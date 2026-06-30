@@ -1,21 +1,16 @@
-import TransactionForm from './components/TransactionForm';
-import Home from "./pages/Home";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import Transactions from './pages/Transactions';
+import Reports from './pages/Reports';
 
 export default function App() {
   return (
-    <>
-    <div>
-        <Home />
-      </div>
-      <div className="max-w-md mx-auto p-6 mt-10">
-        <h1 className="text-2xl font-bold mb-4">
-          Finance Tracker
-        </h1>
-
-        <TransactionForm />
-      </div>
-
-      
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />}></Route>
+        <Route path="/transactions" element={<Transactions />}></Route>
+        <Route path="/reports" element={<Reports />}></Route>
+      </Routes>
+    </Router>
   );
 }

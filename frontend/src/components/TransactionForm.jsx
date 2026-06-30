@@ -5,6 +5,8 @@ function TransactionForm() {
   const [description, setDescription] = useState('')
   const [transactions, setTransactions] = useState([])
 
+  const total = transactions.reduce((sum, tx) => sum + Number(tx.amount || 0), 0)
+
   function handleSubmit(e) {
     e.preventDefault()
 
@@ -12,7 +14,7 @@ function TransactionForm() {
 
     const newTransaction = {
       id: Date.now(),
-      amount,
+      amount: Number(amount),
       description
     }
 
@@ -23,34 +25,57 @@ function TransactionForm() {
   }
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="number"
-          placeholder="Amount"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
+    <section className="tracker-card">
+      <form className="transaction-form" onSubmit={handleSubmit}>
+        <div className="field-group">
+          <label htmlFor="amount">Amount</label>
+          <input
+            id="amount"
+            type="number"
+            placeholder="Enter amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+        </div>
 
-        <input
-          type="text"
-          placeholder="What was it for?"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+        <div className="field-group">
+          <label htmlFor="description">Description</label>
+          <input
+            id="description"
+            type="text"
+            placeholder="What was it for?"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
 
-        <button type="submit">
-          Add
-        </button>
+        <button type="submit">Add transaction</button>
       </form>
 
-      {transactions.map((tx) => (
-        <div key={tx.id}>
-          <p>{tx.description}</p>
-          <p>₹{tx.amount}</p>
+      <div className="tracker-summary">
+        <div>
+          <span className="summary-label">Tracked total</span>
+          <strong>₹{total.toLocaleString()}</strong>
         </div>
-      ))}
-    </div>
+        <span className="summary-pill">{transactions.length} entries</span>
+      </div>
+
+      <div className="transaction-list">
+        {transactions.length === 0 ? (
+          <p className="empty-state">No transactions yet. Add your first expense or income.</p>
+        ) : (
+          transactions.map((tx) => (
+            <div className="transaction-item" key={tx.id}>
+              <div>
+                <p className="transaction-description">{tx.description}</p>
+                <p className="transaction-meta">Added recently</p>
+              </div>
+              <p className="transaction-amount">₹{tx.amount.toLocaleString()}</p>
+            </div>
+          ))
+        )}
+      </div>
+    </section>
   )
 }
 

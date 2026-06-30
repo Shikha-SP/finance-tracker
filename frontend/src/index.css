@@ -1,1 +1,202 @@
 @import "tailwindcss";
+
+/* ── Global Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background: #f1f6ee;
+  color: #2f2a24;
+  min-height: 100vh;
+}
+
+.app-shell {
+  max-width: 700px;
+  margin: 1.2rem auto;
+  padding: 0 1.1rem 1.8rem;
+}
+
+.hero-card {
+  background: transparent;
+  padding: 0.7rem 0;
+  margin-bottom: 0.9rem;
+  text-align: center;
+}
+
+.eyebrow {
+  display: none;
+}
+
+.hero-card h1 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2f2a24;
+  margin-bottom: 0.2rem;
+}
+
+.subtext {
+  color: #6f675d;
+  line-height: 1.4;
+  font-size: 0.95rem;
+}
+
+.tracker-card {
+  background: #f8fcf6;
+  padding: 1.2rem 1rem;
+}
+
+.transaction-form {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.field-group label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4a433d;
+}
+
+.field-group input {
+  border: 1px solid #cfc2b1;
+  padding: 0.7rem 0.75rem;
+  font-size: 0.95rem;
+  outline: none;
+  background: #fffdf9;
+}
+
+.field-group input:focus {
+  border-color: #8fa78e;
+  background: #ffffff;
+}
+
+.transaction-form button {
+  border: 1px solid #8fa78e;
+  padding: 0.72rem 0.8rem;
+  font-weight: 600;
+  color: #2f2a24;
+  background: #dfe8d8;
+  cursor: pointer;
+  margin-top: 0.1rem;
+}
+
+.tracker-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 0;
+  margin-bottom: 0.9rem;
+  border-top: 1px solid #e4dccf;
+  border-bottom: 1px solid #e4dccf;
+}
+
+.summary-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #7a7268;
+  margin-bottom: 0.15rem;
+}
+
+.tracker-summary strong {
+  font-size: 0.95rem;
+  color: #2f2a24;
+}
+
+.summary-pill {
+  color: #5f665b;
+  font-size: 0.8rem;
+}
+
+.transaction-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.transaction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e8e0d2;
+}
+
+.transaction-description {
+  font-weight: 600;
+  color: #2f2a24;
+  margin-bottom: 0.1rem;
+}
+
+.transaction-meta {
+  font-size: 0.8rem;
+  color: #8e857c;
+}
+
+.transaction-amount {
+  font-weight: 600;
+  color: #2f2a24;
+}
+
+.empty-state {
+  padding: 0.8rem 0;
+  color: #6f675d;
+  font-size: 0.95rem;
+}
+
+/* ── Navbar ── */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.7rem 0.9rem;
+  background: #f1f6ee;
+  border-bottom: 1px solid #d7e4d2;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.navbar-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2f2a24;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  list-style: none;
+}
+
+.nav-link {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #6f675d;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  color: #2f2a24;
+}
+
+.nav-link.active {
+  color: #2f2a24;
+}
