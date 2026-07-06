@@ -1,82 +1,143 @@
-import { useState } from 'react'
+import { useState } from 'react';
+import { 
+  ArrowDownCircle, 
+  ArrowUpCircle 
+} from 'lucide-react';
 
-function TransactionForm() {
-  const [amount, setAmount] = useState('')
-  const [description, setDescription] = useState('')
-  const [transactions, setTransactions] = useState([])
+export const CATEGORIES = [
+  'Food & Dining',
+  'Transport',
+  'Shopping',
+  'Health',
+  'Bills & Utilities',
+  'Entertainment',
+  'Salary',
+  'Freelance',
+  'Investment',
+  'Other',
+];
 
-  const total = transactions.reduce((sum, tx) => sum + Number(tx.amount || 0), 0)
+function TransactionForm({ onAdd }) {
+  const [amount,      setAmount]      = useState('');
+  const [description, setDescription] = useState('');
+  const [type,        setType]        = useState('expense');
+  const [category,    setCategory]    = useState('Other');
+  const [note,        setNote]        = useState('');
 
   function handleSubmit(e) {
-    e.preventDefault()
+    e.preventDefault();
+    if (!amount || !description) return;
 
-    if (!amount || !description) return
-
-    const newTransaction = {
+    onAdd?.({
       id: Date.now(),
-      amount: Number(amount),
-      description
-    }
+      amount:      Number(amount),
+      description: description.trim(),
+      type,
+      category,
+      note: note.trim(),
+      date: new Date().toLocaleDateString('en-IN', {
+        day: '2-digit', month: 'short', year: 'numeric',
+      }),
+      monthKey: new Date().toLocaleDateString('en-IN', {
+        month: 'short', year: 'numeric',
+      }),
+    });
 
-    setTransactions([...transactions, newTransaction])
-
-    setAmount('')
-    setDescription('')
+    setAmount('');
+    setDescription('');
+    setType('expense');
+    setCategory('Other');
+    setNote('');
   }
 
   return (
-    <section className="tracker-card">
-      <form className="transaction-form" onSubmit={handleSubmit}>
-        <div className="field-group">
-          <label htmlFor="amount">Amount</label>
-          <input
-            id="amount"
-            type="number"
-            placeholder="Enter amount"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-          />
+    <form className="transaction-form" onSubmit={handleSubmit}>
+      {/* Income / Expense toggle */}
+      <div className="field-group">
+        <span className="field-label">Transaction Type</span>
+        <div className="type-toggle">
+          <button
+            type="button"
+            className={`type-btn${type === 'expense' ? ' active-expense' : ''}`}
+            onClick={() => setType('expense')}
+          >
+            <ArrowDownCircle size={16} /> Expense
+          </button>
+          <button
+            type="button"
+            className={`type-btn${type === 'income' ? ' active-income' : ''}`}
+            onClick={() => setType('income')}
+          >
+            <ArrowUpCircle size={16} /> Income
+          </button>
         </div>
+      </div>
 
+      {/* Description + Amount */}
+      <div className="form-row">
         <div className="field-group">
-          <label htmlFor="description">Description</label>
+          <label className="field-label" htmlFor="tx-desc">Description</label>
           <input
-            id="description"
+            id="tx-desc"
+            className="field-input"
             type="text"
-            placeholder="What was it for?"
+            placeholder="e.g. Business Lunch"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={e => setDescription(e.target.value)}
+            required
           />
         </div>
-
-        <button type="submit">Add transaction</button>
-      </form>
-
-      <div className="tracker-summary">
-        <div>
-          <span className="summary-label">Tracked total</span>
-          <strong>₹{total.toLocaleString()}</strong>
+        <div className="field-group">
+          <label className="field-label" htmlFor="tx-amount">Amount (₹)</label>
+          <input
+            id="tx-amount"
+            className="field-input"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="0.00"
+            value={amount}
+            onChange={e => setAmount(e.target.value)}
+            required
+          />
         </div>
-        <span className="summary-pill">{transactions.length} entries</span>
       </div>
 
-      <div className="transaction-list">
-        {transactions.length === 0 ? (
-          <p className="empty-state">No transactions yet. Add your first expense or income.</p>
-        ) : (
-          transactions.map((tx) => (
-            <div className="transaction-item" key={tx.id}>
-              <div>
-                <p className="transaction-description">{tx.description}</p>
-                <p className="transaction-meta">Added recently</p>
-              </div>
-              <p className="transaction-amount">₹{tx.amount.toLocaleString()}</p>
-            </div>
-          ))
-        )}
+      {/* Category + Note */}
+      <div className="form-row">
+        <div className="field-group">
+          <label className="field-label" htmlFor="tx-cat">Category</label>
+          <select
+            id="tx-cat"
+            className="field-select"
+            value={category}
+            onChange={e => setCategory(e.target.value)}
+          >
+            {CATEGORIES.map(c => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="field-group">
+          <label className="field-label" htmlFor="tx-note">Note (optional)</label>
+          <input
+            id="tx-note"
+            className="field-input"
+            type="text"
+            placeholder="Any extra detail…"
+            value={note}
+            onChange={e => setNote(e.target.value)}
+          />
+        </div>
       </div>
-    </section>
-  )
+
+      <button className="btn-primary" type="submit" id="submit-tx">
+        Add Transaction
+      </button>
+    </form>
+  );
 }
 
-export default TransactionForm
+export default TransactionForm;
