@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   ArrowDownCircle, 
   ArrowUpCircle 
@@ -17,37 +17,59 @@ export const CATEGORIES = [
   'Other',
 ];
 
-function TransactionForm({ onAdd }) {
+function TransactionForm({ onAdd, editTx, onCancelEdit, onUpdate }) {
   const [amount,      setAmount]      = useState('');
   const [description, setDescription] = useState('');
   const [type,        setType]        = useState('expense');
   const [category,    setCategory]    = useState('Other');
   const [note,        setNote]        = useState('');
 
+  useEffect(() => {
+    if (editTx) {
+      setAmount(editTx.amount.toString());
+      setDescription(editTx.description);
+      setType(editTx.type);
+      setCategory(editTx.category);
+      setNote(editTx.note || '');
+    } else {
+      setAmount('');
+      setDescription('');
+      setType('expense');
+      setCategory('Other');
+      setNote('');
+    }
+  }, [editTx]);
+
   function handleSubmit(e) {
     e.preventDefault();
     if (!amount || !description) return;
 
-    onAdd?.({
-      id: Date.now(),
+    const payload = {
       amount:      Number(amount),
       description: description.trim(),
       type,
       category,
       note: note.trim(),
-      date: new Date().toLocaleDateString('en-IN', {
-        day: '2-digit', month: 'short', year: 'numeric',
-      }),
-      monthKey: new Date().toLocaleDateString('en-IN', {
-        month: 'short', year: 'numeric',
-      }),
-    });
+    };
 
-    setAmount('');
-    setDescription('');
-    setType('expense');
-    setCategory('Other');
-    setNote('');
+    if (editTx) {
+      onUpdate?.(editTx.id, payload);
+    } else {
+      onAdd?.({
+        ...payload,
+        date: new Date().toLocaleDateString('en-IN', {
+          day: '2-digit', month: 'short', year: 'numeric',
+        }),
+        monthKey: new Date().toLocaleDateString('en-IN', {
+          month: 'short', year: 'numeric',
+        }),
+      });
+      setAmount('');
+      setDescription('');
+      setType('expense');
+      setCategory('Other');
+      setNote('');
+    }
   }
 
   return (
@@ -133,9 +155,16 @@ function TransactionForm({ onAdd }) {
         </div>
       </div>
 
-      <button className="btn-primary" type="submit" id="submit-tx">
-        Add Transaction
-      </button>
+      <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+        <button className="btn-primary" type="submit" id="submit-tx" style={{ flex: 1 }}>
+          {editTx ? 'Save Changes' : 'Add Transaction'}
+        </button>
+        {editTx && (
+          <button className="btn-outline" type="button" onClick={onCancelEdit} style={{ flex: 1 }}>
+            Cancel
+          </button>
+        )}
+      </div>
     </form>
   );
 }

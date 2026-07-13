@@ -1,15 +1,26 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useTx } from '../context/TxContext';
 import TransactionForm from '../components/TransactionForm';
 import { getCategoryIcon } from '../utils/categoryIcons';
-import { Search, Trash2, SearchX, FileText } from 'lucide-react';
+import { Search, Trash2, SearchX, FileText, Pencil } from 'lucide-react';
 
 const fmt = n => '₹' + Math.abs(n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
 
 function Transactions() {
-  const { transactions, addTransaction, deleteTransaction, income, expense } = useTx();
+  const { transactions, addTransaction, deleteTransaction, updateTransaction, income, expense } = useTx();
   const [search, setSearch]   = useState('');
   const [filter, setFilter]   = useState('all'); // 'all' | 'income' | 'expense'
+  const [editTx, setEditTx]   = useState(null);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.editTx) {
+      setEditTx(location.state.editTx);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [location.state]);
 
   const filtered = useMemo(() => {
     return transactions.filter(tx => {
@@ -36,10 +47,18 @@ function Transactions() {
         {/* Add form card */}
         <div className="card" style={{ marginBottom: '1.5rem' }}>
           <div className="card-header">
-            <span className="card-title">New Entry</span>
+            <span className="card-title">{editTx ? 'Edit Entry' : 'New Entry'}</span>
           </div>
           <div className="card-body">
-            <TransactionForm onAdd={addTransaction} />
+            <TransactionForm 
+              onAdd={addTransaction} 
+              editTx={editTx} 
+              onCancelEdit={() => setEditTx(null)} 
+              onUpdate={(id, payload) => {
+                updateTransaction(id, payload);
+                setEditTx(null);
+              }}
+            />
           </div>
         </div>
 
@@ -133,6 +152,17 @@ function Transactions() {
                     <p className={`tx-amount ${tx.type === 'income' ? 'positive' : 'negative'}`}>
                       {tx.type === 'income' ? '+' : '−'}{fmt(tx.amount)}
                     </p>
+                    <button
+                      className="btn-ghost"
+                      title="Edit entry"
+                      style={{ marginRight: '0.25rem' }}
+                      onClick={() => {
+                        setEditTx(tx);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                    >
+                      <Pencil size={16} />
+                    </button>
                     <button
                       className="btn-ghost"
                       title="Delete entry"

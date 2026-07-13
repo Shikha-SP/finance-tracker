@@ -1,7 +1,7 @@
 import { useTx } from '../context/TxContext';
 import { useNavigate } from 'react-router-dom';
 import { getCategoryIcon } from '../utils/categoryIcons';
-import { FileText, Trash2, Wallet, FileBarChart, TrendingUp, TrendingDown } from 'lucide-react';
+import { FileText, Trash2, Wallet, FileBarChart, TrendingUp, TrendingDown, Pencil } from 'lucide-react';
 
 const fmt = n => '₹' + Math.abs(n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
 const today = new Date().toLocaleDateString('en-US', {
@@ -102,7 +102,15 @@ function Home() {
                         <p className={`tx-amount ${tx.type === 'income' ? 'positive' : 'negative'}`}>
                           {tx.type === 'income' ? '+' : '−'}{fmt(tx.amount)}
                         </p>
-                        <button className="btn-ghost" onClick={() => deleteTransaction(tx.id)}>
+                        <button 
+                          className="btn-ghost" 
+                          title="Edit entry"
+                          style={{ marginRight: '0.25rem' }}
+                          onClick={() => navigate('/transactions', { state: { editTx: tx } })}
+                        >
+                          <Pencil size={13} />
+                        </button>
+                        <button className="btn-ghost" title="Delete entry" onClick={() => deleteTransaction(tx.id)}>
                           <Trash2 size={13} />
                         </button>
                       </div>

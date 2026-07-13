@@ -11,7 +11,7 @@ const EXPENSE_CATEGORIES = [
 ];
 
 function Budget() {
-  const { byCategory, expense, budgets, updateBudget } = useTx();
+  const { byCategory, expense, budgets, updateBudget, income } = useTx();
   const [editing, setEditing] = useState(null);
   const [editVal, setEditVal] = useState('');
 
@@ -46,15 +46,21 @@ function Budget() {
       </div>
 
       <div className="page-content">
-        {/* Overall budget banner */}
-        <div className="budget-overview-card">
-          <div className="budget-overview-left">
-            <p className="budget-overview-label">Monthly Allocation</p>
-            <p className="budget-overview-total">{fmt(totalBudget)}</p>
-            <p className="budget-overview-sub">
-              {fmt(totalSpent)} spent &bull; {fmt(Math.max(0, totalBudget - totalSpent))} remaining
-            </p>
+        {/* Income and Allocation Summary */}
+        <div className="budget-summary-card" style={{ display: 'flex', justifyContent: 'space-around', padding: '1rem', background: 'var(--bg-elevated)', borderRadius: '8px', marginBottom: '1rem' }}>
+          <div style={{ textAlign: 'center' }}>
+            <p className="budget-summary-label" style={{ margin: 0, color: 'var(--text-muted)' }}>Total Income</p>
+            <p className="budget-summary-value" style={{ margin: 0, fontWeight: 700, color: 'var(--text-primary)' }}>{fmt(income)}</p>
           </div>
+          <div style={{ textAlign: 'center' }}>
+            <p className="budget-summary-label" style={{ margin: 0, color: 'var(--text-muted)' }}>Allocated</p>
+            <p className="budget-summary-value" style={{ margin: 0, fontWeight: 700, color: 'var(--text-primary)' }}>{fmt(totalBudget)}</p>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <p className="budget-summary-label" style={{ margin: 0, color: 'var(--text-muted)' }}>Unallocated</p>
+            <p className="budget-summary-value" style={{ margin: 0, fontWeight: 700, color: totalBudget > income ? '#ef4444' : 'var(--text-primary)' }}>{fmt(Math.max(0, income - totalBudget))}</p>
+          </div>
+        </div>
           <div className="budget-overview-right">
             <div className="budget-donut-wrap">
               <svg viewBox="0 0 100 100" width="120" height="120" className="budget-donut">
@@ -73,7 +79,8 @@ function Budget() {
                 <text x="50" y="60" textAnchor="middle" fontSize="8" fill="var(--text-muted)" fontFamily="'Courier Prime', monospace">
                   USED
                 </text>
-              </svg>
+</svg>
+
             </div>
             {overBudgetCats.length > 0 ? (
               <div className="budget-alert">
@@ -86,9 +93,7 @@ function Budget() {
                 <span>All within limits</span>
               </div>
             )}
-          </div>
         </div>
-
         {/* Category budget rows */}
         <div className="card" style={{ marginTop: '2rem' }}>
           <div className="card-header">
