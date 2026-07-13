@@ -23,11 +23,29 @@ export default function Signup() {
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState('');
   const [success, setSuccess]   = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const pw = strength(password);
 
+  const validate = () => {
+    const errs = {};
+    if (!name.trim()) errs.name = 'Full name is required';
+    else if (name.trim().length < 2) errs.name = 'Name must be at least 2 characters';
+
+    if (!email) errs.email = 'Email address is required';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs.email = 'Please enter a valid email address';
+    
+    if (!password) errs.password = 'Password is required';
+    else if (pw.score < 3) errs.password = 'Password must be at least Good strength';
+    
+    setFieldErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
   const handleSubmit = async e => {
     e.preventDefault();
+    if (!validate()) return;
+    
     setError('');
     setSuccess('');
     setLoading(true);
@@ -116,15 +134,19 @@ export default function Signup() {
                 <User size={16} className="auth-input-icon" />
                 <input
                   id="signup-name"
-                  className="auth-input"
+                  className={`auth-input ${fieldErrors.name ? 'auth-input--error' : ''}`}
                   type="text"
                   placeholder="Jane Doe"
                   value={name}
-                  onChange={e => setName(e.target.value)}
+                  onChange={e => {
+                    setName(e.target.value);
+                    if (fieldErrors.name) setFieldErrors(prev => ({ ...prev, name: '' }));
+                  }}
                   required
                   autoComplete="name"
                 />
               </div>
+              {fieldErrors.name && <div className="auth-field-error" style={{ color: 'var(--red)', fontSize: '0.75rem', marginTop: '0.25rem' }}>{fieldErrors.name}</div>}
             </div>
 
             <div className="auth-field">
@@ -133,15 +155,19 @@ export default function Signup() {
                 <Mail size={16} className="auth-input-icon" />
                 <input
                   id="signup-email"
-                  className="auth-input"
+                  className={`auth-input ${fieldErrors.email ? 'auth-input--error' : ''}`}
                   type="email"
                   placeholder="you@example.com"
                   value={email}
-                  onChange={e => setEmail(e.target.value)}
+                  onChange={e => {
+                    setEmail(e.target.value);
+                    if (fieldErrors.email) setFieldErrors(prev => ({ ...prev, email: '' }));
+                  }}
                   required
                   autoComplete="email"
                 />
               </div>
+              {fieldErrors.email && <div className="auth-field-error" style={{ color: 'var(--red)', fontSize: '0.75rem', marginTop: '0.25rem' }}>{fieldErrors.email}</div>}
             </div>
 
             <div className="auth-field">
@@ -150,11 +176,14 @@ export default function Signup() {
                 <Lock size={16} className="auth-input-icon" />
                 <input
                   id="signup-password"
-                  className="auth-input"
+                  className={`auth-input ${fieldErrors.password ? 'auth-input--error' : ''}`}
                   type={showPw ? 'text' : 'password'}
                   placeholder="Min. 8 characters"
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={e => {
+                    setPassword(e.target.value);
+                    if (fieldErrors.password) setFieldErrors(prev => ({ ...prev, password: '' }));
+                  }}
                   required
                   minLength={8}
                   autoComplete="new-password"
@@ -168,6 +197,7 @@ export default function Signup() {
                   {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
+              {fieldErrors.password && <div className="auth-field-error" style={{ color: 'var(--red)', fontSize: '0.75rem', marginTop: '0.25rem' }}>{fieldErrors.password}</div>}
               {password && (
                 <div className="auth-pw-strength">
                   <div className="auth-pw-bars">

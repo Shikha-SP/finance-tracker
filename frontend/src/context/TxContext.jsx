@@ -18,7 +18,7 @@ const DEFAULT_BUDGETS = {
 
 export function TxProvider({ children }) {
   const [transactions, setTransactions] = useState([]);
-  const [theme, setTheme]               = useState('dark');
+  const [theme, setTheme]               = useState('light');
   const [budgets, setBudgets]           = useState(DEFAULT_BUDGETS);
 
   // Fetch initial data from backend

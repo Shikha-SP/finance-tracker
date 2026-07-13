@@ -1,65 +1,62 @@
 /* ── Fonts ── */
-@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 /* ══════════════════════════════════════
-   DARK THEME  (Slate & Cream Print Ledger)
+   DARK THEME
 ══════════════════════════════════════ */
 :root {
-  --bg-base:         #0c0f12; /* Deep Charcoal-Slate */
-  --bg-surface:      #12161b;
-  --bg-elevated:     #191e25;
-  --bg-hover:        #202730;
+  --bg-base:         #000000;
+  --bg-surface:      #0a0a0a;
+  --bg-elevated:     #171717;
+  --bg-hover:        #262626;
 
-  /* Champagne gold/copper rules */
-  --border:          rgba(208, 163, 110, 0.2);
-  --border-strong:   rgba(208, 163, 110, 0.45);
+  --border:          #262626;
+  --border-strong:   #404040;
 
-  --accent:          #d0a36e; /* Muted Champagne Gold */
-  --accent-dark:     #b58954;
-  --accent-soft:     rgba(208, 163, 110, 0.1);
+  --accent:          #ffffff;
+  --accent-dark:     #e5e5e5;
+  --accent-soft:     rgba(255, 255, 255, 0.1);
 
-  /* Vivid semantic pops */
-  --green:           #34d399;  /* Emerald */
-  --green-soft:      rgba(52, 211, 153, 0.12);
-  --red:             #f87171;
-  --red-soft:        rgba(248, 113, 113, 0.12);
-  --pink:            #f472b6;
-  --pink-soft:       rgba(244, 114, 182, 0.12);
-  --amber:           #fbbf24;
-  --amber-soft:      rgba(251, 191, 36, 0.12);
+  --green:           #10b981;
+  --green-soft:      rgba(16, 185, 129, 0.12);
+  --red:             #ef4444;
+  --red-soft:        rgba(239, 68, 68, 0.12);
+  --pink:            #ec4899;
+  --pink-soft:       rgba(236, 72, 153, 0.12);
+  --amber:           #f59e0b;
+  --amber-soft:      rgba(245, 158, 11, 0.12);
 
-  /* Cream / Off-White */
-  --text-primary:    #fdfbf7;
-  --text-secondary:  #cdc8bf;
-  --text-muted:      #9c978f;
+  --text-primary:    #ffffff;
+  --text-secondary:  #a3a3a3;
+  --text-muted:      #737373;
 
-  --shadow-card:     0 4px 16px rgba(0,0,0,0.4);
+  --shadow-card:     0 4px 16px rgba(0,0,0,0.5);
   --shadow-green:    none;
   --shadow-red:      none;
 
-  --radius-sm:       0px; /* Sharp corners for typewriter / printed paper */
-  --radius-md:       0px;
-  --radius-lg:       0px;
-  --radius-xl:       0px;
+  --radius-sm:       4px;
+  --radius-md:       8px;
+  --radius-lg:       12px;
+  --radius-xl:       16px;
 
-  --transition:      all 0.2s ease-in-out;
+  --transition:      all 0.15s ease-in-out;
 }
 
 /* ══════════════════════════════════════
-   LIGHT THEME (Cream Newspaper)
+   LIGHT THEME
 ══════════════════════════════════════ */
 [data-theme="light"] {
-  --bg-base:         #f6f3eb; /* True Newspaper Creme */
-  --bg-surface:      #fdfbf7;
-  --bg-elevated:     #eae5d8;
-  --bg-hover:        #ded9c9;
+  --bg-base:         #f9fafb;
+  --bg-surface:      #ffffff;
+  --bg-elevated:     #f3f4f6;
+  --bg-hover:        #e5e7eb;
 
-  --border:          rgba(12, 15, 18, 0.15);
-  --border-strong:   rgba(12, 15, 18, 0.35);
+  --border:          #e5e7eb;
+  --border-strong:   #d1d5db;
 
-  --accent:          #1c232b; /* Ink Black */
-  --accent-dark:     #0c0f13;
-  --accent-soft:     rgba(12, 15, 18, 0.08);
+  --accent:          #000000;
+  --accent-dark:     #1f2937;
+  --accent-soft:     rgba(0, 0, 0, 0.05);
 
   --green:           #059669;
   --green-soft:      rgba(5, 150, 105, 0.1);
@@ -70,24 +67,22 @@
   --amber:           #d97706;
   --amber-soft:      rgba(217, 119, 6, 0.1);
 
-  --text-primary:    #1c232b;
-  --text-secondary:  #4a545e;
-  --text-muted:      #7c8793;
+  --text-primary:    #111827;
+  --text-secondary:  #4b5563;
+  --text-muted:      #6b7280;
 
-  --shadow-card:     0 8px 24px rgba(0,0,0,0.06);
-  --shadow-green:    none;
-  --shadow-red:      none;
+  --shadow-card:     0 4px 12px rgba(0,0,0,0.05);
 }
 
 /* ══════════════════════════════════════
-   RESET & TYPEWRITER SETUP
+   RESET & SETUP
 ══════════════════════════════════════ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0 !important; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Courier Prime', monospace;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background: var(--bg-base);
   color: var(--text-primary);
   min-height: 100vh;
@@ -96,18 +91,18 @@ body {
   transition: background 0.4s ease, color 0.4s ease;
 }
 
-/* Big Headlines */
+/* Typography Overrides */
 h1, h2, h3, h4, h5, h6, .brand-name, .page-title, .home-hero-amount, .card-title, .stat-value {
-  font-family: 'Playfair Display', Georgia, serif;
-  letter-spacing: -0.01em;
+  font-family: 'Inter', system-ui, sans-serif;
+  letter-spacing: -0.02em;
 }
 
-/* Courier utility for subheadings/labels */
+/* Label utilities */
 .typewriter-label, .sidebar-section-label, .stat-label, .field-label, .btn-primary, .btn-outline, .filter-btn, .summary-item-label, .tx-meta, .month-label, .legend-item {
-  font-family: 'Courier Prime', monospace;
-  font-weight: 700;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.05em;
 }
 
 /* ══════════════════════════════════════
@@ -120,8 +115,8 @@ h1, h2, h3, h4, h5, h6, .brand-name, .page-title, .home-hero-amount, .card-title
 }
 
 .layout {
-  display: grid;
-  grid-template-columns: 240px 1fr; /* Slightly wider to prevent text cutoff */
+  display: flex;
+  flex-direction: column;
   flex: 1;
 }
 
@@ -200,20 +195,53 @@ h1, h2, h3, h4, h5, h6, .brand-name, .page-title, .home-hero-amount, .card-title
 }
 
 /* ══════════════════════════════════════
-   SIDEBAR
+   NAVBAR (formerly SIDEBAR)
 ══════════════════════════════════════ */
-.sidebar {
+.navbar {
   background: var(--bg-surface);
-  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
   display: flex;
-  flex-direction: column;
-  padding: 2rem 1rem 1.5rem; /* Reduced horizontal padding to give content more room */
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
   position: sticky;
   top: 0;
-  height: calc(100vh - 38px);
-  overflow-y: auto;
-  overflow-x: hidden;
+  z-index: 50;
   transition: background 0.4s ease;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  list-style: none;
+}
+
+.navbar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: var(--transition);
+}
+.navbar-link:hover, .navbar-link.active {
+  color: var(--text-primary);
+}
+
+.navbar-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .sidebar-brand {

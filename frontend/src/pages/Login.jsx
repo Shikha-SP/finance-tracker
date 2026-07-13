@@ -9,9 +9,23 @@ export default function Login() {
   const [showPw, setShowPw]   = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const validate = () => {
+    const errs = {};
+    if (!email) errs.email = 'Email address is required';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs.email = 'Please enter a valid email address';
+    
+    if (!password) errs.password = 'Password is required';
+    
+    setFieldErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
 
   const handleSubmit = async e => {
     e.preventDefault();
+    if (!validate()) return;
+    
     setError('');
     setLoading(true);
 
@@ -112,15 +126,19 @@ export default function Login() {
                 <Mail size={16} className="auth-input-icon" />
                 <input
                   id="login-email"
-                  className="auth-input"
+                  className={`auth-input ${fieldErrors.email ? 'auth-input--error' : ''}`}
                   type="email"
                   placeholder="you@example.com"
                   value={email}
-                  onChange={e => setEmail(e.target.value)}
+                  onChange={e => {
+                    setEmail(e.target.value);
+                    if (fieldErrors.email) setFieldErrors(prev => ({ ...prev, email: '' }));
+                  }}
                   required
                   autoComplete="email"
                 />
               </div>
+              {fieldErrors.email && <div className="auth-field-error" style={{ color: 'var(--red)', fontSize: '0.75rem', marginTop: '0.25rem' }}>{fieldErrors.email}</div>}
             </div>
 
             <div className="auth-field">
@@ -131,11 +149,14 @@ export default function Login() {
                 <Lock size={16} className="auth-input-icon" />
                 <input
                   id="login-password"
-                  className="auth-input"
+                  className={`auth-input ${fieldErrors.password ? 'auth-input--error' : ''}`}
                   type={showPw ? 'text' : 'password'}
                   placeholder="••••••••"
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={e => {
+                    setPassword(e.target.value);
+                    if (fieldErrors.password) setFieldErrors(prev => ({ ...prev, password: '' }));
+                  }}
                   required
                   autoComplete="current-password"
                 />
@@ -148,6 +169,7 @@ export default function Login() {
                   {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
+              {fieldErrors.password && <div className="auth-field-error" style={{ color: 'var(--red)', fontSize: '0.75rem', marginTop: '0.25rem' }}>{fieldErrors.password}</div>}
             </div>
 
             <button
