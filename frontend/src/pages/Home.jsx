@@ -4,26 +4,26 @@ import { getCategoryIcon } from '../utils/categoryIcons';
 import { Wallet, TrendingUp, TrendingDown, Activity, CreditCard } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
-const fmt = n => '$' + Math.abs(n).toLocaleString('en-US', { maximumFractionDigits: 2 });
+const fmt = n => '₹' + Math.abs(n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
 const COLORS = ['#10b981', '#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6'];
 
 function Home() {
-  const { transactions, total, income, expense } = useTx();
+  const { transactions, total, income, expense, monthlyData } = useTx();
   const navigate = useNavigate();
   
   const recent = transactions.slice(0, 5);
   const savingsRate = income > 0 ? Math.round(((income - expense) / income) * 100) : 0;
 
-  // Prepare chart data (dummy historical data combined with real totals for demo)
-  const areaData = [
-    { name: 'Jan', income: 4000, expense: 2400 },
-    { name: 'Feb', income: 3000, expense: 1398 },
-    { name: 'Mar', income: 2000, expense: 9800 },
-    { name: 'Apr', income: 2780, expense: 3908 },
-    { name: 'May', income: 1890, expense: 4800 },
-    { name: 'Jun', income: 2390, expense: 3800 },
-    { name: 'Jul', income: income > 0 ? income : 3490, expense: expense > 0 ? expense : 4300 },
-  ];
+  // Use real monthly data, or empty if none
+  const areaData = monthlyData.length > 0 
+    ? monthlyData.map(m => ({
+        name: m.label.split(' ')[0], // e.g., "Oct" from "Oct 2026"
+        income: m.income,
+        expense: m.expense
+      }))
+    : [
+        { name: 'No Data', income: 0, expense: 0 }
+      ];
 
   // Aggregate category data for PieChart
   const expenseTxs = transactions.filter(t => t.type === 'expense');

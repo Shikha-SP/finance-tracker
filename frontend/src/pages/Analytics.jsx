@@ -9,8 +9,8 @@ const fmtK = n  => n >= 1000 ? '₹' + (n / 1000).toFixed(1) + 'k' : fmt(n);
 const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 function BarPair({ income, expense, maxVal, month }) {
-  const iH = maxVal > 0 ? Math.max(4, (income  / maxVal) * 140) : 4;
-  const eH = maxVal > 0 ? Math.max(4, (expense / maxVal) * 140) : 4;
+  const iH = maxVal > 0 ? Math.max(2, (income  / maxVal) * 100) + '%' : '4px';
+  const eH = maxVal > 0 ? Math.max(2, (expense / maxVal) * 100) + '%' : '4px';
   return (
     <div className="analytics-col">
       <div className="analytics-bars">
@@ -97,7 +97,7 @@ function Analytics() {
 
         <div className="analytics-grid">
           {/* Monthly chart */}
-          <div className="card">
+          <div className="card" style={{ display: 'flex', flexDirection: 'column' }}>
             <div className="card-header">
               <span className="card-title">Monthly Trend</span>
               <div style={{ display:'flex', gap:'1rem', alignItems:'center' }}>
@@ -109,14 +109,14 @@ function Analytics() {
                 </span>
               </div>
             </div>
-            <div className="card-body">
+            <div className="card-body" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
               {monthlyData.length === 0 ? (
-                <div className="empty-state" style={{ padding:'3rem' }}>
+                <div className="empty-state" style={{ padding:'3rem', flex: 1, justifyContent: 'center' }}>
                   <Activity size={32} style={{ color:'var(--text-muted)' }} />
                   <p className="empty-title">No data yet</p>
                 </div>
               ) : (
-                <div className="analytics-chart">
+                <div className="analytics-chart" style={{ flex: 1, height: 'auto', minHeight: '150px' }}>
                   {monthlyData.map(m => (
                     <BarPair
                       key={m.label}

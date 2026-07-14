@@ -18,7 +18,9 @@ const DEFAULT_BUDGETS = {
 
 export function TxProvider({ children }) {
   const [transactions, setTransactions] = useState([]);
-  const [theme, setTheme]               = useState('light');
+  const [theme, setTheme]               = useState(
+    () => localStorage.getItem('theme') || 'light'
+  );
   const [budgets, setBudgets]           = useState(DEFAULT_BUDGETS);
 
   // Fetch initial data from backend
@@ -100,14 +102,29 @@ export function TxProvider({ children }) {
       .catch(err => console.error('Error updating budget:', err));
   }, []);
 
+  /* ── Clear all data ── */
+  const clearAllData = useCallback(async () => {
+    try {
+      await Promise.all(
+        transactions.map(t =>
+          fetch(`${API_URL}/transactions/${t.id}`, { method: 'DELETE' })
+        )
+      );
+    } catch (err) {
+      console.error('Error clearing data:', err);
+    }
+    setTransactions([]);
+  }, [transactions]);
+
   /* ── Theme ── */
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-  }, []);
+  }, [theme]);
 
   const toggleTheme = useCallback(() => {
     setTheme(prev => {
       const next = prev === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('theme', next);
       document.documentElement.setAttribute('data-theme', next);
       return next;
     });
@@ -154,6 +171,7 @@ export function TxProvider({ children }) {
       total, income, expense, byCategory, monthlyData, healthScore,
       budgets, updateBudget,
       theme, toggleTheme,
+      clearAllData,
     }}>
       {children}
     </TxContext.Provider>

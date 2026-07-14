@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { 
-  ArrowDownCircle, 
-  ArrowUpCircle 
+import {
+  ArrowDownCircle,
+  ArrowUpCircle
 } from 'lucide-react';
 
 export const CATEGORIES = [
@@ -17,12 +17,15 @@ export const CATEGORIES = [
   'Other',
 ];
 
+const todayISO = () => new Date().toISOString().split('T')[0];
+
 function TransactionForm({ onAdd, editTx, onCancelEdit, onUpdate }) {
   const [amount,      setAmount]      = useState('');
   const [description, setDescription] = useState('');
   const [type,        setType]        = useState('expense');
   const [category,    setCategory]    = useState('Other');
   const [note,        setNote]        = useState('');
+  const [date,        setDate]        = useState(todayISO());
 
   useEffect(() => {
     if (editTx) {
@@ -31,12 +34,17 @@ function TransactionForm({ onAdd, editTx, onCancelEdit, onUpdate }) {
       setType(editTx.type);
       setCategory(editTx.category);
       setNote(editTx.note || '');
+      // Parse back a display date to ISO if possible
+      const raw = editTx.dateISO || editTx.date;
+      const parsed = new Date(raw);
+      setDate(!isNaN(parsed) ? parsed.toISOString().split('T')[0] : todayISO());
     } else {
       setAmount('');
       setDescription('');
       setType('expense');
       setCategory('Other');
       setNote('');
+      setDate(todayISO());
     }
   }, [editTx]);
 
@@ -44,31 +52,35 @@ function TransactionForm({ onAdd, editTx, onCancelEdit, onUpdate }) {
     e.preventDefault();
     if (!amount || !description) return;
 
+    const selectedDate = new Date(date + 'T00:00:00');
+    const displayDate  = selectedDate.toLocaleDateString('en-IN', {
+      day: '2-digit', month: 'short', year: 'numeric',
+    });
+    const monthKey = selectedDate.toLocaleDateString('en-IN', {
+      month: 'short', year: 'numeric',
+    });
+
     const payload = {
       amount:      Number(amount),
       description: description.trim(),
       type,
       category,
-      note: note.trim(),
+      note:        note.trim(),
+      date:        displayDate,
+      dateISO:     date,
+      monthKey,
     };
 
     if (editTx) {
       onUpdate?.(editTx.id, payload);
     } else {
-      onAdd?.({
-        ...payload,
-        date: new Date().toLocaleDateString('en-IN', {
-          day: '2-digit', month: 'short', year: 'numeric',
-        }),
-        monthKey: new Date().toLocaleDateString('en-IN', {
-          month: 'short', year: 'numeric',
-        }),
-      });
+      onAdd?.(payload);
       setAmount('');
       setDescription('');
       setType('expense');
       setCategory('Other');
       setNote('');
+      setDate(todayISO());
     }
   }
 
@@ -125,7 +137,7 @@ function TransactionForm({ onAdd, editTx, onCancelEdit, onUpdate }) {
         </div>
       </div>
 
-      {/* Category + Note */}
+      {/* Category + Date */}
       <div className="form-row">
         <div className="field-group">
           <label className="field-label" htmlFor="tx-cat">Category</label>
@@ -136,26 +148,37 @@ function TransactionForm({ onAdd, editTx, onCancelEdit, onUpdate }) {
             onChange={e => setCategory(e.target.value)}
           >
             {CATEGORIES.map(c => (
-              <option key={c} value={c}>
-                {c}
-              </option>
+              <option key={c} value={c}>{c}</option>
             ))}
           </select>
         </div>
         <div className="field-group">
-          <label className="field-label" htmlFor="tx-note">Note (optional)</label>
+          <label className="field-label" htmlFor="tx-date">Date</label>
           <input
-            id="tx-note"
+            id="tx-date"
             className="field-input"
-            type="text"
-            placeholder="Any extra detail…"
-            value={note}
-            onChange={e => setNote(e.target.value)}
+            type="date"
+            value={date}
+            onChange={e => setDate(e.target.value)}
+            max={todayISO()}
           />
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+      {/* Note */}
+      <div className="field-group">
+        <label className="field-label" htmlFor="tx-note">Note (optional)</label>
+        <input
+          id="tx-note"
+          className="field-input"
+          type="text"
+          placeholder="Any extra detail…"
+          value={note}
+          onChange={e => setNote(e.target.value)}
+        />
+      </div>
+
+      <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.25rem' }}>
         <button className="btn-primary" type="submit" id="submit-tx" style={{ flex: 1 }}>
           {editTx ? 'Save Changes' : 'Add Transaction'}
         </button>

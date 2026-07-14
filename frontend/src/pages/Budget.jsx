@@ -46,25 +46,42 @@ function Budget() {
       </div>
 
       <div className="page-content">
-        {/* Income and Allocation Summary */}
-        <div className="budget-summary-card" style={{ display: 'flex', justifyContent: 'space-around', padding: '1rem', background: 'var(--bg-elevated)', borderRadius: '8px', marginBottom: '1rem' }}>
-          <div style={{ textAlign: 'center' }}>
-            <p className="budget-summary-label" style={{ margin: 0, color: 'var(--text-muted)' }}>Total Income</p>
-            <p className="budget-summary-value" style={{ margin: 0, fontWeight: 700, color: 'var(--text-primary)' }}>{fmt(income)}</p>
+        {/* Overview card — summary stats + donut together */}
+        <div className="card" style={{ marginBottom: '1.5rem' }}>
+          <div className="card-header">
+            <span className="card-title">Budget Overview</span>
+            {overBudgetCats.length > 0 ? (
+              <div className="budget-alert">
+                <AlertTriangle size={13} />
+                <span>{overBudgetCats.length} categor{overBudgetCats.length > 1 ? 'ies' : 'y'} over budget</span>
+              </div>
+            ) : (
+              <div className="budget-alert ok">
+                <CheckCircle size={13} />
+                <span>All within limits</span>
+              </div>
+            )}
           </div>
-          <div style={{ textAlign: 'center' }}>
-            <p className="budget-summary-label" style={{ margin: 0, color: 'var(--text-muted)' }}>Allocated</p>
-            <p className="budget-summary-value" style={{ margin: 0, fontWeight: 700, color: 'var(--text-primary)' }}>{fmt(totalBudget)}</p>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <p className="budget-summary-label" style={{ margin: 0, color: 'var(--text-muted)' }}>Unallocated</p>
-            <p className="budget-summary-value" style={{ margin: 0, fontWeight: 700, color: totalBudget > income ? '#ef4444' : 'var(--text-primary)' }}>{fmt(Math.max(0, income - totalBudget))}</p>
-          </div>
-        </div>
-          <div className="budget-overview-right">
-            <div className="budget-donut-wrap">
-              <svg viewBox="0 0 100 100" width="120" height="120" className="budget-donut">
-                <circle cx="50" cy="50" r="40" fill="none" stroke="var(--bg-elevated)" strokeWidth="12" />
+          <div className="card-body" style={{ display: 'flex', alignItems: 'center', gap: '2.5rem' }}>
+            {/* Summary stats */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', flex: 1 }}>
+              {[
+                { label: 'Monthly Income', value: fmt(income), color: 'var(--green)' },
+                { label: 'Allocated Budget', value: fmt(totalBudget), color: 'var(--text-primary)' },
+                { label: 'Total Spent', value: fmt(totalSpent), color: totalSpent > totalBudget ? 'var(--red)' : 'var(--text-primary)' },
+                { label: 'Unallocated', value: fmt(Math.max(0, income - totalBudget)), color: totalBudget > income ? 'var(--red)' : 'var(--text-muted)' },
+              ].map((item, i) => (
+                <div key={item.label} style={{ paddingLeft: i > 0 ? '1.5rem' : '0', borderLeft: i > 0 ? '1px solid var(--border)' : 'none' }}>
+                  <p style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>{item.label}</p>
+                  <p style={{ fontSize: '1.25rem', fontWeight: 800, color: item.color, fontFamily: "'Outfit', sans-serif", letterSpacing: '-0.02em' }}>{item.value}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Donut */}
+            <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingLeft: '1.5rem', borderLeft: '1px solid var(--border)' }}>
+              <svg viewBox="0 0 100 100" width="110" height="110">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="var(--border-strong)" strokeWidth="12" />
                 <circle
                   cx="50" cy="50" r="40" fill="none"
                   stroke={overallColor}
@@ -73,29 +90,19 @@ function Budget() {
                   strokeLinecap="butt"
                   transform="rotate(-90 50 50)"
                 />
-                <text x="50" y="46" textAnchor="middle" fontSize="14" fontWeight="700" fill="var(--text-primary)" fontFamily="'Playfair Display', serif">
+                <text x="50" y="46" textAnchor="middle" fontSize="15" fontWeight="800" fill="var(--text-primary)" fontFamily="'Outfit', sans-serif">
                   {Math.round(overallPct)}%
                 </text>
-                <text x="50" y="60" textAnchor="middle" fontSize="8" fill="var(--text-muted)" fontFamily="'Courier Prime', monospace">
+                <text x="50" y="60" textAnchor="middle" fontSize="8" fill="var(--text-muted)" fontFamily="system-ui, sans-serif">
                   USED
                 </text>
-</svg>
-
+              </svg>
             </div>
-            {overBudgetCats.length > 0 ? (
-              <div className="budget-alert">
-                <AlertTriangle size={14} style={{ color: '#ef4444' }} />
-                <span>{overBudgetCats.length} categor{overBudgetCats.length > 1 ? 'ies' : 'y'} over budget</span>
-              </div>
-            ) : (
-              <div className="budget-alert ok">
-                <CheckCircle size={14} style={{ color: '#10b981' }} />
-                <span>All within limits</span>
-              </div>
-            )}
+          </div>
         </div>
+
         {/* Category budget rows */}
-        <div className="card" style={{ marginTop: '2rem' }}>
+        <div className="card">
           <div className="card-header">
             <span className="card-title">Category Limits</span>
             <span className="card-badge">Click amount to edit</span>
