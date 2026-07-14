@@ -3,8 +3,8 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useTx } from '../context/TxContext';
 import {
   Landmark, LayoutDashboard, ArrowRightLeft, PieChart,
-  Target, TrendingUp, Moon, Sun, LogOut, User,
-  ChevronDown, Settings, Bell, Shield
+  Target, TrendingUp, Moon, Sun, LogOut, Settings,
+  ChevronDown
 } from 'lucide-react';
 
 const navItems = [
@@ -41,10 +41,11 @@ function Navbar() {
       {/* ── Brand ── */}
       <NavLink to="/home" className="navbar-brand">
         <div className="brand-icon">
-          <Landmark size={20} />
+          <Landmark size={20} strokeWidth={2.5} />
         </div>
         <div>
-          <div className="brand-name">FinanceTracker</div>
+          <div className="brand-name">LedgerLive</div>
+          <div className="brand-sub">Capital Management</div>
         </div>
       </NavLink>
 
@@ -57,46 +58,40 @@ function Navbar() {
               end={end}
               className={({ isActive }) => `navbar-link${isActive ? ' active' : ''}`}
             >
-              <Icon size={16} />
+              <Icon size={18} strokeWidth={2.2} />
               {label}
             </NavLink>
           </li>
         ))}
       </ul>
 
-      {/* ── Right Controls ── */}
+      {/* ── Bottom Controls ── */}
       <div className="navbar-controls">
-        <button
-          className="theme-toggle-btn"
-          onClick={toggleTheme}
-          title="Toggle theme"
-          style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
-        >
-          {isDark ? <Moon size={18} /> : <Sun size={18} />}
+        <button className="theme-toggle-btn" onClick={toggleTheme} title="Toggle theme">
+          {isDark ? (
+            <><Sun size={15} /> <span>Light Mode</span></>
+          ) : (
+            <><Moon size={15} /> <span>Dark Mode</span></>
+          )}
         </button>
 
-        <div className={`profile-card${profileOpen ? ' is-open' : ''}`} style={{ position: 'relative' }}>
-          <button
-            className="profile-card-trigger"
-            onClick={() => setProfileOpen(v => !v)}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
-          >
-            <div className="profile-avatar" style={{ background: 'var(--accent)', color: 'var(--bg-base)', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-              {initials}
+        <div className={`profile-card${profileOpen ? ' is-open' : ''}`}>
+          <button className="profile-card-trigger" onClick={() => setProfileOpen(v => !v)}>
+            <div className="profile-avatar">{initials}</div>
+            <div className="profile-info">
+              <span className="profile-name">{name}</span>
+              <span className="profile-email">{email}</span>
             </div>
-            <ChevronDown size={14} className={`profile-chevron${profileOpen ? ' rotated' : ''}`} style={{ color: 'var(--text-secondary)' }} />
+            <ChevronDown size={14} className={`profile-chevron${profileOpen ? ' rotated' : ''}`} />
           </button>
 
           {profileOpen && (
-            <div className="profile-dropdown" style={{ position: 'absolute', top: '100%', right: '0', background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '0.5rem', minWidth: '180px', marginTop: '0.5rem', zIndex: 100 }}>
-              <div style={{ padding: '0.5rem', borderBottom: '1px solid var(--border)', marginBottom: '0.5rem' }}>
-                <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{name}</div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{email}</div>
-              </div>
-              <button className="profile-menu-item" onClick={() => setProfileOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', padding: '0.5rem', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}>
+            <div className="profile-dropdown">
+              <button className="profile-menu-item" onClick={() => setProfileOpen(false)}>
                 <Settings size={14} /> Settings
               </button>
-              <button className="profile-menu-item" onClick={handleLogout} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', padding: '0.5rem', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--red)' }}>
+              <div className="profile-menu-divider" />
+              <button className="profile-menu-item profile-menu-item--danger" onClick={handleLogout}>
                 <LogOut size={14} /> Sign Out
               </button>
             </div>

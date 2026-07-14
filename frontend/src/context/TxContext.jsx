@@ -101,6 +101,10 @@ export function TxProvider({ children }) {
   }, []);
 
   /* ── Theme ── */
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, []);
+
   const toggleTheme = useCallback(() => {
     setTheme(prev => {
       const next = prev === 'dark' ? 'light' : 'dark';

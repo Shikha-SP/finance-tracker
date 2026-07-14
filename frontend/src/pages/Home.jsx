@@ -1,179 +1,177 @@
 import { useTx } from '../context/TxContext';
 import { useNavigate } from 'react-router-dom';
 import { getCategoryIcon } from '../utils/categoryIcons';
-import { FileText, Trash2, Wallet, FileBarChart, TrendingUp, TrendingDown, Pencil } from 'lucide-react';
+import { Wallet, TrendingUp, TrendingDown, Activity, CreditCard } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
-const fmt = n => '₹' + Math.abs(n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
-const today = new Date().toLocaleDateString('en-US', {
-  weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
-});
+const fmt = n => '$' + Math.abs(n).toLocaleString('en-US', { maximumFractionDigits: 2 });
+const COLORS = ['#10b981', '#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6'];
 
 function Home() {
-  const { transactions, total, income, expense, deleteTransaction } = useTx();
+  const { transactions, total, income, expense } = useTx();
   const navigate = useNavigate();
-  const recent = transactions.slice(0, 6);
+  
+  const recent = transactions.slice(0, 5);
   const savingsRate = income > 0 ? Math.round(((income - expense) / income) * 100) : 0;
 
+  // Prepare chart data (dummy historical data combined with real totals for demo)
+  const areaData = [
+    { name: 'Jan', income: 4000, expense: 2400 },
+    { name: 'Feb', income: 3000, expense: 1398 },
+    { name: 'Mar', income: 2000, expense: 9800 },
+    { name: 'Apr', income: 2780, expense: 3908 },
+    { name: 'May', income: 1890, expense: 4800 },
+    { name: 'Jun', income: 2390, expense: 3800 },
+    { name: 'Jul', income: income > 0 ? income : 3490, expense: expense > 0 ? expense : 4300 },
+  ];
+
+  // Aggregate category data for PieChart
+  const expenseTxs = transactions.filter(t => t.type === 'expense');
+  const catMap = expenseTxs.reduce((acc, tx) => {
+    acc[tx.category] = (acc[tx.category] || 0) + tx.amount;
+    return acc;
+  }, {});
+  const pieData = Object.keys(catMap).map(key => ({ name: key, value: catMap[key] }));
+  if (pieData.length === 0) {
+    pieData.push({ name: 'No Data', value: 1 });
+  }
+
   return (
-    <main className="page">
-      {/* ── Masthead ── */}
-      <div className="masthead">
-        <div className="masthead-kicker">Est. {new Date().getFullYear()} &bull; Personal Finance Edition</div>
-        <h1 className="masthead-title">THE DAILY LEDGER</h1>
-        <div className="masthead-rule" />
-        <div className="masthead-dateline">{today}</div>
+    <main className="page" style={{ padding: '2rem 2.5rem', background: 'var(--bg-base)' }}>
+      {/* ── Dashboard Header ── */}
+      <div className="page-header" style={{ borderBottom: 'none', padding: '0 0 1.5rem' }}>
+        <div className="page-header-left">
+          <h1 className="page-title">Dashboard Overview</h1>
+          <p className="page-subtitle">Welcome back! Here's what's happening with your finances today.</p>
+        </div>
+        <div>
+          <button className="btn-primary" onClick={() => navigate('/transactions')}>
+            <Wallet size={14} style={{ marginRight: '0.4rem' }}/> Log Transaction
+          </button>
+        </div>
       </div>
 
-      <div className="page-content" style={{ paddingTop: 0 }}>
-        {/* ── Broadsheet grid ── */}
-        <div className="broadsheet">
-
-          {/* ── LEFT: main content ── */}
-          <div className="broadsheet-main">
-
-            {/* Hero image — full bleed, editorial */}
-            <div className="hero-image-block">
-              <img src="/hero_collage.png" alt="Financial Market Collage" className="hero-full-img" />
-              <div className="hero-caption">
-                <span className="hero-caption-label">MARKET DISPATCH</span>
-                Mixed-media collage · Capital markets roundup · {today}
-              </div>
-            </div>
-
-            {/* Balance strip */}
-            <div className="balance-strip">
-              <div className="balance-strip-left">
-                <p className="balance-strip-label">Net Treasury Balance</p>
-                <p className={`balance-strip-amount ${total >= 0 ? 'is-positive' : 'is-negative'}`}>
-                  {total < 0 ? '−' : '+'}{fmt(total)}
-                </p>
-              </div>
-              <div className="balance-strip-divider" />
-              <div className="balance-strip-right">
-                <div className="balance-stat">
-                  <TrendingUp size={14} style={{ color: 'var(--green)' }} />
-                  <span className="balance-stat-label">Deposits</span>
-                  <span className="balance-stat-val pop-green">{fmt(income)}</span>
-                </div>
-                <div className="balance-stat">
-                  <TrendingDown size={14} style={{ color: 'var(--red)' }} />
-                  <span className="balance-stat-label">Debits</span>
-                  <span className="balance-stat-val pop-red">{fmt(expense)}</span>
-                </div>
-                <div className="balance-stat">
-                  <span className="balance-stat-label">Savings</span>
-                  <span className="balance-stat-val pop-amber">{savingsRate}%</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Ledger entries */}
-            <div className="ledger-block">
-              <div className="ledger-block-header">
-                <h2 className="ledger-block-title">Recent Entries</h2>
-                {transactions.length > 6 && (
-                  <button className="btn-outline" onClick={() => navigate('/transactions')}
-                    style={{ fontSize: '0.7rem', padding: '0.3rem 0.75rem' }}>
-                    Full Ledger
-                  </button>
-                )}
-              </div>
-
-              {recent.length === 0 ? (
-                <div className="empty-state">
-                  <div className="empty-icon"><FileText size={36} /></div>
-                  <p className="empty-title">No entries recorded</p>
-                  <p className="empty-text">Begin by logging your first voucher.</p>
-                </div>
-              ) : (
-                <div className="transaction-list">
-                  {recent.map(tx => (
-                    <div className={`transaction-item ${tx.type === 'income' ? 'is-income' : 'is-expense'}`} key={tx.id}>
-                      <div className="tx-left">
-                        <div className="tx-icon-wrap">
-                          {getCategoryIcon(tx.category, 16)}
-                        </div>
-                        <div className="tx-info">
-                          <p className="tx-desc">{tx.description}</p>
-                          <p className="tx-meta">{tx.category} &middot; {tx.date}</p>
-                        </div>
-                      </div>
-                      <div className="tx-right">
-                        <p className={`tx-amount ${tx.type === 'income' ? 'positive' : 'negative'}`}>
-                          {tx.type === 'income' ? '+' : '−'}{fmt(tx.amount)}
-                        </p>
-                        <button 
-                          className="btn-ghost" 
-                          title="Edit entry"
-                          style={{ marginRight: '0.25rem' }}
-                          onClick={() => navigate('/transactions', { state: { editTx: tx } })}
-                        >
-                          <Pencil size={13} />
-                        </button>
-                        <button className="btn-ghost" title="Delete entry" onClick={() => deleteTransaction(tx.id)}>
-                          <Trash2 size={13} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+      {/* ── KPI Stat Cards ── */}
+      <div className="stat-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.25rem', marginBottom: '1.5rem' }}>
+        <div className="stat-card" style={{ padding: '1.25rem' }}>
+          <div className="stat-header" style={{ borderBottom: 'none', paddingBottom: 0 }}>
+            <span className="stat-label">Net Balance</span>
+            <div className="stat-icon"><Activity size={18} /></div>
           </div>
+          <div className="stat-value" style={{ fontSize: '1.75rem', marginTop: '0.5rem', color: 'var(--text-primary)' }}>
+            {total < 0 ? '−' : ''}{fmt(total)}
+          </div>
+        </div>
+        <div className="stat-card" style={{ padding: '1.25rem' }}>
+          <div className="stat-header" style={{ borderBottom: 'none', paddingBottom: 0 }}>
+            <span className="stat-label">Total Income</span>
+            <div className="stat-icon"><TrendingUp size={18} color="var(--green)"/></div>
+          </div>
+          <div className="stat-value" style={{ fontSize: '1.75rem', marginTop: '0.5rem', color: 'var(--green)' }}>
+            +{fmt(income)}
+          </div>
+        </div>
+        <div className="stat-card" style={{ padding: '1.25rem' }}>
+          <div className="stat-header" style={{ borderBottom: 'none', paddingBottom: 0 }}>
+            <span className="stat-label">Total Expenses</span>
+            <div className="stat-icon"><TrendingDown size={18} color="var(--red)"/></div>
+          </div>
+          <div className="stat-value" style={{ fontSize: '1.75rem', marginTop: '0.5rem', color: 'var(--red)' }}>
+            −{fmt(expense)}
+          </div>
+        </div>
+        <div className="stat-card" style={{ padding: '1.25rem' }}>
+          <div className="stat-header" style={{ borderBottom: 'none', paddingBottom: 0 }}>
+            <span className="stat-label">Savings Rate</span>
+            <div className="stat-icon"><CreditCard size={18} color="var(--amber)"/></div>
+          </div>
+          <div className="stat-value" style={{ fontSize: '1.75rem', marginTop: '0.5rem', color: 'var(--amber)' }}>
+            {savingsRate}%
+          </div>
+        </div>
+      </div>
 
-          {/* ── RIGHT: editorial sidebar ── */}
-          <aside className="broadsheet-side">
-            {/* Sidebar collage image */}
-            <div className="side-image-block">
-              <img src="/sidebar_collage.png" alt="Ticker Tape Collage" className="side-full-img" />
-              <div className="side-img-caption">Fig. I — Capital Assets, Mixed Media</div>
-            </div>
+      {/* ── Main Charts Area ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+        
+        {/* Cash Flow Chart */}
+        <div className="ledger-block" style={{ padding: '1.5rem' }}>
+          <h3 style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1.5rem' }}>Cash Flow Trend</h3>
+          <div style={{ width: '100%', height: 280 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={areaData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="var(--green)" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="var(--green)" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorExpense" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="var(--red)" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="var(--red)" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="var(--text-muted)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => '$'+val} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-strong)', borderRadius: '8px' }}
+                  itemStyle={{ fontSize: '0.8rem', fontWeight: 600 }}
+                />
+                <Area type="monotone" dataKey="income" stroke="var(--green)" strokeWidth={3} fillOpacity={1} fill="url(#colorIncome)" />
+                <Area type="monotone" dataKey="expense" stroke="var(--red)" strokeWidth={3} fillOpacity={1} fill="url(#colorExpense)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
 
-            {/* Pull quote */}
-            <blockquote className="pull-quote">
-              "The stock market is a device for transferring money from the impatient to the patient."
-              <cite className="pull-quote-cite">— Warren Buffett</cite>
-            </blockquote>
+        {/* Expense Breakdown */}
+        <div className="ledger-block" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
+          <h3 style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1rem' }}>Expenses by Category</h3>
+          <div style={{ flex: 1, minHeight: 200 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value" stroke="none">
+                  {pieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  contentStyle={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-strong)', borderRadius: '8px', fontSize: '0.8rem' }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
 
-            {/* Quick actions */}
-            <div className="side-actions">
-              <p className="side-section-label">Quick Dispatch</p>
-              <button className="btn-primary" style={{ width: '100%' }} onClick={() => navigate('/transactions')}>
-                <Wallet size={13} /> Log New Voucher
-              </button>
-              <button className="btn-outline" style={{ width: '100%' }} onClick={() => navigate('/reports')}>
-                <FileBarChart size={13} /> View Annual Report
-              </button>
-            </div>
-
-            {/* Thin divider */}
-            <div style={{ borderTop: '2px solid var(--border-strong)', margin: '0.5rem 0' }} />
-
-            {/* Side stats column */}
-            <div className="side-stats">
-              <p className="side-section-label">Portfolio At A Glance</p>
-              <div className="side-stat-row">
-                <span className="side-stat-label">Total Records</span>
-                <span className="side-stat-val">{transactions.length}</span>
+      {/* ── Recent Transactions ── */}
+      <div className="ledger-block" style={{ padding: '0', overflow: 'hidden' }}>
+        <div className="ledger-block-header" style={{ padding: '1.25rem 1.5rem', borderLeft: 'none' }}>
+          <h2 className="ledger-block-title" style={{ fontSize: '0.85rem' }}>Recent Transactions</h2>
+        </div>
+        <div className="transaction-list" style={{ padding: '0.5rem 1.5rem 1.5rem' }}>
+          {recent.length === 0 ? (
+            <p className="empty-text" style={{ textAlign: 'center', margin: '2rem 0' }}>No recent transactions.</p>
+          ) : (
+            recent.map(tx => (
+              <div className={`transaction-item ${tx.type === 'income' ? 'is-income' : 'is-expense'}`} key={tx.id} style={{ padding: '0.75rem 0', borderBottom: '1px solid var(--border)' }}>
+                <div className="tx-left">
+                  <div className="tx-icon-wrap" style={{ width: '32px', height: '32px' }}>
+                    {getCategoryIcon(tx.category, 14)}
+                  </div>
+                  <div className="tx-info">
+                    <p className="tx-desc" style={{ fontSize: '0.85rem' }}>{tx.description}</p>
+                    <p className="tx-meta" style={{ fontSize: '0.7rem' }}>{tx.category} &middot; {tx.date}</p>
+                  </div>
+                </div>
+                <div className="tx-right">
+                  <p className={`tx-amount ${tx.type === 'income' ? 'positive' : 'negative'}`} style={{ fontSize: '0.9rem' }}>
+                    {tx.type === 'income' ? '+' : '−'}{fmt(tx.amount)}
+                  </p>
+                </div>
               </div>
-              <div className="side-stat-row">
-                <span className="side-stat-label">Net P&amp;L</span>
-                <span className="side-stat-val" style={{ color: total >= 0 ? 'var(--green)' : 'var(--red)' }}>
-                  {total >= 0 ? '+' : '−'}{fmt(total)}
-                </span>
-              </div>
-              <div className="side-stat-row">
-                <span className="side-stat-label">Savings Rate</span>
-                <span className="side-stat-val pop-amber">{savingsRate}%</span>
-              </div>
-              <div className="side-stat-row">
-                <span className="side-stat-label">Expense Ratio</span>
-                <span className="side-stat-val pop-red">
-                  {income > 0 ? Math.round((expense / income) * 100) : 0}%
-                </span>
-              </div>
-            </div>
-          </aside>
+            ))
+          )}
         </div>
       </div>
     </main>
