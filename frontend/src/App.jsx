@@ -1,11 +1,16 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { TxProvider } from './context/TxContext';
-import Navbar from './components/Navbar';
+import TopNavbar from './components/TopNavbar';
+import BudgetLayout from './components/BudgetLayout';
+import InvestmentLayout from './components/InvestmentLayout';
 import Home from './pages/Home';
 import Transactions from './pages/Transactions';
-import Reports from './pages/Reports';
 import Budget from './pages/Budget';
-import Analytics from './pages/Analytics';
+import Investment from './pages/Investment';
+import InvestmentTracker from './pages/InvestmentTracker';
+import InvestmentSectors from './pages/InvestmentSectors';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Landing from './pages/Landing';
@@ -16,11 +21,11 @@ function RequireAuth({ children }) {
   return isAuth ? children : <Navigate to="/login" replace />;
 }
 
-// Layout for authenticated pages (with navbar)
+// Layout for authenticated pages (with top navbar)
 function AppLayout({ children }) {
   return (
     <div className="app-wrapper">
-      <Navbar />
+      <TopNavbar />
       <div className="layout">
         {children}
       </div>
@@ -33,49 +38,69 @@ export default function App() {
     <TxProvider>
       <Router>
         <Routes>
-          {/* Auth pages – NO sidebar/ticker */}
+          {/* Auth pages – NO navbar */}
           <Route path="/"       element={<Landing />} />
           <Route path="/login"  element={<Login />} />
           <Route path="/signup" element={<Signup />} />
 
-          {/* Protected pages – WITH layout */}
+          {/* Default redirect after login → investment market */}
           <Route
             path="/home"
             element={
               <RequireAuth>
-                <AppLayout><Home /></AppLayout>
+                <Navigate to="/investment/market" replace />
               </RequireAuth>
             }
           />
+
+          {/* ── Investment Section ── */}
           <Route
-            path="/transactions"
+            path="/investment"
             element={
               <RequireAuth>
-                <AppLayout><Transactions /></AppLayout>
+                <AppLayout>
+                  <InvestmentLayout />
+                </AppLayout>
               </RequireAuth>
             }
-          />
-          <Route
-            path="/reports"
-            element={
-              <RequireAuth>
-                <AppLayout><Reports /></AppLayout>
-              </RequireAuth>
-            }
-          />
+          >
+            <Route index element={<Navigate to="market" replace />} />
+            <Route path="market"  element={<Investment />} />
+            <Route path="tracker" element={<InvestmentTracker />} />
+            <Route path="sectors" element={<InvestmentSectors />} />
+          </Route>
+
+          {/* ── Budget Section ── */}
           <Route
             path="/budget"
             element={
               <RequireAuth>
-                <AppLayout><Budget /></AppLayout>
+                <AppLayout>
+                  <BudgetLayout />
+                </AppLayout>
+              </RequireAuth>
+            }
+          >
+            <Route index element={<Navigate to="overview" replace />} />
+            <Route path="overview"     element={<Home />} />
+            <Route path="transactions" element={<Transactions />} />
+            <Route path="plan"         element={<Budget />} />
+          </Route>
+
+          {/* ── Standalone pages ── */}
+          <Route
+            path="/profile"
+            element={
+              <RequireAuth>
+                <AppLayout><Profile /></AppLayout>
               </RequireAuth>
             }
           />
           <Route
-            path="/analytics"
+            path="/settings"
             element={
               <RequireAuth>
-                <AppLayout><Analytics /></AppLayout>
+                <AppLayout><Settings /></AppLayout>
               </RequireAuth>
             }
           />

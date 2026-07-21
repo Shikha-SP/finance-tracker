@@ -3,15 +3,16 @@ import { useLocation } from 'react-router-dom';
 import { useTx } from '../context/TxContext';
 import TransactionForm from '../components/TransactionForm';
 import { getCategoryIcon } from '../utils/categoryIcons';
-import { Search, Trash2, SearchX, FileText, Pencil } from 'lucide-react';
+import { Search, Trash2, SearchX, FileText, Pencil, X } from 'lucide-react';
 
-const fmt = n => '₹' + Math.abs(n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+const fmt = n => 'रू ' + Math.abs(n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
 
 function Transactions() {
   const { transactions, addTransaction, deleteTransaction, updateTransaction, income, expense } = useTx();
   const [search, setSearch]   = useState('');
   const [filter, setFilter]   = useState('all'); // 'all' | 'income' | 'expense'
   const [editTx, setEditTx]   = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
 
   const location = useLocation();
 
@@ -95,26 +96,30 @@ function Transactions() {
           {/* Search & filter */}
           <div className="filter-bar">
             <div className="search-wrap">
-              <span className="search-icon"><Search size={16} /></span>
+              <span className="search-icon" style={{ left: '1rem' }}><Search size={16} /></span>
               <input
                 id="search-tx"
                 className="search-input"
+                style={{ paddingLeft: '2.5rem', borderRadius: 'var(--radius-md)' }}
                 type="text"
                 placeholder="Search ledger entries&hellip;"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
               />
             </div>
-            {['all', 'income', 'expense'].map(f => (
-              <button
-                key={f}
-                id={`filter-${f}`}
-                className={`filter-btn${filter === f ? ' active' : ''}`}
-                onClick={() => setFilter(f)}
-              >
-                {f.charAt(0).toUpperCase() + f.slice(1)}
-              </button>
-            ))}
+            <div style={{ display: 'flex', gap: '0.4rem', background: 'var(--bg-surface)', padding: '0.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+              {['all', 'income', 'expense'].map(f => (
+                <button
+                  key={f}
+                  id={`filter-${f}`}
+                  className={`filter-btn${filter === f ? ' active' : ''}`}
+                  style={{ padding: '0.4rem 1rem', borderRadius: 'var(--radius-sm)' }}
+                  onClick={() => setFilter(f)}
+                >
+                  {f.charAt(0).toUpperCase() + f.slice(1)}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* List */}
@@ -140,9 +145,9 @@ function Transactions() {
                     <div className={`tx-icon-wrap ${tx.type}`}>
                       {getCategoryIcon(tx.category, 20)}
                     </div>
-                    <div className="tx-info">
-                      <p className="tx-desc">{tx.description}</p>
-                      <p className="tx-meta">
+                    <div className="tx-info" style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+                      <p className="tx-desc" style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>{tx.description}</p>
+                      <p className="tx-meta" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                         {tx.category} &middot; {tx.date}
                         {tx.note ? ` \u2014 "${tx.note}"` : ''}
                       </p>
@@ -166,7 +171,7 @@ function Transactions() {
                     <button
                       className="btn-ghost"
                       title="Delete entry"
-                      onClick={() => deleteTransaction(tx.id)}
+                      onClick={() => setDeleteId(tx.id)}
                     >
                       <Trash2 size={16} />
                     </button>
@@ -177,6 +182,26 @@ function Transactions() {
           )}
         </div>
       </div>
+
+      {deleteId && (
+        <div className="settings-overlay">
+          <div className="settings-modal" style={{ maxWidth: '360px', padding: '1.5rem', textAlign: 'center' }}>
+            <div style={{ color: 'var(--red)', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+              <div style={{ width: '48px', height: '48px', background: 'var(--red-soft)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Trash2 size={24} />
+              </div>
+            </div>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem', letterSpacing: '-0.01em' }}>Delete Transaction</h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5', marginBottom: '1.5rem' }}>
+              Are you sure? This action cannot be undone and will permanently remove this record.
+            </p>
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button className="btn-outline" style={{ flex: 1 }} onClick={() => setDeleteId(null)}>Cancel</button>
+              <button className="btn-primary" style={{ flex: 1, background: 'var(--red)', borderColor: 'var(--red)' }} onClick={() => { deleteTransaction(deleteId); setDeleteId(null); }}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

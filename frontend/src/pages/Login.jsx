@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles, TrendingUp, ShieldCheck, BarChart3 } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Landmark } from 'lucide-react';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -50,7 +50,7 @@ export default function Login() {
       localStorage.setItem('userEmail', data.user.email);
       localStorage.setItem('userId',    data.user.id);
 
-      navigate('/home');
+      navigate('/investment/market');
     } catch (err) {
       setError('Could not reach the server. Is the backend running?');
       setLoading(false);
@@ -61,47 +61,32 @@ export default function Login() {
     <div className="auth-root">
       {/* ── Left panel – branding ── */}
       <div className="auth-panel auth-panel--brand">
-        <div className="auth-orb auth-orb--1" />
-        <div className="auth-orb auth-orb--2" />
-        <div className="auth-orb auth-orb--3" />
-
         <div className="auth-brand-content">
           <div className="auth-logo">
-            <Sparkles size={28} />
+            <Landmark size={28} />
           </div>
-          <h1 className="auth-brand-title">Finance<span>Tracker</span></h1>
-          <p className="auth-brand-tagline">Your wealth, beautifully organised.</p>
+          <h1 className="auth-brand-title">Welth</h1>
+          <p className="auth-brand-tagline">Institutional grade wealth management.</p>
 
           <div className="auth-feature-list">
             <div className="auth-feature-item">
-              <div className="auth-feature-icon"><TrendingUp size={18} /></div>
               <div>
                 <div className="auth-feature-title">Real-time Analytics</div>
-                <div className="auth-feature-desc">Live charts for every transaction.</div>
+                <div className="auth-feature-desc">Monitor cash flows and balance trends with precision.</div>
               </div>
             </div>
             <div className="auth-feature-item">
-              <div className="auth-feature-icon"><ShieldCheck size={18} /></div>
               <div>
-                <div className="auth-feature-title">256-bit Encryption</div>
-                <div className="auth-feature-desc">Your data is always private &amp; safe.</div>
-              </div>
-            </div>
-            <div className="auth-feature-item">
-              <div className="auth-feature-icon"><BarChart3 size={18} /></div>
-              <div>
-                <div className="auth-feature-title">Budget Intelligence</div>
-                <div className="auth-feature-desc">Smart goals that adapt to your habits.</div>
+                <div className="auth-feature-title">Enterprise Security</div>
+                <div className="auth-feature-desc">Bank-level encryption protecting your financial data.</div>
               </div>
             </div>
           </div>
 
           <div className="auth-stat-row">
-            <div className="auth-stat"><span>50K+</span><small>Users</small></div>
+            <div className="auth-stat"><span>$2.4B+</span><small>Assets Tracked</small></div>
             <div className="auth-stat-divider" />
-            <div className="auth-stat"><span>$2B+</span><small>Tracked</small></div>
-            <div className="auth-stat-divider" />
-            <div className="auth-stat"><span>4.9★</span><small>Rating</small></div>
+            <div className="auth-stat"><span>99.9%</span><small>Uptime</small></div>
           </div>
         </div>
       </div>
@@ -110,10 +95,10 @@ export default function Login() {
       <div className="auth-panel auth-panel--form">
         <div className="auth-form-card">
           <div className="auth-form-header">
-            <div className="auth-logo auth-logo--dark">
-              <Sparkles size={22} />
+            <div className="auth-logo auth-logo--dark" style={{ background: 'var(--accent)', color: '#fff', border: 'none' }}>
+              <Landmark size={22} />
             </div>
-            <h2 className="auth-form-title">Welcome back</h2>
+            <h2 className="auth-form-title">Welcome back to Welth</h2>
             <p className="auth-form-subtitle">Sign in to your account to continue.</p>
           </div>
 

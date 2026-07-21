@@ -14,9 +14,7 @@ function TopNav() {
           <div className="brand-icon">
             <Landmark size={20} strokeWidth={2.5} />
           </div>
-          <div>
-            <div className="brand-name">LedgerLive</div>
-          </div>
+            <div className="brand-name">Welth</div>
         </NavLink>
 
         {/* Desktop Links */}

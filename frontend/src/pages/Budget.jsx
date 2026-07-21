@@ -3,7 +3,7 @@ import { useTx } from '../context/TxContext';
 import { getCategoryIcon } from '../utils/categoryIcons';
 import { Target, AlertTriangle, CheckCircle, TrendingDown } from 'lucide-react';
 
-const fmt = n => '₹' + Math.abs(n).toLocaleString('en-IN', { maximumFractionDigits: 0 });
+const fmt = n => 'रू ' + Math.abs(n).toLocaleString('en-IN', { maximumFractionDigits: 0 });
 
 const EXPENSE_CATEGORIES = [
   'Food & Dining', 'Transport', 'Shopping', 'Health',
@@ -127,18 +127,25 @@ function Budget() {
                         <span style={{ color: barColor, fontWeight: 700 }}>{fmt(spent)}</span>
                         <span style={{ color: 'var(--text-muted)' }}> / </span>
                         {editing === cat ? (
-                          <input
-                            className="budget-inline-input"
-                            type="number"
-                            value={editVal}
-                            autoFocus
-                            onChange={e => setEditVal(e.target.value)}
-                            onBlur={() => saveEdit(cat)}
-                            onKeyDown={e => e.key === 'Enter' && saveEdit(cat)}
-                          />
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                            <input
+                              className="settings-input"
+                              style={{ width: '80px', padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}
+                              type="number"
+                              value={editVal}
+                              autoFocus
+                              onChange={e => setEditVal(e.target.value)}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter') saveEdit(cat);
+                                if (e.key === 'Escape') setEditing(null);
+                              }}
+                            />
+                            <button className="btn-primary" style={{ padding: '0.2rem 0.4rem', fontSize: '0.7rem' }} onClick={() => saveEdit(cat)}>Save</button>
+                            <button className="btn-ghost" style={{ padding: '0.2rem 0.4rem', fontSize: '0.7rem' }} onClick={() => setEditing(null)}>Cancel</button>
+                          </div>
                         ) : (
-                          <button className="budget-limit-btn" onClick={() => startEdit(cat)}>
-                            {limit > 0 ? fmt(limit) : 'Set limit'}
+                          <button className="budget-limit-btn" style={{ textDecoration: 'underline', textUnderlineOffset: '2px', color: limit > 0 ? 'var(--text-primary)' : 'var(--accent)', cursor: 'pointer', background: 'none', border: 'none', fontSize: '0.85rem' }} onClick={() => startEdit(cat)}>
+                            {limit > 0 ? fmt(limit) : '+ Set limit'}
                           </button>
                         )}
                       </div>

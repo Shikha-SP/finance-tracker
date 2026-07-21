@@ -4,16 +4,16 @@ const TxContext = createContext(null);
 const API_URL = 'http://localhost:5000/api';
 
 const DEFAULT_BUDGETS = {
-  'Food & Dining': 5000,
-  'Transport': 3000,
-  'Shopping': 8000,
-  'Health': 2000,
-  'Bills & Utilities': 4000,
-  'Entertainment': 3000,
+  'Food & Dining': 0,
+  'Transport': 0,
+  'Shopping': 0,
+  'Health': 0,
+  'Bills & Utilities': 0,
+  'Entertainment': 0,
   'Salary': 0,
   'Freelance': 0,
   'Investment': 0,
-  'Other': 2000,
+  'Other': 0,
 };
 
 export function TxProvider({ children }) {
