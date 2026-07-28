@@ -9,6 +9,8 @@ import Budget from './pages/Budget';
 import Investment from './pages/Investment';
 import InvestmentTracker from './pages/InvestmentTracker';
 import InvestmentSectors from './pages/InvestmentSectors';
+import StockScreener from './pages/StockScreener';
+import RAGAssistant from './pages/RAGAssistant';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
@@ -65,9 +67,11 @@ export default function App() {
             }
           >
             <Route index element={<Navigate to="market" replace />} />
-            <Route path="market"  element={<Investment />} />
-            <Route path="tracker" element={<InvestmentTracker />} />
-            <Route path="sectors" element={<InvestmentSectors />} />
+            <Route path="market"   element={<Investment />} />
+            <Route path="screener" element={<StockScreener />} />
+            <Route path="tracker"  element={<InvestmentTracker />} />
+            <Route path="rag"      element={<RAGAssistant />} />
+            <Route path="sectors"  element={<InvestmentSectors />} />
           </Route>
 
           {/* ── Budget Section ── */}

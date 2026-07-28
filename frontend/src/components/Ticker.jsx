@@ -1,41 +1,30 @@
 import { useState, useEffect } from 'react';
 import { useTx } from '../context/TxContext';
 
-const fmtNPR = n => 'रू ' + Math.abs(n).toLocaleString('en-IN', { maximumFractionDigits: 0 });
+const API_BASE = 'http://localhost:5000/api';
 
-// Simulated NEPSE ticker data — refreshed periodically
-function getNepseItems() {
-  const base = [
-    { label: 'NEPSE',     val: 2074.56, chg: -8.34,   pct: -0.40 },
-    { label: 'SENSITIVE', val: 418.22,  chg: -1.22,   pct: -0.29 },
-    { label: 'FLOAT',     val: 157.88,  chg: -0.65,   pct: -0.41 },
-    { label: 'NABIL',     val: 920,     chg: 42,      pct: 4.78  },
-    { label: 'NTC',       val: 780,     chg: 32,      pct: 4.28  },
-    { label: 'UPPER',     val: 612,     chg: -38,     pct: -5.84 },
-    { label: 'GBIME',     val: 345,     chg: 15,      pct: 4.54  },
-    { label: 'NIBL',      val: 623,     chg: -22,     pct: -3.41 },
-    { label: 'NICA',      val: 567,     chg: 21,      pct: 3.84  },
-    { label: 'ADBL',      val: 412,     chg: 14,      pct: 3.52  },
-  ];
-  return base;
-}
+const fmtNPR = n => 'रू ' + Math.abs(n).toLocaleString('en-IN', { maximumFractionDigits: 0 });
 
 export default function Ticker() {
   const { total, income, expense, healthScore } = useTx();
-  const [nepseItems, setNepseItems] = useState(getNepseItems());
+  const [nepseItems, setNepseItems] = useState([]);
 
-  // Slightly fluctuate values every 30 seconds to feel alive
   useEffect(() => {
-    const id = setInterval(() => {
-      setNepseItems(prev =>
-        prev.map(item => ({
-          ...item,
-          val: +(item.val + (Math.random() - 0.5) * item.val * 0.002).toFixed(2),
-          chg: +(item.chg + (Math.random() - 0.5) * 0.5).toFixed(2),
-        }))
-      );
-    }, 30000);
-    return () => clearInterval(id);
+    // Fetch real indices for the ticker
+    fetch(`${API_BASE}/nepse/indices`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.indices) {
+          const items = data.indices.slice(0, 10).map(idx => ({
+            label: idx.name.toUpperCase(),
+            val: idx.value,
+            chg: idx.change,
+            pct: idx.changePct
+          }));
+          setNepseItems(items);
+        }
+      })
+      .catch(() => {}); // silently fail and just show budget items
   }, []);
 
   const budgetItems = [
@@ -45,7 +34,6 @@ export default function Ticker() {
     { label: 'HEALTH',    val: `${healthScore}/100`, up: healthScore >= 50, change: '' },
   ];
 
-  // Interleave budget and market items
   const allItems = [
     ...budgetItems,
     ...nepseItems.map(n => ({

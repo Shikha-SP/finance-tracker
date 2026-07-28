@@ -16,9 +16,6 @@ export default function InvestmentSectors() {
   const [loading, setLoading] = useState(true);
   const [selectedDirectorySector, setSelectedDirectorySector] = useState('Sensitive Index');
   const [search, setSearch] = useState('');
-  const [timePeriod, setTimePeriod] = useState('Today');
-  
-  const TIME_PERIODS = ['Today', '1 Week', '2 Weeks', '1 Month', '6 Months', '1 Year'];
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -30,6 +27,8 @@ export default function InvestmentSectors() {
       if (siRes.ok) {
         const data = await siRes.json();
         setSubIndices(data.subIndices || []);
+      } else {
+        setSubIndices([]);
       }
       if (lmRes.ok) {
         const data = await lmRes.json();
@@ -37,6 +36,7 @@ export default function InvestmentSectors() {
       }
     } catch (err) {
       console.error('Failed to fetch sector data:', err);
+      setSubIndices([]);
     } finally {
       setLoading(false);
     }
@@ -72,51 +72,34 @@ export default function InvestmentSectors() {
     companiesBySector[sectorName].push(company);
   });
 
-  // Generate simulated or real data based on time period
-  const getSimulatedChange = (idx, period) => {
-    if (period === 'Today') {
-      return { change: idx.change, perChange: idx.perChange, currentValue: idx.currentValue };
-    }
-    const multipliers = { '1 Week': 1.8, '2 Weeks': 3.2, '1 Month': 6.5, '6 Months': 18, '1 Year': 35 };
-    const mul = multipliers[period] || 1;
-    let hash = 0;
-    const str = idx.index + period;
-    for (let i = 0; i < str.length; i++) hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0;
-    const pseudoRandom = (Math.abs(hash) % 100) / 100; // 0 to 0.99
-    
-    // Determine sign deterministically
-    const sign = (hash % 2 === 0) ? 1 : -1;
-    const vol = (idx.index.length % 5) + 1.5; 
-    
-    const simulatedPerChange = sign * pseudoRandom * mul * vol;
-    const simulatedChange = (idx.currentValue * simulatedPerChange) / 100;
-    
-    return {
-      change: simulatedChange,
-      perChange: simulatedPerChange,
-      currentValue: idx.currentValue
-    };
-  };
+  const [filterMode, setFilterMode] = useState('all'); // 'all', 'gainers', 'losers', 'points'
+  const [stockSortMode, setStockSortMode] = useState('all'); // 'all', 'gainers', 'losers'
 
-  const displayIndices = subIndices.map(idx => ({
-    ...idx,
-    ...getSimulatedChange(idx, timePeriod)
-  }));
+  const displayIndices = subIndices;
 
-  // Sort sub-indices by absolute change
-  const sortedIndices = [...displayIndices].sort((a, b) => Math.abs(b.change) - Math.abs(a.change));
+  // Filter and sort sub-indices
+  let sortedIndices = [...displayIndices];
+  if (filterMode === 'gainers') {
+    sortedIndices.sort((a, b) => b.perChange - a.perChange);
+  } else if (filterMode === 'losers') {
+    sortedIndices.sort((a, b) => a.perChange - b.perChange);
+  } else if (filterMode === 'points') {
+    sortedIndices.sort((a, b) => b.currentValue - a.currentValue);
+  } else {
+    sortedIndices.sort((a, b) => Math.abs(b.change) - Math.abs(a.change));
+  }
 
-  // Filtered
+  // Filtered by search
   const filtered = sortedIndices.filter(idx =>
     idx.index.toLowerCase().includes(search.toLowerCase())
   );
 
   // Top gainer / loser sectors
-  const topGainer = sortedIndices.length > 0
-    ? sortedIndices.reduce((a, b) => (b.perChange > a.perChange ? b : a))
+  const topGainer = displayIndices.length > 0
+    ? displayIndices.reduce((a, b) => (b.perChange > a.perChange ? b : a))
     : null;
-  const topLoser = sortedIndices.length > 0
-    ? sortedIndices.reduce((a, b) => (b.perChange < a.perChange ? b : a))
+  const topLoser = displayIndices.length > 0
+    ? displayIndices.reduce((a, b) => (b.perChange < a.perChange ? b : a))
     : null;
 
   if (loading) {
@@ -138,7 +121,7 @@ export default function InvestmentSectors() {
             <Layers size={22} style={{ marginRight: '0.6rem', color: 'var(--accent)' }} />
             Sector Analysis
           </h1>
-          <p className="page-subtitle">Live sector performance from NEPSE sub-indices.</p>
+          <p className="page-subtitle">Historical sector breakdown, gainers/losers filters & company analysis.</p>
         </div>
         <button className="btn-outline" onClick={fetchData}>
           <RefreshCw size={14} style={{ marginRight: '0.3rem' }} /> Refresh
@@ -186,31 +169,24 @@ export default function InvestmentSectors() {
             />
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.25rem', WebkitOverflowScrolling: 'touch' }}>
-            {TIME_PERIODS.map(period => (
-              <button
-                key={period}
-                onClick={() => setTimePeriod(period)}
-                style={{
-                  padding: '0.4rem 0.8rem',
-                  fontSize: '0.75rem',
-                  fontWeight: timePeriod === period ? '600' : '500',
-                  borderRadius: '20px',
-                  border: `1px solid ${timePeriod === period ? 'var(--accent)' : 'var(--border)'}`,
-                  background: timePeriod === period ? 'var(--accent)' : 'var(--bg-glass)',
-                  color: timePeriod === period ? '#fff' : 'var(--text-secondary)',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  whiteSpace: 'nowrap',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.3rem'
-                }}
-              >
-                {period !== 'Today' && <Calendar size={12} />}
-                {period}
-              </button>
-            ))}
+          {/* Sector Filters */}
+          <div className="chart-type-toggle" style={{ background: 'var(--bg-surface)', padding: '3px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+            <button
+              className={`chart-type-btn${filterMode === 'all' ? ' active' : ''}`}
+              onClick={() => setFilterMode('all')}
+            >All</button>
+            <button
+              className={`chart-type-btn${filterMode === 'gainers' ? ' active' : ''}`}
+              onClick={() => setFilterMode('gainers')}
+            >Highest Gaining</button>
+            <button
+              className={`chart-type-btn${filterMode === 'losers' ? ' active' : ''}`}
+              onClick={() => setFilterMode('losers')}
+            >Lowest Gaining</button>
+            <button
+              className={`chart-type-btn${filterMode === 'points' ? ' active' : ''}`}
+              onClick={() => setFilterMode('points')}
+            >Highest Points</button>
           </div>
         </div>
 
@@ -219,7 +195,10 @@ export default function InvestmentSectors() {
           {filtered.length === 0 ? (
             <div className="empty-state" style={{ gridColumn: '1 / -1', padding: '3rem' }}>
               <Layers size={40} style={{ color: 'var(--text-muted)', marginBottom: '0.75rem' }} />
-              <p className="empty-title">No sectors found</p>
+              <p className="empty-title">{search ? 'No matching sectors' : 'No sector data'}</p>
+              <p className="empty-text" style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                {search ? 'Try a different search term.' : 'Could not load live data.'}
+              </p>
             </div>
           ) : (
             filtered.map(idx => {
@@ -254,25 +233,55 @@ export default function InvestmentSectors() {
 
         {/* ── Browse Companies ── */}
         <div className="card" style={{ marginTop: '2rem' }}>
-          <div className="card-header" style={{ flexWrap: 'wrap', gap: '1rem' }}>
-            <span className="card-title">Companies Directory</span>
-            <select
-              value={selectedDirectorySector}
-              onChange={e => setSelectedDirectorySector(e.target.value)}
-              style={{ padding: '0.4rem 0.6rem', borderRadius: '4px', background: 'var(--bg-glass)', color: 'var(--text-primary)', border: '1px solid var(--border)', outline: 'none', cursor: 'pointer', fontSize: '0.9rem' }}
-            >
-              <option value="Sensitive Index">Sensitive Index (Class A)</option>
-              {Object.keys(SECTOR_COMPANIES).filter(k => k !== 'Sensitive Index').sort().map(k => (
-                <option key={k} value={k}>{k}</option>
-              ))}
-            </select>
+          <div className="card-header" style={{ flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between' }}>
+            <span className="card-title">Companies Directory & Stock Analysis</span>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <select
+                value={stockSortMode}
+                onChange={e => setStockSortMode(e.target.value)}
+                style={{ padding: '0.4rem 0.6rem', borderRadius: '4px', background: 'var(--bg-glass)', color: 'var(--text-primary)', border: '1px solid var(--border)', outline: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
+              >
+                <option value="all">Sort: Symbol A-Z</option>
+                <option value="gainers">Filter: Highest Gaining Stocks</option>
+                <option value="losers">Filter: Lowest Gaining Stocks</option>
+              </select>
+              <select
+                value={selectedDirectorySector}
+                onChange={e => setSelectedDirectorySector(e.target.value)}
+                style={{ padding: '0.4rem 0.6rem', borderRadius: '4px', background: 'var(--bg-glass)', color: 'var(--text-primary)', border: '1px solid var(--border)', outline: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
+              >
+                <option value="Sensitive Index">Sensitive Index (Class A)</option>
+                {Object.keys(SECTOR_COMPANIES).filter(k => k !== 'Sensitive Index').sort().map(k => (
+                  <option key={k} value={k}>{k}</option>
+                ))}
+              </select>
+            </div>
           </div>
           <div className="card-content" style={{ padding: '1.25rem' }}>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-              {(SECTOR_COMPANIES[selectedDirectorySector] || []).length === 0 ? (
-                <div className="empty-state" style={{ padding: '1rem', width: '100%' }}>No companies found in this category.</div>
-              ) : (
-                (SECTOR_COMPANIES[selectedDirectorySector] || []).sort().map(c => {
+              {(() => {
+                let companyList = (SECTOR_COMPANIES[selectedDirectorySector] || []).slice();
+                if (stockSortMode === 'gainers') {
+                  companyList.sort((a, b) => {
+                    const coA = liveMarket.find(l => l.symbol === a);
+                    const coB = liveMarket.find(l => l.symbol === b);
+                    return (coB ? coB.percentageChange : -999) - (coA ? coA.percentageChange : -999);
+                  });
+                } else if (stockSortMode === 'losers') {
+                  companyList.sort((a, b) => {
+                    const coA = liveMarket.find(l => l.symbol === a);
+                    const coB = liveMarket.find(l => l.symbol === b);
+                    return (coA ? coA.percentageChange : 999) - (coB ? coB.percentageChange : 999);
+                  });
+                } else {
+                  companyList.sort();
+                }
+
+                if (companyList.length === 0) {
+                  return <div className="empty-state" style={{ padding: '1rem', width: '100%' }}>No companies found in this category.</div>;
+                }
+
+                return companyList.map(c => {
                   const co = liveMarket.find(l => l.symbol === c);
                   const ltp = co ? (co.lastTradedPrice || co.ltp || co.closingPrice) : null;
                   const change = co ? co.percentageChange : null;
@@ -284,18 +293,20 @@ export default function InvestmentSectors() {
                       display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: '120px'
                     }}>
                       <span style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)' }}>{c}</span>
-                      {ltp && (
+                      {ltp !== null && ltp !== undefined && (
                         <div style={{ marginLeft: 'auto', textAlign: 'right', display: 'flex', flexDirection: 'column', gap: '2px' }}>
                           <span style={{ fontSize: '0.85rem' }}>{ltp.toLocaleString('en-IN', { maximumFractionDigits: 1 })}</span>
-                          <span className={up ? 'positive' : 'negative'} style={{ fontSize: '0.7rem', fontWeight: 600 }}>
-                            {up ? '+' : ''}{change.toFixed(2)}%
-                          </span>
+                          {change !== null && change !== undefined && (
+                            <span className={up ? 'positive' : 'negative'} style={{ fontSize: '0.7rem', fontWeight: 600 }}>
+                              {up ? '+' : ''}{change.toFixed(2)}%
+                            </span>
+                          )}
                         </div>
                       )}
                     </div>
                   );
-                })
-              )}
+                });
+              })()}
             </div>
           </div>
         </div>
@@ -303,3 +314,4 @@ export default function InvestmentSectors() {
     </main>
   );
 }
+

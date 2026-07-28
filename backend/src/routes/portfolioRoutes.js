@@ -36,6 +36,30 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
+// Update a portfolio item
+router.put('/:id', auth, async (req, res) => {
+  const { symbol, type, quantity, price, date } = req.body;
+  try {
+    let item = await Portfolio.findById(req.params.id);
+    if (!item) return res.status(404).json({ msg: 'Item not found' });
+    const userId = req.user.userId || req.user.id;
+    if (item.user.toString() !== userId) return res.status(401).json({ msg: 'Not authorized' });
+
+    if (symbol) item.symbol = symbol.toUpperCase().trim();
+    if (type) item.type = type;
+    if (quantity !== undefined) item.quantity = Number(quantity);
+    if (price !== undefined) item.price = Number(price);
+    if (date) item.date = date;
+
+    await item.save();
+    res.json(item);
+  } catch (err) {
+    console.error(err.message);
+    if (err.kind === 'ObjectId') return res.status(404).json({ msg: 'Item not found' });
+    res.status(500).send('Server Error');
+  }
+});
+
 // Delete an item
 router.delete('/:id', auth, async (req, res) => {
   try {
@@ -54,3 +78,4 @@ router.delete('/:id', auth, async (req, res) => {
 });
 
 module.exports = router;
+

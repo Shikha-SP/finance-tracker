@@ -14,6 +14,7 @@ const authRoutes        = require('./src/routes/authRoutes');
 const userRoutes        = require('./src/routes/userRoutes');
 const nepseRoutes       = require('./src/routes/nepseRoutes');
 const portfolioRoutes   = require('./src/routes/portfolioRoutes');
+const aiRoutes          = require('./src/routes/aiRoutes');
 
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/budgets',      budgetRoutes);
@@ -21,6 +22,7 @@ app.use('/api/auth',         authRoutes);
 app.use('/api/users',        userRoutes);
 app.use('/api/nepse',        nepseRoutes);
 app.use('/api/portfolio',    portfolioRoutes);
+app.use('/api/ai',           aiRoutes);
 
 app.get('/', (req, res) => {
   res.send('FinanceTracker API is running!');

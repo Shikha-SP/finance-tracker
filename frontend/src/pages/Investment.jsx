@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { TrendingUp, TrendingDown, Activity, RefreshCw, WifiOff, ChevronUp, ChevronDown, Clock, Layers, Zap, AlertCircle } from 'lucide-react';
+import { TrendingUp, TrendingDown, Activity, RefreshCw, WifiOff, ChevronUp, ChevronDown, Clock, Layers, Zap, AlertCircle, Maximize2, X, Calendar } from 'lucide-react';
 import SECTOR_COMPANIES from '../sectorCompanies.json';
 import TradingChart from '../components/TradingChart';
 
@@ -15,84 +15,40 @@ const fmtNum  = n => Math.abs(n).toLocaleString('en-IN', { maximumFractionDigits
 const fmtPct  = n => (n >= 0 ? '+' : '') + Number(n).toFixed(2) + '%';
 const fmtPt   = n => (n >= 0 ? '+' : '') + Number(n).toFixed(2);
 
-/* ─── Inline simulated data (always available without backend) ──────────── */
-const SIMULATED_DATA = {
-  summary: {
-    isOpen: false,
-    simulatedData: true,
-    nepseIndex:      2074.56,
-    nepseChange:     -8.34,
-    nepseChangePct:  -0.40,
-    sensitiveIndex:  418.22,
-    sensitiveChange: -1.22,
-    floatIndex:      157.88,
-    floatChange:     -0.65,
-    totalTurnover:   2341567890,
-    totalVolume:     4823450,
-    totalTrades:     48234,
-  },
-  indices: [
-    { name: 'NEPSE Index',     value: 2074.56, change: -8.34,  changePct: -0.40 },
-    { name: 'Sensitive Index', value: 418.22,  change: -1.22,  changePct: -0.29 },
-    { name: 'Float Index',     value: 157.88,  change: -0.65,  changePct: -0.41 },
-    { name: 'Banking',         value: 1234.45, change: -5.12,  changePct: -0.41 },
-    { name: 'Dev. Bank',       value: 2345.67, change:  12.34, changePct:  0.53 },
-    { name: 'Finance',         value: 1567.89, change: -7.45,  changePct: -0.47 },
-    { name: 'Insurance',       value: 8765.43, change:  32.10, changePct:  0.37 },
-    { name: 'Hydropower',      value: 2134.56, change: -9.87,  changePct: -0.46 },
-  ],
-  gainers: [
-    { symbol: 'NABIL',  ltp: 920,  pointChange:  42, pctChange:  4.78, volume:  12340 },
-    { symbol: 'GBIME',  ltp: 345,  pointChange:  15, pctChange:  4.54, volume:   8920 },
-    { symbol: 'NTC',    ltp: 780,  pointChange:  32, pctChange:  4.28, volume:   5670 },
-    { symbol: 'SANIMA', ltp: 298,  pointChange:  11, pctChange:  3.83, volume:  15430 },
-    { symbol: 'NICA',   ltp: 567,  pointChange:  21, pctChange:  3.84, volume:   6780 },
-    { symbol: 'ADBL',   ltp: 412,  pointChange:  14, pctChange:  3.52, volume:   9820 },
-    { symbol: 'BOKL',   ltp: 234,  pointChange:   7, pctChange:  3.08, volume:  23450 },
-    { symbol: 'SWBBL',  ltp: 189,  pointChange:   5, pctChange:  2.71, volume:   4530 },
-    { symbol: 'MEGA',   ltp: 245,  pointChange:   6, pctChange:  2.51, volume:  18760 },
-    { symbol: 'MLBSL',  ltp: 456,  pointChange:  11, pctChange:  2.47, volume:   7890 },
-  ],
-  losers: [
-    { symbol: 'UPPER',  ltp: 612,  pointChange:  -38, pctChange: -5.84, volume:  34560 },
-    { symbol: 'HDHPC',  ltp: 145,  pointChange:   -8, pctChange: -5.23, volume:  12340 },
-    { symbol: 'BFC',    ltp: 278,  pointChange:  -14, pctChange: -4.79, volume:   8920 },
-    { symbol: 'CHDC',   ltp: 398,  pointChange:  -19, pctChange: -4.56, volume:   5670 },
-    { symbol: 'PRIC',   ltp: 1234, pointChange:  -55, pctChange: -4.27, volume:   3450 },
-    { symbol: 'LICN',   ltp: 4560, pointChange: -198, pctChange: -4.16, volume:   2340 },
-    { symbol: 'NLG',    ltp: 2345, pointChange:  -98, pctChange: -4.01, volume:   4560 },
-    { symbol: 'SICL',   ltp: 1890, pointChange:  -74, pctChange: -3.77, volume:   6780 },
-    { symbol: 'KBBL',   ltp: 189,  pointChange:   -7, pctChange: -3.57, volume:   9870 },
-    { symbol: 'NIBL',   ltp: 623,  pointChange:  -22, pctChange: -3.41, volume:  15430 },
-  ],
-  turnover: [
-    { symbol: 'NABIL',  turnover: 113634000, volume: 123456, ltp: 920  },
-    { symbol: 'GBIME',  turnover:  98765432, volume: 286122, ltp: 345  },
-    { symbol: 'NTC',    turnover:  87654321, volume: 112379, ltp: 780  },
-    { symbol: 'NICA',   turnover:  76543210, volume: 134992, ltp: 567  },
-    { symbol: 'UPPER',  turnover:  65432198, volume: 106912, ltp: 612  },
-    { symbol: 'ADBL',   turnover:  54321987, volume: 131849, ltp: 412  },
-    { symbol: 'SANIMA', turnover:  43210876, volume: 144999, ltp: 298  },
-    { symbol: 'MEGA',   turnover:  32109765, volume: 131060, ltp: 245  },
-    { symbol: 'BOKL',   turnover:  21098654, volume:  90114, ltp: 234  },
-    { symbol: 'NIBL',   turnover:  10987543, volume:  17636, ltp: 623  },
-  ],
-};
-
 /* ─── Graph Data Processor ────────────────────────────────────────────────── */
 function processGraphData(rawData, chartType) {
   if (!rawData || !rawData.length) return [];
-  
+
+  // Check if first item is object { time, open, high, low, close, value } vs array [ts, val]
+  const isObject = typeof rawData[0] === 'object' && !Array.isArray(rawData[0]);
+
+  if (isObject) {
+    if (chartType === 'line') {
+      return rawData.map(item => ({
+        time: item.time,
+        value: item.close !== undefined ? item.close : item.value
+      }));
+    } else {
+      return rawData.map(item => ({
+        time: item.time,
+        open: item.open || item.close || item.value,
+        high: item.high || item.close || item.value,
+        low: item.low || item.close || item.value,
+        close: item.close || item.value
+      }));
+    }
+  }
+
+  // Tuple array format [ts, val]
   if (chartType === 'line') {
     return rawData.map(([ts, val]) => ({ time: ts, value: val })).sort((a, b) => a.time - b.time);
   }
-  
-  // Candlestick: bucket by 5 minutes (300 seconds)
+
+  // Candlestick bucket by 5 minutes (300 seconds)
   const bucketSize = 300; 
   const buckets = {};
-  
+
   rawData.forEach(([ts, val]) => {
-    // Round down to nearest bucket
     const bucketTime = Math.floor(ts / bucketSize) * bucketSize;
     if (!buckets[bucketTime]) {
       buckets[bucketTime] = { time: bucketTime, open: val, high: val, low: val, close: val };
@@ -103,43 +59,46 @@ function processGraphData(rawData, chartType) {
       b.close = val;
     }
   });
-  
+
   return Object.values(buckets).sort((a, b) => a.time - b.time);
 }
 
 const API = 'http://localhost:5000/api/nepse';
 
 async function tryFetch(path) {
-  const res = await fetch(`${API}${path}`, { signal: AbortSignal.timeout(4000) });
+  const res = await fetch(`${API}${path}`, { signal: AbortSignal.timeout(8000) });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
 
 /* ─── Sub-components ─────────────────────────────────────────────────────── */
 
-function SimBadge() {
-  return (
-    <span className="sim-badge">
-      <AlertCircle size={10} /> Demo Data
-    </span>
-  );
-}
+function MarketStatusBar({ isOpen, statusText, backendOnline, lastUpdated, onRefresh, loading }) {
+  const isFallback = statusText && (statusText.includes('Fallback') || statusText.includes('past data'));
+  
+  let fallbackDate = '';
+  if (isFallback) {
+    const match = statusText.match(/(\d{4}-\d{2}-\d{2})/);
+    if (match) fallbackDate = match[1];
+  }
 
-function MarketStatusBar({ isOpen, simulatedData, backendOnline, lastUpdated, onRefresh, loading }) {
+  const titleText = isOpen ? 'MARKET OPEN' : (isFallback ? 'MARKET CLOSED RN' : 'MARKET CLOSED');
+  const subText = isFallback && fallbackDate 
+    ? `Data fetched from ${fallbackDate}` 
+    : 'Nepal Stock Exchange · Real Data Feed';
+
   return (
     <div className={`market-status-bar ${isOpen ? 'market-open' : 'market-closed'}`}>
       <div className="market-status-left">
         <span className="market-pulse" />
         <span className="market-status-text">
-          {isOpen ? 'MARKET OPEN' : 'MARKET CLOSED'}
+          {titleText}
         </span>
         <span className="market-status-sub">
-          Nepal Stock Exchange ·{' '}
-          {backendOnline ? 'Live via NepseUnofficialApi' : 'Fallback Mode'}
+          {subText}
         </span>
-        {simulatedData && <SimBadge />}
         {!backendOnline && (
-          <span className="offline-badge" title="Unable to reach backend API server. Showing fallback data.">
+          <span className="offline-badge" title="Unable to reach backend API server. Showing cached data.">
             <WifiOff size={10} /> Backend Unreachable
           </span>
         )}
@@ -201,7 +160,7 @@ function StatKPICard({ name, value, sub, icon: Icon, color, loading }) {
   );
 }
 
-function StockTable({ title, data, type, loading, simulatedData }) {
+function StockTable({ title, data, type, loading }) {
   const isGainer = type === 'gainers';
   const color     = isGainer ? 'var(--green)' : 'var(--red)';
   const softColor = isGainer ? 'var(--green-soft)' : 'var(--red-soft)';
@@ -212,7 +171,6 @@ function StockTable({ title, data, type, loading, simulatedData }) {
         <div className="stock-table-title-row">
           <div className="stock-table-indicator" style={{ background: color }} />
           <span className="stock-table-title">{title}</span>
-          {simulatedData && <SimBadge />}
         </div>
       </div>
       <div className="stock-table-body">
@@ -250,14 +208,13 @@ function StockTable({ title, data, type, loading, simulatedData }) {
   );
 }
 
-function TurnoverTable({ data, loading, simulatedData }) {
+function TurnoverTable({ data, loading }) {
   return (
     <div className="stock-table-block">
       <div className="stock-table-header">
         <div className="stock-table-title-row">
           <div className="stock-table-indicator" style={{ background: 'var(--blue)' }} />
           <span className="stock-table-title">Top by Turnover</span>
-          {simulatedData && <SimBadge />}
         </div>
       </div>
       <div className="stock-table-body">
@@ -289,12 +246,125 @@ function TurnoverTable({ data, loading, simulatedData }) {
   );
 }
 
+const TIME_RANGES = ['1D', '1W', '1M', '1Y', '3Y', '5Y', 'ALL'];
+
+function ChartPanel({ idx, indices, sel, setSel, chartType, setChartType, chartData, isFetchingGraph, up, isExpanded = false, onExpand, onClose, timeRange, setTimeRange, liveMode, setLiveMode }) {
+  return (
+    <div className={isExpanded ? 'chart-panel-expanded' : 'index-chart-block'}>
+      {/* Header */}
+      <div className="chart-panel-header">
+        {/* Left: index selector tabs */}
+        <div className="chart-index-tabs" style={{ overflowX: 'auto', flexWrap: 'nowrap', paddingBottom: '2px', maxWidth: isExpanded ? 'none' : '380px' }}>
+          {indices.map((ind, i) => (
+            <button
+              key={ind.name}
+              className={`chart-index-tab${sel === i ? ' active' : ''}`}
+              onClick={() => setSel(i)}
+              style={{ whiteSpace: 'nowrap', flexShrink: 0 }}
+            >
+              {ind.name.replace(' Index', '').replace('SubIndex', '')}
+            </button>
+          ))}
+        </div>
+        {/* Right: live toggle + time range + chart type + expand */}
+        <div className="chart-panel-controls" style={{ flexShrink: 0, gap: '0.4rem' }}>
+          {/* Live vs Historic Toggle */}
+          <button
+            onClick={() => setLiveMode(!liveMode)}
+            style={{
+              padding: '0.25rem 0.6rem', fontSize: '0.75rem', fontWeight: 600, borderRadius: '4px',
+              border: liveMode ? '1px solid var(--green)' : '1px solid var(--border)',
+              background: liveMode ? 'var(--green-soft, rgba(16,185,129,0.15))' : 'var(--bg-surface)',
+              color: liveMode ? 'var(--green)' : 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px'
+            }}
+            title={liveMode ? "Live Stream Enabled" : "Showing Historic Candle Data"}
+          >
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: liveMode ? 'var(--green)' : 'var(--text-muted)' }} />
+            {liveMode ? 'LIVE' : 'HISTORIC'}
+          </button>
+          <div className="chart-type-toggle">
+            {TIME_RANGES.map(r => (
+              <button
+                key={r}
+                className={`chart-type-btn${timeRange === r ? ' active' : ''}`}
+                onClick={() => setTimeRange(r)}
+              >{r}</button>
+            ))}
+          </div>
+          <div className="chart-type-toggle">
+            <button
+              className={`chart-type-btn${chartType === 'line' ? ' active' : ''}`}
+              onClick={() => setChartType('line')}
+            >Line</button>
+            <button
+              className={`chart-type-btn${chartType === 'candle' ? ' active' : ''}`}
+              onClick={() => setChartType('candle')}
+            >Candle</button>
+          </div>
+          {isExpanded ? (
+            <button className="chart-expand-btn" onClick={onClose} title="Close">
+              <X size={15} />
+            </button>
+          ) : (
+            <button className="chart-expand-btn" onClick={onExpand} title="Expand chart">
+              <Maximize2 size={14} />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Value display */}
+      <div className="chart-value-row">
+        <div>
+          <div className="chart-index-name">
+            {idx.name}
+            {isFetchingGraph && <span className="chart-loading-dot">●</span>}
+          </div>
+          <div className="chart-index-value">
+            {idx.value.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+          </div>
+        </div>
+        <div className={`chart-index-change ${up ? 'up' : 'down'}`}>
+          {up ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          <div>
+            <div className="chart-change-pt">{fmtPt(idx.change)}</div>
+            <div className="chart-change-pct">{fmtPct(idx.changePct)}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Chart area */}
+      <div style={{ width: '100%', height: isExpanded ? 'calc(100% - 140px)' : 320, position: 'relative', flex: isExpanded ? 1 : 'unset' }}>
+        {chartData.length > 0 ? (
+          <TradingChart
+            data={chartData}
+            type={chartType}
+            colors={{
+              upColor: '#10b981',
+              downColor: '#ef4444',
+              lineColor: up ? '#10b981' : '#ef4444',
+            }}
+          />
+        ) : (
+          <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', flexDirection: 'column', gap: '0.5rem' }}>
+            <Activity size={28} style={{ opacity: 0.3 }} />
+            <span style={{ fontSize: '0.8rem' }}>{isFetchingGraph ? 'Loading real chart data…' : 'No chart data available'}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function IndexChart({ indices, loading }) {
   const [sel, setSel] = useState(0);
-  const [chartType, setChartType] = useState('line'); 
-  const idx = indices[sel] || { name: 'NEPSE Index', value: 2074.56, change: -8.34 };
+  const [chartType, setChartType] = useState('line');
+  const [timeRange, setTimeRange] = useState('1D');
+  const [liveMode, setLiveMode] = useState(true);
+  const [expanded, setExpanded] = useState(false);
+  const idx = indices[sel] || { name: 'NEPSE Index', value: 2074.56, change: -8.34, changePct: -0.40 };
   const up = idx.change >= 0;
-  
+
   const [rawData, setRawData] = useState([]);
   const [isFetchingGraph, setIsFetchingGraph] = useState(false);
 
@@ -303,104 +373,209 @@ function IndexChart({ indices, loading }) {
     const fetchGraph = async () => {
       setIsFetchingGraph(true);
       try {
-        const res = await tryFetch(`/graph/${encodeURIComponent(idx.name)}`);
-        if (active) {
-          if (res.graph && res.graph.length > 0) {
-            setRawData(res.graph);
-          } else {
-            throw new Error('Empty graph data');
+        let res = null;
+        const now = Math.floor(Date.now() / 1000);
+        let from = now - 30 * 24 * 3600;
+
+        if (timeRange === '1D' && liveMode) {
+          try {
+            res = await tryFetch(`/graph/${encodeURIComponent(idx.name)}`);
+          } catch (e) {
+            res = null;
           }
+        }
+
+        if (!liveMode || timeRange !== '1D' || !res || !res.graph || res.graph.length === 0) {
+          if (timeRange === '1W') from = now - 7 * 24 * 3600;
+          if (timeRange === '1M') from = now - 30 * 24 * 3600;
+          if (timeRange === '1Y') from = now - 365 * 24 * 3600;
+          if (timeRange === '3Y') from = now - 1095 * 24 * 3600;
+          if (timeRange === '5Y') from = now - 1825 * 24 * 3600;
+          if (timeRange === 'ALL') from = now - 3650 * 24 * 3600;
+          if (timeRange === '1D') from = now - 14 * 24 * 3600;
+
+          res = await tryFetch(`/history/${encodeURIComponent(idx.name)}?from=${from}&to=${now}&resolution=1D`);
+        }
+
+        if (active) {
+          const data = Array.isArray(res) ? res : (res && res.graph ? res.graph : []);
+          setRawData(data);
         }
       } catch (err) {
-        console.error(err);
-        if (active) {
-          const base = idx.value;
-          const points = [];
-          let time = Math.floor(Date.now() / 1000) - 3600 * 4;
-          let val = base - idx.change;
-          for (let i = 0; i < 60; i++) {
-            points.push([time, val]);
-            time += 240;
-            val += (Math.random() - 0.45) * 5;
-          }
-          points.push([Math.floor(Date.now() / 1000), base]);
-          setRawData(points);
-        }
+        if (active) setRawData([]);
       } finally {
         if (active) setIsFetchingGraph(false);
       }
     };
     fetchGraph();
     return () => { active = false; };
-  }, [sel, idx.name]);
+  }, [sel, idx.name, timeRange, liveMode]);
 
   const chartData = processGraphData(rawData, chartType);
+  const sharedProps = { idx, indices, sel, setSel, chartType, setChartType, chartData, isFetchingGraph, up, timeRange, setTimeRange, liveMode, setLiveMode };
+
 
   return (
-    <div className="index-chart-block">
-      <div className="index-chart-header" style={{ alignItems: 'flex-start' }}>
+    <>
+      <ChartPanel {...sharedProps} onExpand={() => setExpanded(true)} />
+      {expanded && (
+        <div className="chart-expand-overlay" onClick={() => setExpanded(false)}>
+          <div className="chart-expand-modal chart-expand-modal--xl" onClick={e => e.stopPropagation()}>
+            <ChartPanel {...sharedProps} isExpanded onClose={() => setExpanded(false)} />
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+/* ─── Market History & Performance Section Component ────────────────────── */
+function MarketHistorySection() {
+  const [period, setPeriod] = useState('1M');
+  const [historyData, setHistoryData] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const fetchHistory = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`${API}/market-history?period=${period}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (active) setHistoryData(data);
+        }
+      } catch (e) {
+        console.error('Market history fetch error:', e);
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+    fetchHistory();
+    return () => { active = false; };
+  }, [period]);
+
+  const periods = ['1W', '1M', '3M', '1Y', '3Y', '5Y'];
+
+  return (
+    <div className="card" style={{ marginTop: '2.5rem', padding: '1.5rem' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', gap: '1rem' }}>
         <div>
-          <div className="index-chart-title">Market Chart {isFetchingGraph && <span style={{fontSize: '0.7rem', color: 'var(--text-muted)'}}>(Loading...)</span>}</div>
-          <div className="index-chart-subtitle">Intraday · {idx.name}</div>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
-          <div className="index-chart-tabs" style={{ background: 'var(--bg-card)', padding: '2px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
-            <button
-              className={`index-chart-tab ${chartType === 'line' ? 'active' : ''}`}
-              onClick={() => setChartType('line')}
-              style={{ border: 'none', background: chartType === 'line' ? 'var(--bg-glass)' : 'transparent', color: chartType === 'line' ? 'var(--text-primary)' : 'var(--text-muted)' }}
-            >
-              Line
-            </button>
-            <button
-              className={`index-chart-tab ${chartType === 'candle' ? 'active' : ''}`}
-              onClick={() => setChartType('candle')}
-              style={{ border: 'none', background: chartType === 'candle' ? 'var(--bg-glass)' : 'transparent', color: chartType === 'candle' ? 'var(--text-primary)' : 'var(--text-muted)' }}
-            >
-              Candle
-            </button>
+          <div style={{ fontSize: '1.1rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-primary)' }}>
+            <Calendar size={18} style={{ color: 'var(--accent)' }} />
+            Market History & Sector Performance
           </div>
-          <div className="index-chart-tabs">
-            {indices.slice(0, 4).map((ind, i) => (
-              <button
-                key={ind.name}
-                className={`index-chart-tab${sel === i ? ' active' : ''}`}
-                onClick={() => setSel(i)}
-              >
-                {ind.name.replace(' Index', '')}
-              </button>
-            ))}
+          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+            Historical price returns, period highs/lows, and volume analysis computed from real NEPSE datasets.
           </div>
         </div>
+
+        {/* Timeframe selector */}
+        <div className="chart-type-toggle" style={{ background: 'var(--bg-surface)', padding: '3px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+          {periods.map(p => (
+            <button
+              key={p}
+              className={`chart-type-btn${period === p ? ' active' : ''}`}
+              onClick={() => setPeriod(p)}
+              style={{ padding: '0.3rem 0.75rem', fontSize: '0.8rem', fontWeight: 600 }}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
       </div>
-      <div style={{ width: '100%', height: 250, position: 'relative' }}>
-        {chartData.length > 0 ? (
-          <TradingChart 
-            data={chartData} 
-            type={chartType} 
-            colors={{
-              upColor: 'var(--green)',
-              downColor: 'var(--red)',
-              lineColor: up ? 'var(--green)' : 'var(--red)',
-            }}
-          />
-        ) : (
-          <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
-            {isFetchingGraph ? 'Loading graph data...' : 'No graph data available'}
+
+      {loading ? (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem 0' }}>
+          <RefreshCw size={24} className="spin" style={{ color: 'var(--accent)' }} />
+        </div>
+      ) : historyData && historyData.data ? (
+        <>
+          {/* Top Performer Highlights */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+            {/* Gainers */}
+            <div style={{ background: 'var(--bg-surface)', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--green)', display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.75rem' }}>
+                <TrendingUp size={16} /> Top Performers ({period})
+              </div>
+              {historyData.gainers.slice(0, 4).map(g => (
+                <div key={g.symbol} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.4rem 0', borderBottom: '1px solid var(--border)' }}>
+                  <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>{g.symbol}</span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>रू {g.currentPrice}</span>
+                  <span className="change-badge up" style={{ fontSize: '0.75rem' }}>
+                    +{g.pctChange.toFixed(2)}%
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Decliners */}
+            <div style={{ background: 'var(--bg-surface)', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--red)', display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.75rem' }}>
+                <TrendingDown size={16} /> Lowest Performers ({period})
+              </div>
+              {historyData.decliners.slice(0, 4).map(d => (
+                <div key={d.symbol} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.4rem 0', borderBottom: '1px solid var(--border)' }}>
+                  <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>{d.symbol}</span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>रू {d.currentPrice}</span>
+                  <span className="change-badge down" style={{ fontSize: '0.75rem' }}>
+                    {d.pctChange.toFixed(2)}%
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-        )}
-      </div>
+
+          {/* Detailed Performance Table */}
+          <div className="stock-table-body">
+            <div className="stock-table-row stock-table-head-row" style={{ display: 'grid', gridTemplateColumns: '50px 1fr 100px 100px 100px 100px 100px 100px' }}>
+              <span>#</span>
+              <span>Symbol</span>
+              <span>Start Price</span>
+              <span>Current</span>
+              <span>Return %</span>
+              <span>Period High</span>
+              <span>Period Low</span>
+              <span>Avg Vol</span>
+            </div>
+            {historyData.data.map((item, idx) => {
+              const up = item.pctChange >= 0;
+              return (
+                <div key={item.symbol} className="stock-table-row stock-table-data-row" style={{ display: 'grid', gridTemplateColumns: '50px 1fr 100px 100px 100px 100px 100px 100px' }}>
+                  <span className="stock-rank">{idx + 1}</span>
+                  <span className="stock-symbol">{item.symbol}</span>
+                  <span>रू {item.startPrice.toLocaleString('en-IN', { maximumFractionDigits: 1 })}</span>
+                  <span style={{ fontWeight: 600 }}>रू {item.currentPrice.toLocaleString('en-IN', { maximumFractionDigits: 1 })}</span>
+                  <span>
+                    <span className={`change-badge ${up ? 'up' : 'down'}`}>
+                      {up ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
+                      {Math.abs(item.pctChange).toFixed(2)}%
+                    </span>
+                  </span>
+                  <span style={{ color: 'var(--green)' }}>रू {item.high.toLocaleString('en-IN', { maximumFractionDigits: 1 })}</span>
+                  <span style={{ color: 'var(--red)' }}>रू {item.low.toLocaleString('en-IN', { maximumFractionDigits: 1 })}</span>
+                  <span className="stock-volume">{fmtNum(item.avgVolume)}</span>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      ) : (
+        <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+          No market history data available.
+        </div>
+      )}
     </div>
   );
 }
 
 /* ─── Main page ──────────────────────────────────────────────────────────── */
 export default function Investment() {
-  const [summary,       setSummary]       = useState(SIMULATED_DATA.summary);
-  const [indices,       setIndices]       = useState(SIMULATED_DATA.indices);
-  const [gainers,       setGainers]       = useState(SIMULATED_DATA.gainers);
-  const [losers,        setLosers]        = useState(SIMULATED_DATA.losers);
-  const [turnover,      setTurnover]      = useState(SIMULATED_DATA.turnover);
+  const [summary,       setSummary]       = useState(null);
+  const [indices,       setIndices]       = useState([]);
+  const [gainers,       setGainers]       = useState([]);
+  const [losers,        setLosers]        = useState([]);
+  const [turnover,      setTurnover]      = useState([]);
   const [loading,       setLoading]       = useState(false);
   const [backendOnline, setBackendOnline] = useState(false);
   const [lastUpdated,   setLastUpdated]   = useState(null);
@@ -417,35 +592,31 @@ export default function Investment() {
         tryFetch('/top-turnover'),
       ]);
       setSummary(sumData);
-      setIndices(idxData.indices  || SIMULATED_DATA.indices);
-      setGainers(gainData.gainers || SIMULATED_DATA.gainers);
-      setLosers(loseData.losers   || SIMULATED_DATA.losers);
-      setTurnover(turnData.turnover || SIMULATED_DATA.turnover);
+      setIndices(idxData.indices || []);
+      setGainers(gainData.gainers || []);
+      setLosers(loseData.losers || []);
+      setTurnover(turnData.turnover || []);
       setBackendOnline(true);
       setLastUpdated(
         new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
       );
     } catch {
-      // Backend offline → keep / restore simulated data
       setBackendOnline(false);
-      setSummary(SIMULATED_DATA.summary);
-      setIndices(SIMULATED_DATA.indices);
-      setGainers(SIMULATED_DATA.gainers);
-      setLosers(SIMULATED_DATA.losers);
-      setTurnover(SIMULATED_DATA.turnover);
+      setSummary({ isOpen: false });
+      setIndices([]);
+      setGainers([]);
+      setLosers([]);
+      setTurnover([]);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Try live data on mount; silently fall back
   useEffect(() => {
     loadData();
     const iv = setInterval(loadData, 90000);
     return () => clearInterval(iv);
   }, [loadData]);
-
-  const sim = summary?.simulatedData !== false;
 
   return (
     <main className="page">
@@ -457,11 +628,11 @@ export default function Investment() {
             NEPSE Market
           </h1>
           <p className="page-subtitle">
-            Nepal Stock Exchange · NepseUnofficialApi
+            Nepal Stock Exchange · Live & Multi-Year Historical Data
           </p>
         </div>
         <div className="investment-header-right">
-          {summary && (
+          {summary && summary.nepseIndex && (
             <div className={`nepse-index-badge ${summary.nepseChange >= 0 ? 'up' : 'down'}`}>
               <span className="nib-label">NEPSE</span>
               <span className="nib-value">
@@ -479,7 +650,7 @@ export default function Investment() {
       {/* ── Market status bar — always visible ── */}
       <MarketStatusBar
         isOpen={summary?.isOpen || false}
-        simulatedData={sim}
+        statusText={summary?.statusText || ''}
         backendOnline={backendOnline}
         lastUpdated={lastUpdated}
         onRefresh={loadData}
@@ -537,7 +708,7 @@ export default function Investment() {
           <StatKPICard
             name="Market Status"
             value={summary?.isOpen ? 'OPEN' : 'CLOSED'}
-            sub={summary?.isOpen ? 'Trading in progress' : 'Next: 11:00 AM NST'}
+            sub={summary?.isOpen ? 'Trading in progress' : (summary?.statusText && (summary.statusText.includes('Fallback') || summary.statusText.includes('past data')) ? summary.statusText : 'Next: 11:00 AM NST')}
             icon={Zap}
             color={summary?.isOpen ? 'var(--green)' : 'var(--red)'}
             loading={loading}
@@ -554,6 +725,9 @@ export default function Investment() {
                 const up = ind.change >= 0;
                 const isExpanded = expandedIdx === ind.name;
                 const companies = SECTOR_COMPANIES[ind.name] || [];
+                const top50Companies = companies.slice(0, 50);
+                const extraCount = companies.length - 50;
+
                 return (
                   <div key={ind.name} style={{ display: 'flex', flexDirection: 'column' }}>
                     <div 
@@ -580,13 +754,21 @@ export default function Investment() {
                     </div>
                     {isExpanded && companies.length > 0 && (
                       <div style={{ padding: '0 0.75rem 0.75rem', background: 'var(--bg-card)', borderBottom: '1px solid var(--border)', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                        <div style={{ fontWeight: 600, marginBottom: '0.25rem', color: 'var(--text-primary)' }}>Listed Companies:</div>
+                        <div style={{ fontWeight: 600, marginBottom: '0.25rem', color: 'var(--text-primary)', display: 'flex', justifyContent: 'space-between' }}>
+                          <span>Top Companies ({top50Companies.length} shown):</span>
+                          {extraCount > 0 && <span>+{extraCount} more</span>}
+                        </div>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', maxHeight: '160px', overflowY: 'auto', paddingRight: '0.25rem' }}>
-                          {companies.map(c => (
+                          {top50Companies.map(c => (
                             <span key={c} style={{ background: 'var(--bg-surface)', padding: '2px 6px', borderRadius: '4px', border: '1px solid var(--border)' }}>
                               {c}
                             </span>
                           ))}
+                          {extraCount > 0 && (
+                            <span style={{ background: 'var(--accent-soft, rgba(59,130,246,0.1))', color: 'var(--accent)', padding: '2px 6px', borderRadius: '4px', border: '1px solid var(--accent)', fontWeight: 600 }}>
+                              +{extraCount} more
+                            </span>
+                          )}
                         </div>
                       </div>
                     )}
@@ -599,12 +781,15 @@ export default function Investment() {
 
         {/* ── Top Gainers / Losers ── */}
         <div className="investment-tables-row">
-          <StockTable title="Top Gainers" data={gainers} type="gainers" loading={loading} simulatedData={sim} />
-          <StockTable title="Top Losers"  data={losers}  type="losers"  loading={loading} simulatedData={sim} />
+          <StockTable title="Top Gainers" data={gainers} type="gainers" loading={loading}  />
+          <StockTable title="Top Losers"  data={losers}  type="losers"  loading={loading}  />
         </div>
 
         {/* ── Top Turnover ── */}
-        <TurnoverTable data={turnover} loading={loading} simulatedData={sim} />
+        <TurnoverTable data={turnover} loading={loading}  />
+
+        {/* ── Market History & Performance Section ── */}
+        <MarketHistorySection />
       </div>
     </main>
   );

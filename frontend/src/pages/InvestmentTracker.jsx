@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Briefcase, Plus, Trash2, TrendingUp, TrendingDown,
-  ChevronUp, ChevronDown, Loader, X, Search
+  Briefcase, Plus, Trash2, Edit2, TrendingUp, TrendingDown,
+  ChevronUp, ChevronDown, Loader, X, Search, AlertTriangle, WifiOff, Clock
 } from 'lucide-react';
 import SECTOR_COMPANIES from '../sectorCompanies.json';
 
 const API_BASE = 'http://localhost:5000/api';
+const LOCAL_KEY = 'portfolio_local';
 
 const fmtNPR = n => 'रू ' + Math.abs(n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
 const fmtPct = n => (n >= 0 ? '+' : '') + Number(n).toFixed(2) + '%';
@@ -18,13 +19,31 @@ function getAuthHeaders() {
   };
 }
 
+/* ── Local storage helpers ─────────────────────────────────────────────── */
+function loadLocalPortfolio() {
+  try {
+    const raw = localStorage.getItem(LOCAL_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+function saveLocalPortfolio(items) {
+  try { localStorage.setItem(LOCAL_KEY, JSON.stringify(items)); } catch {}
+}
+let _localIdSeq = Date.now();
+function localNextId() { return 'local_' + (++_localIdSeq); }
+
 export default function InvestmentTracker() {
   const [portfolio, setPortfolio] = useState([]);
   const [liveMarket, setLiveMarket] = useState([]);
+// No simulated LTP state
+  const [isCachedLTP, setIsCachedLTP] = useState(false);
+  const [cachedAt, setCachedAt] = useState(null);
+  const [ltpUnavailable, setLtpUnavailable] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [search, setSearch] = useState('');
+  const [backendAvailable, setBackendAvailable] = useState(true);
 
   // Form state
   const [form, setForm] = useState({
@@ -50,16 +69,28 @@ export default function InvestmentTracker() {
     }
   };
 
-  // Fetch portfolio items
+  // Fetch portfolio items — falls back to localStorage if backend is unreachable
   const fetchPortfolio = useCallback(async () => {
     try {
       const res = await fetch(`${API_BASE}/portfolio`, { headers: getAuthHeaders() });
       if (res.ok) {
         const data = await res.json();
         setPortfolio(data);
+        setBackendAvailable(true);
+        // Sync to local cache for offline use
+        saveLocalPortfolio(data);
+      } else {
+        // Auth error or other server error — use local cache
+        const local = loadLocalPortfolio();
+        setPortfolio(local);
+        setBackendAvailable(false);
       }
     } catch (err) {
       console.error('Failed to fetch portfolio:', err);
+      // Network error — use local cache
+      const local = loadLocalPortfolio();
+      setPortfolio(local);
+      setBackendAvailable(false);
     }
   }, []);
 
@@ -70,9 +101,16 @@ export default function InvestmentTracker() {
       if (res.ok) {
         const data = await res.json();
         setLiveMarket(data.liveMarket || []);
+        // Two states: live real data | cached from earlier today
+        setIsCachedLTP(data.cachedData === true);
+        setCachedAt(data.cachedAt || null);
+        setLtpUnavailable(false);
+      } else {
+        setLtpUnavailable(true);
       }
     } catch (err) {
       console.error('Failed to fetch live market:', err);
+      setLtpUnavailable(true);
     }
   }, []);
 
@@ -149,46 +187,144 @@ export default function InvestmentTracker() {
 
     setFormLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/portfolio`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify({
-          symbol: form.symbol.toUpperCase().trim(),
-          type: form.type,
-          quantity: Number(form.quantity),
-          price: Number(form.price),
-          date: form.date
-        })
-      });
-      if (res.ok) {
+      const payload = {
+        symbol: form.symbol.toUpperCase().trim(),
+        type: form.type,
+        quantity: Number(form.quantity),
+        price: Number(form.price),
+        date: form.date
+      };
+
+      if (backendAvailable) {
+        const res = await fetch(`${API_BASE}/portfolio`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          setForm({ symbol: '', type: 'buy', quantity: '', price: '', date: new Date().toISOString().slice(0, 10) });
+          setShowForm(false);
+          await fetchPortfolio();
+        } else {
+          // Try local fallback on auth error
+          const err = await res.json();
+          if (res.status === 401 || res.status === 403) {
+            // Not logged in — save locally
+            const newItem = { ...payload, _id: localNextId() };
+            const updated = [newItem, ...loadLocalPortfolio()];
+            saveLocalPortfolio(updated);
+            setPortfolio(updated);
+            setForm({ symbol: '', type: 'buy', quantity: '', price: '', date: new Date().toISOString().slice(0, 10) });
+            setShowForm(false);
+          } else {
+            setFormError(err.message || err.msg || 'Failed to add');
+          }
+        }
+      } else {
+        // Offline — save locally
+        const newItem = { ...payload, _id: localNextId() };
+        const updated = [newItem, ...loadLocalPortfolio()];
+        saveLocalPortfolio(updated);
+        setPortfolio(updated);
         setForm({ symbol: '', type: 'buy', quantity: '', price: '', date: new Date().toISOString().slice(0, 10) });
         setShowForm(false);
-        await fetchPortfolio();
-      } else {
-        const err = await res.json();
-        setFormError(err.message || err.msg || 'Failed to add');
       }
     } catch (err) {
-      setFormError('Network error');
+      // Network error — save locally
+      const payload = {
+        _id: localNextId(),
+        symbol: form.symbol.toUpperCase().trim(),
+        type: form.type,
+        quantity: Number(form.quantity),
+        price: Number(form.price),
+        date: form.date
+      };
+      const updated = [payload, ...loadLocalPortfolio()];
+      saveLocalPortfolio(updated);
+      setPortfolio(updated);
+      setForm({ symbol: '', type: 'buy', quantity: '', price: '', date: new Date().toISOString().slice(0, 10) });
+      setShowForm(false);
     } finally {
       setFormLoading(false);
     }
   }
 
+  // Edit state
+  const [editItem, setEditItem] = useState(null);
+
+  function openEditForm(tx) {
+    setEditItem({
+      _id: tx._id,
+      symbol: tx.symbol,
+      type: tx.type,
+      quantity: tx.quantity,
+      price: tx.price,
+      date: tx.date ? new Date(tx.date).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10)
+    });
+  }
+
+  async function handleEditSubmit(e) {
+    e.preventDefault();
+    if (!editItem) return;
+
+    const payload = {
+      symbol: editItem.symbol.toUpperCase().trim(),
+      type: editItem.type,
+      quantity: Number(editItem.quantity),
+      price: Number(editItem.price),
+      date: editItem.date
+    };
+
+    const isLocal = String(editItem._id).startsWith('local_');
+    if (isLocal || !backendAvailable) {
+      const local = loadLocalPortfolio().map(item => item._id === editItem._id ? { ...item, ...payload } : item);
+      saveLocalPortfolio(local);
+      setPortfolio(prev => prev.map(item => item._id === editItem._id ? { ...item, ...payload } : item));
+    } else {
+      try {
+        const res = await fetch(`${API_BASE}/portfolio/${editItem._id}`, {
+          method: 'PUT',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          await fetchPortfolio();
+        } else {
+          setPortfolio(prev => prev.map(item => item._id === editItem._id ? { ...item, ...payload } : item));
+        }
+      } catch (err) {
+        console.error('Edit request failed:', err);
+        setPortfolio(prev => prev.map(item => item._id === editItem._id ? { ...item, ...payload } : item));
+      }
+    }
+    setEditItem(null);
+  }
+
   // Delete transaction
   async function handleDelete() {
     if (!deleteId) return;
-    try {
-      await fetch(`${API_BASE}/portfolio/${deleteId}`, {
-        method: 'DELETE',
-        headers: getAuthHeaders()
-      });
-      await fetchPortfolio();
-    } catch (err) {
-      console.error(err);
+    // Check if this is a local-only item
+    const isLocal = String(deleteId).startsWith('local_');
+    if (isLocal || !backendAvailable) {
+      const updated = loadLocalPortfolio().filter(i => i._id !== deleteId);
+      saveLocalPortfolio(updated);
+      setPortfolio(prev => prev.filter(i => i._id !== deleteId));
+    } else {
+      try {
+        await fetch(`${API_BASE}/portfolio/${deleteId}`, {
+          method: 'DELETE',
+          headers: getAuthHeaders()
+        });
+        await fetchPortfolio();
+      } catch (err) {
+        console.error(err);
+        // Fallback: remove locally
+        setPortfolio(prev => prev.filter(i => i._id !== deleteId));
+      }
     }
     setDeleteId(null);
   }
+
 
   if (loading) {
     return (
@@ -217,6 +353,48 @@ export default function InvestmentTracker() {
       </div>
 
       <div className="page-content">
+        {/* ── LTP Data Status Banner ── */}
+        {ltpUnavailable && (
+          <div className="ltp-status-banner unavailable">
+            <div className="ltp-banner-left">
+              <WifiOff size={15} />
+              <div>
+                <div className="ltp-banner-title">Live Market Data Unavailable</div>
+                <div className="ltp-banner-desc">
+                  Could not connect to the backend. LTP columns show N/A — your invested amounts are still accurate.
+                  {!backendAvailable && ' Trades are saved locally and will sync when the server is back online.'}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {!ltpUnavailable && !backendAvailable && (
+          <div className="ltp-status-banner" style={{ background: 'rgba(245,158,11,0.08)', borderColor: 'rgba(245,158,11,0.3)', color: 'var(--amber)' }}>
+            <div className="ltp-banner-left">
+              <WifiOff size={15} />
+              <div>
+                <div className="ltp-banner-title">Offline Mode — Trades saved locally</div>
+                <div className="ltp-banner-desc">Backend unreachable. Your portfolio is stored in this browser and will sync when the server comes back online.</div>
+              </div>
+            </div>
+          </div>
+        )}
+        {!ltpUnavailable && isCachedLTP && cachedAt && (
+          <div className="ltp-status-banner cached">
+            <div className="ltp-banner-left">
+              <Clock size={15} />
+              <div>
+                <div className="ltp-banner-title">
+                  Last known prices · as of {new Date(cachedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}{' '}
+                  <span style={{ fontWeight: 400, opacity: 0.75 }}>({new Date(cachedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })})</span>
+                </div>
+                <div className="ltp-banner-desc">Market is closed. Showing real prices from the last trading session — P&L values reflect actual closing data.</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+
         {/* ── Portfolio KPIs ── */}
         <div className="tracker-kpi-grid">
           <div className="tracker-kpi-card">
@@ -229,7 +407,11 @@ export default function InvestmentTracker() {
               {totalCurrentVal > 0 ? fmtNPR(totalCurrentVal) : '—'}
             </span>
             <span className="tracker-kpi-sub">
-              {liveMarket.length === 0 ? 'Live data unavailable' : `${liveMarket.length} stocks tracked`}
+              {ltpUnavailable
+                ? <><WifiOff size={10} style={{display:'inline',marginRight:'3px'}} />Live data unavailable</>
+                : isCachedLTP
+                ? <><Clock size={10} style={{display:'inline',marginRight:'3px',color:'var(--accent)'}} /><span style={{color:'var(--accent)'}}>Closing prices · {liveMarket.length} stocks</span></>
+                : `${liveMarket.length} stocks live`}
             </span>
           </div>
           <div className="tracker-kpi-card">
@@ -296,8 +478,13 @@ export default function InvestmentTracker() {
                     <span className="stock-symbol">{h.symbol}</span>
                     <span style={{ fontWeight: 600 }}>{h.qtyHeld}</span>
                     <span>{h.avgBuyPrice.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span>
-                    <span style={{ color: h.currentLTP > 0 ? 'var(--text-primary)' : 'var(--text-muted)' }}>
-                      {h.currentLTP > 0 ? h.currentLTP.toLocaleString('en-IN', { maximumFractionDigits: 2 }) : 'N/A'}
+                    <span style={{ color: h.currentLTP > 0 ? 'var(--text-primary)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.25rem', flexWrap: 'wrap' }}>
+                      {h.currentLTP > 0 ? (
+                        <>
+                          {h.currentLTP.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                          {isCachedLTP && <span className="ltp-sim-tag">cls</span>}
+                        </>
+                      ) : 'N/A'}
                     </span>
                     <span>{fmtNPR(h.investedValue)}</span>
                     <span style={{ color: h.currentLTP > 0 ? 'var(--accent)' : 'var(--text-muted)' }}>
@@ -369,7 +556,14 @@ export default function InvestmentTracker() {
                   <span style={{ fontWeight: 600 }}>
                     {fmtNPR(tx.quantity * tx.price)}
                   </span>
-                  <span>
+                  <span style={{ display: 'flex', gap: '0.25rem', justifyContent: 'flex-end' }}>
+                    <button
+                      className="btn-ghost"
+                      title="Edit trade"
+                      onClick={() => openEditForm(tx)}
+                    >
+                      <Edit2 size={14} />
+                    </button>
                     <button
                       className="btn-ghost"
                       title="Delete trade"
@@ -490,6 +684,90 @@ export default function InvestmentTracker() {
               {formError && <div className="form-error">{formError}</div>}
               <button type="submit" className="btn-primary" disabled={formLoading} style={{ width: '100%', marginTop: '0.5rem' }}>
                 {formLoading ? <Loader size={16} className="spin" /> : 'Add Trade'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── Edit Trade Modal ── */}
+      {editItem && (
+        <div className="settings-overlay" onClick={() => setEditItem(null)}>
+          <div className="settings-modal tracker-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Edit Trade</h3>
+              <button className="btn-ghost" onClick={() => setEditItem(null)}><X size={18} /></button>
+            </div>
+            <form onSubmit={handleEditSubmit} className="tracker-form">
+              <div className="form-group">
+                <label>Stock Symbol</label>
+                <input
+                  type="text"
+                  placeholder="e.g. NABIL"
+                  value={editItem.symbol}
+                  onChange={e => setEditItem({ ...editItem, symbol: e.target.value.toUpperCase() })}
+                  required
+                />
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Type</label>
+                  <div className="trade-type-toggle">
+                    <button
+                      type="button"
+                      className={`toggle-btn${editItem.type === 'buy' ? ' active buy' : ''}`}
+                      onClick={() => setEditItem({ ...editItem, type: 'buy' })}
+                    >
+                      <TrendingUp size={14} /> Buy
+                    </button>
+                    <button
+                      type="button"
+                      className={`toggle-btn${editItem.type === 'sell' ? ' active sell' : ''}`}
+                      onClick={() => setEditItem({ ...editItem, type: 'sell' })}
+                    >
+                      <TrendingDown size={14} /> Sell
+                    </button>
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label>Date</label>
+                  <input
+                    type="date"
+                    value={editItem.date}
+                    onChange={e => setEditItem({ ...editItem, date: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Quantity</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={editItem.quantity}
+                    onChange={e => setEditItem({ ...editItem, quantity: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Price per share (रू)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={editItem.price}
+                    onChange={e => setEditItem({ ...editItem, price: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+              {editItem.quantity && editItem.price && (
+                <div className="form-total">
+                  Total: {fmtNPR(Number(editItem.quantity) * Number(editItem.price))}
+                </div>
+              )}
+              <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '0.5rem' }}>
+                Save Changes
               </button>
             </form>
           </div>
