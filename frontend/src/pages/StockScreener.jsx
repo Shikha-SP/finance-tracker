@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Filter, Search, ChevronDown, ChevronUp, TrendingUp, TrendingDown, DollarSign, Activity, Newspaper, ShieldCheck, RefreshCw, X, ArrowRight } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Filter, Activity, ShieldCheck, RefreshCw, X, DollarSign } from 'lucide-react';
 import AIExplanationCard from '../components/AIExplanationCard';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
@@ -25,11 +25,7 @@ export default function StockScreener() {
   const [analysisData, setAnalysisData] = useState(null);
   const [analysisLoading, setAnalysisLoading] = useState(false);
 
-  useEffect(() => {
-    runScreener();
-  }, [sector, maxPe, minConfidence]);
-
-  const runScreener = async () => {
+  const runScreener = useCallback(async () => {
     setScreenerLoading(true);
     try {
       const params = new URLSearchParams({
@@ -45,7 +41,15 @@ export default function StockScreener() {
     } finally {
       setScreenerLoading(false);
     }
-  };
+  }, [sector, maxPe, minConfidence]);
+
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      void runScreener();
+    }, 0);
+
+    return () => window.clearTimeout(id);
+  }, [runScreener]);
 
   const handleSelectSymbol = async (sym) => {
     setSelectedSymbol(sym);

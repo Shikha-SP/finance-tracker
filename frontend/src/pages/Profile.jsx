@@ -48,8 +48,8 @@ export default function Profile() {
         setProfileSaved(true);
         setTimeout(() => setProfileSaved(false), 2000);
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
+      console.error('Profile update failed');
     }
   };
 
@@ -78,7 +78,7 @@ export default function Profile() {
         const data = await res.json();
         setErrorMsg(data.message || 'Error changing password');
       }
-    } catch (err) {
+    } catch {
       setErrorMsg('Server error');
     }
   };

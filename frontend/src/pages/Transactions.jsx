@@ -1,9 +1,9 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTx } from '../context/TxContext';
 import TransactionForm from '../components/TransactionForm';
 import { getCategoryIcon } from '../utils/categoryIcons';
-import { Search, Trash2, SearchX, FileText, Pencil, X } from 'lucide-react';
+import { Search, Trash2, SearchX, FileText, Pencil } from 'lucide-react';
 
 const fmt = n => 'रू ' + Math.abs(n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
 
@@ -11,17 +11,10 @@ function Transactions() {
   const { transactions, addTransaction, deleteTransaction, updateTransaction, income, expense } = useTx();
   const [search, setSearch]   = useState('');
   const [filter, setFilter]   = useState('all'); // 'all' | 'income' | 'expense'
-  const [editTx, setEditTx]   = useState(null);
   const [deleteId, setDeleteId] = useState(null);
 
   const location = useLocation();
-
-  useEffect(() => {
-    if (location.state?.editTx) {
-      setEditTx(location.state.editTx);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }, [location.state]);
+  const [editTx, setEditTx] = useState(() => location.state?.editTx ?? null);
 
   const filtered = useMemo(() => {
     return transactions.filter(tx => {
@@ -51,10 +44,11 @@ function Transactions() {
             <span className="card-title">{editTx ? 'Edit Entry' : 'New Entry'}</span>
           </div>
           <div className="card-body">
-            <TransactionForm 
-              onAdd={addTransaction} 
-              editTx={editTx} 
-              onCancelEdit={() => setEditTx(null)} 
+            <TransactionForm
+              key={editTx?.id ?? 'new'}
+              onAdd={addTransaction}
+              editTx={editTx}
+              onCancelEdit={() => setEditTx(null)}
               onUpdate={(id, payload) => {
                 updateTransaction(id, payload);
                 setEditTx(null);

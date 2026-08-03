@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
   Briefcase, Plus, Trash2, Edit2, TrendingUp, TrendingDown,
-  ChevronUp, ChevronDown, Loader, X, Search, AlertTriangle, WifiOff, Clock
+  ChevronUp, ChevronDown, Loader, X, Search, WifiOff, Clock
 } from 'lucide-react';
 import SECTOR_COMPANIES from '../sectorCompanies.json';
 
@@ -9,7 +9,6 @@ const API_BASE = '/api';
 const LOCAL_KEY = 'portfolio_local';
 
 const fmtNPR = n => 'रू ' + Math.abs(n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
-const fmtPct = n => (n >= 0 ? '+' : '') + Number(n).toFixed(2) + '%';
 
 function getAuthHeaders() {
   const token = localStorage.getItem('token');
@@ -24,10 +23,16 @@ function loadLocalPortfolio() {
   try {
     const raw = localStorage.getItem(LOCAL_KEY);
     return raw ? JSON.parse(raw) : [];
-  } catch { return []; }
+  } catch {
+    return [];
+  }
 }
 function saveLocalPortfolio(items) {
-  try { localStorage.setItem(LOCAL_KEY, JSON.stringify(items)); } catch {}
+  try {
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(items));
+  } catch {
+    /* ignore local cache write failures */
+  }
 }
 let _localIdSeq = Date.now();
 function localNextId() { return 'local_' + (++_localIdSeq); }
@@ -85,8 +90,7 @@ export default function InvestmentTracker() {
         setPortfolio(local);
         setBackendAvailable(false);
       }
-    } catch (err) {
-      console.error('Failed to fetch portfolio:', err);
+    } catch {
       // Network error — use local cache
       const local = loadLocalPortfolio();
       setPortfolio(local);
@@ -108,14 +112,18 @@ export default function InvestmentTracker() {
       } else {
         setLtpUnavailable(true);
       }
-    } catch (err) {
-      console.error('Failed to fetch live market:', err);
+    } catch {
       setLtpUnavailable(true);
     }
   }, []);
 
   useEffect(() => {
-    Promise.all([fetchPortfolio(), fetchLiveMarket()]).finally(() => setLoading(false));
+    const timer = window.setTimeout(() => {
+      void Promise.all([fetchPortfolio(), fetchLiveMarket()])
+        .finally(() => setLoading(false));
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [fetchPortfolio, fetchLiveMarket]);
 
   // Build a symbol -> LTP map from live market data
@@ -146,7 +154,7 @@ export default function InvestmentTracker() {
   // Helper function for NEPSE Brokerage & Charges (0.36% avg + NPR 25 DP fee + 0.015% SEBON fee)
   const calcBuyCharges = (amount) => {
     if (amount <= 0) return 0;
-    let comm = 0;
+    let comm;
     if (amount <= 50000) comm = Math.max(10, amount * 0.0040);
     else if (amount <= 500000) comm = amount * 0.0037;
     else if (amount <= 2000000) comm = amount * 0.0034;
@@ -255,7 +263,7 @@ export default function InvestmentTracker() {
         setForm({ symbol: '', type: 'buy', quantity: '', price: '', date: new Date().toISOString().slice(0, 10) });
         setShowForm(false);
       }
-    } catch (err) {
+    } catch {
       // Network error — save locally
       const payload = {
         _id: localNextId(),
@@ -342,8 +350,7 @@ export default function InvestmentTracker() {
           headers: getAuthHeaders()
         });
         await fetchPortfolio();
-      } catch (err) {
-        console.error(err);
+      } catch {
         // Fallback: remove locally
         setPortfolio(prev => prev.filter(i => i._id !== deleteId));
       }

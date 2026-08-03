@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const http = require('http');
 
-const PYTHON_AI_URL = 'http://127.0.0.1:8000';
+const PYTHON_AI_URL = process.env.PYTHON_AI_URL || 'http://127.0.0.1:8000';
 
 function fetchPythonAPI(path, method = 'GET', body = null) {
   return new Promise((resolve, reject) => {

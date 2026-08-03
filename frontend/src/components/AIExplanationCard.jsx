@@ -1,5 +1,4 @@
-import React from 'react';
-import { ShieldCheck, TrendingUp, TrendingDown, Minus, Info, AlertTriangle } from 'lucide-react';
+import { ShieldCheck, TrendingUp, TrendingDown, Minus, Info } from 'lucide-react';
 
 export default function AIExplanationCard({ prediction, explainableAI, symbol }) {
   if (!prediction) return null;

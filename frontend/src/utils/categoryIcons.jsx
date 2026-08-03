@@ -1,5 +1,5 @@
 import { 
-  Utensils, Car, ShoppingBag, HeartPulse, Zap, Film, Briefcase, Laptop, TrendingUp, Package, DollarSign
+  Utensils, Car, ShoppingBag, HeartPulse, Zap, Film, Briefcase, Laptop, TrendingUp, Package
 } from 'lucide-react';
 
 export const CATEGORY_ICONS = {

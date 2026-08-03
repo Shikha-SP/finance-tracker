@@ -51,7 +51,7 @@ export default function Login() {
       localStorage.setItem('userId',    data.user.id);
 
       navigate('/investment/market');
-    } catch (err) {
+    } catch {
       setError('Could not reach the server. Is the backend running?');
       setLoading(false);
     }

@@ -5,7 +5,10 @@
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:ai\"",
     "dev:backend": "npm run dev --prefix backend",
     "dev:frontend": "npm run dev --prefix frontend",
-    "dev:ai": "cd backend/ai_engine && python -m uvicorn main:app --port 8000 --reload"
+    "dev:ai": "cd backend/ai_engine && python -m uvicorn main:app --port 8000 --reload",
+    "build": "npm run build --prefix frontend",
+    "start": "npm run start:backend",
+    "start:backend": "npm run start --prefix backend"
   },
   "dependencies": {
     "react-router-dom": "^7.18.1"

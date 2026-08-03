@@ -67,7 +67,7 @@ export default function Signup() {
 
       setSuccess('Account created! Redirecting to sign in…');
       setTimeout(() => navigate('/login'), 1200);
-    } catch (err) {
+    } catch {
       setError('Could not reach the server. Is the backend running?');
       setLoading(false);
     }

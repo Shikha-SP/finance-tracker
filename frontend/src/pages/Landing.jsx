@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import TopNav from '../components/TopNav';
-import { Activity, ShieldCheck, BarChart3, Wallet, PieChart, Target, ArrowRight, TrendingUp, Lock } from 'lucide-react';
+import { ShieldCheck, BarChart3, Wallet, PieChart, Target, ArrowRight, TrendingUp, Lock } from 'lucide-react';
 
 export default function Landing() {
   const navigate = useNavigate();

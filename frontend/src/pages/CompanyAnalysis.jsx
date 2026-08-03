@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { Search, TrendingUp, DollarSign, Activity, BarChart2, Newspaper, RefreshCw } from 'lucide-react';
 import AIExplanationCard from '../components/AIExplanationCard';
 
@@ -14,11 +14,7 @@ export default function CompanyAnalysis() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
 
-  useEffect(() => {
-    fetchCompanyData(selectedSymbol);
-  }, [selectedSymbol]);
-
-  const fetchCompanyData = async (symbol) => {
+  const fetchCompanyData = useCallback(async (symbol) => {
     setLoading(true);
     try {
       const res = await fetch(`/api/ai/analyze/${symbol}`);
@@ -29,7 +25,15 @@ export default function CompanyAnalysis() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      void fetchCompanyData(selectedSymbol);
+    }, 0);
+
+    return () => window.clearTimeout(id);
+  }, [fetchCompanyData, selectedSymbol]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();

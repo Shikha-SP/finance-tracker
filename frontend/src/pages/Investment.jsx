@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { TrendingUp, TrendingDown, Activity, RefreshCw, WifiOff, ChevronUp, ChevronDown, Clock, Layers, Zap, AlertCircle, Maximize2, X, Calendar } from 'lucide-react';
+import { TrendingUp, TrendingDown, Activity, RefreshCw, WifiOff, ChevronUp, ChevronDown, Clock, Layers, Zap, Maximize2, X, Calendar } from 'lucide-react';
 import SECTOR_COMPANIES from '../sectorCompanies.json';
 import TradingChart from '../components/TradingChart';
 
@@ -356,7 +356,7 @@ function ChartPanel({ idx, indices, sel, setSel, chartType, setChartType, chartD
   );
 }
 
-function IndexChart({ indices, loading }) {
+function IndexChart({ indices }) {
   const [sel, setSel] = useState(0);
   const [chartType, setChartType] = useState('line');
   const [timeRange, setTimeRange] = useState('1D');
@@ -380,7 +380,7 @@ function IndexChart({ indices, loading }) {
         if (timeRange === '1D' && liveMode) {
           try {
             res = await tryFetch(`/graph/${encodeURIComponent(idx.name)}`);
-          } catch (e) {
+          } catch {
             res = null;
           }
         }
@@ -401,7 +401,7 @@ function IndexChart({ indices, loading }) {
           const data = Array.isArray(res) ? res : (res && res.graph ? res.graph : []);
           setRawData(data);
         }
-      } catch (err) {
+      } catch {
         if (active) setRawData([]);
       } finally {
         if (active) setIsFetchingGraph(false);
@@ -445,14 +445,21 @@ function MarketHistorySection() {
           const data = await res.json();
           if (active) setHistoryData(data);
         }
-      } catch (e) {
-        console.error('Market history fetch error:', e);
+      } catch {
+        if (active) setHistoryData(null);
       } finally {
         if (active) setLoading(false);
       }
     };
-    fetchHistory();
-    return () => { active = false; };
+
+    const id = window.setTimeout(() => {
+      void fetchHistory();
+    }, 0);
+
+    return () => {
+      active = false;
+      window.clearTimeout(id);
+    };
   }, [period]);
 
   const periods = ['1W', '1M', '3M', '1Y', '3Y', '5Y'];
@@ -613,9 +620,14 @@ export default function Investment() {
   }, []);
 
   useEffect(() => {
-    loadData();
-    const iv = setInterval(loadData, 90000);
-    return () => clearInterval(iv);
+    const id = window.setTimeout(() => {
+      void loadData();
+    }, 0);
+    const iv = window.setInterval(loadData, 90000);
+    return () => {
+      window.clearTimeout(id);
+      window.clearInterval(iv);
+    };
   }, [loadData]);
 
   return (

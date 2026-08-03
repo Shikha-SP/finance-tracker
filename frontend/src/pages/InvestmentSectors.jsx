@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
   Layers, TrendingUp, TrendingDown, ChevronUp, ChevronDown,
-  Loader, RefreshCw, Search, Calendar
+  Loader, RefreshCw, Search
 } from 'lucide-react';
 import SECTOR_COMPANIES from '../sectorCompanies.json';
 
@@ -43,26 +43,12 @@ export default function InvestmentSectors() {
   }, []);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    const id = window.setTimeout(() => {
+      void fetchData();
+    }, 0);
 
-  // Map sector names (from sub-indices) to a classification keyword
-  const SECTOR_MAP = {
-    'Banking SubIndex': 'Commercial Banks',
-    'Development Bank Index': 'Development Banks',
-    'Finance Index': 'Finance',
-    'HydroPower Index': 'Hydro Power',
-    'Insurance': 'Insurance',
-    'Life Insurance': 'Life Insurance',
-    'Non Life Insurance': 'Non Life Insurance',
-    'Hotels And Tourism Index': 'Hotels And Tourism',
-    'Manufacturing And Processing': 'Manufacturing And Processing',
-    'Microfinance Index': 'Microfinance',
-    'Mutual Fund': 'Mutual Fund',
-    'Trading Index': 'Trading',
-    'Investment Index': 'Investment',
-    'Others Index': 'Others',
-  };
+    return () => window.clearTimeout(id);
+  }, [fetchData]);
 
   // Group live market companies by their sectorName if available
   const companiesBySector = {};

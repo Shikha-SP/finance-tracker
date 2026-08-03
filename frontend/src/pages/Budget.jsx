@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useTx } from '../context/TxContext';
 import { getCategoryIcon } from '../utils/categoryIcons';
-import { Target, AlertTriangle, CheckCircle, TrendingDown } from 'lucide-react';
+import { AlertTriangle, CheckCircle, TrendingDown } from 'lucide-react';
 
 const fmt = n => 'रू ' + Math.abs(n).toLocaleString('en-IN', { maximumFractionDigits: 0 });
 

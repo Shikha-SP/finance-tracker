@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: financetracker-api
+    env: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install && npm install --prefix ../frontend && npm run build --prefix ../frontend
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGO_URI
+        sync: false
+      - key: MONGO_URI_ATLAS
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PYTHON_AI_URL
+        sync: false
+
+  - type: web
+    name: financetracker-ai
+    env: python
+    rootDir: backend/ai_engine
+    plan: free
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PORT
+        value: 8000

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
-import { Play, TrendingUp, ShieldAlert, Award, RefreshCw, BarChart } from 'lucide-react';
+import { Play, RefreshCw, BarChart } from 'lucide-react';
 
 export default function BacktestingModule() {
   const [symbol, setSymbol] = useState('NABIL');
@@ -10,11 +10,7 @@ export default function BacktestingModule() {
   const [loading, setLoading] = useState(false);
   const [backtestResult, setBacktestResult] = useState(null);
 
-  useEffect(() => {
-    runBacktest();
-  }, [symbol]);
-
-  const runBacktest = async () => {
+  const runBacktest = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch('/api/ai/backtest', {
@@ -29,7 +25,15 @@ export default function BacktestingModule() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [symbol, initialCapital, minConfidence]);
+
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      void runBacktest();
+    }, 0);
+
+    return () => window.clearTimeout(id);
+  }, [runBacktest]);
 
   const summary = backtestResult?.summary || {};
 

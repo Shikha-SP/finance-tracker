@@ -1,52 +1,46 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   ArrowDownCircle,
   ArrowUpCircle
 } from 'lucide-react';
-
-export const CATEGORIES = [
-  'Food & Dining',
-  'Transport',
-  'Shopping',
-  'Health',
-  'Bills & Utilities',
-  'Entertainment',
-  'Salary',
-  'Freelance',
-  'Investment',
-  'Other',
-];
+import { TRANSACTION_CATEGORIES } from '../utils/transactionCategories';
 
 const todayISO = () => new Date().toISOString().split('T')[0];
 
-function TransactionForm({ onAdd, editTx, onCancelEdit, onUpdate }) {
-  const [amount,      setAmount]      = useState('');
-  const [description, setDescription] = useState('');
-  const [type,        setType]        = useState('expense');
-  const [category,    setCategory]    = useState('Other');
-  const [note,        setNote]        = useState('');
-  const [date,        setDate]        = useState(todayISO());
+function getInitialState(editTx) {
+  if (editTx) {
+    const raw = editTx.dateISO || editTx.date;
+    const parsed = new Date(raw);
 
-  useEffect(() => {
-    if (editTx) {
-      setAmount(editTx.amount.toString());
-      setDescription(editTx.description);
-      setType(editTx.type);
-      setCategory(editTx.category);
-      setNote(editTx.note || '');
-      // Parse back a display date to ISO if possible
-      const raw = editTx.dateISO || editTx.date;
-      const parsed = new Date(raw);
-      setDate(!isNaN(parsed) ? parsed.toISOString().split('T')[0] : todayISO());
-    } else {
-      setAmount('');
-      setDescription('');
-      setType('expense');
-      setCategory('Other');
-      setNote('');
-      setDate(todayISO());
-    }
-  }, [editTx]);
+    return {
+      amount: editTx.amount.toString(),
+      description: editTx.description,
+      type: editTx.type,
+      category: editTx.category,
+      note: editTx.note || '',
+      date: !isNaN(parsed) ? parsed.toISOString().split('T')[0] : todayISO(),
+    };
+  }
+
+  return {
+    amount: '',
+    description: '',
+    type: 'expense',
+    category: 'Other',
+    note: '',
+    date: todayISO(),
+  };
+}
+
+function TransactionForm({ onAdd, editTx, onCancelEdit, onUpdate }) {
+  const initialState = getInitialState(editTx);
+
+  const [amount,      setAmount]      = useState(initialState.amount);
+  const [description, setDescription] = useState(initialState.description);
+  const [type,        setType]        = useState(initialState.type);
+  const [category,    setCategory]    = useState(initialState.category);
+  const [note,        setNote]        = useState(initialState.note);
+  const [date,        setDate]        = useState(initialState.date);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -147,7 +141,7 @@ function TransactionForm({ onAdd, editTx, onCancelEdit, onUpdate }) {
             value={category}
             onChange={e => setCategory(e.target.value)}
           >
-            {CATEGORIES.map(c => (
+            {TRANSACTION_CATEGORIES.map(c => (
               <option key={c} value={c}>{c}</option>
             ))}
           </select>

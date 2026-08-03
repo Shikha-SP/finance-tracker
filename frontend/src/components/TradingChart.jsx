@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { createChart, ColorType, LineSeries, CandlestickSeries, AreaSeries } from 'lightweight-charts';
+import { useEffect, useRef } from 'react';
+import { createChart, ColorType, CandlestickSeries, AreaSeries } from 'lightweight-charts';
 
 export default function TradingChart({
   data,
