@@ -3,6 +3,8 @@ import { Bot, Send, Upload, FileText, CheckCircle2, BookOpen, Sparkles, RefreshC
 
 export default function RAGAssistant() {
   const [symbol, setSymbol] = useState('NABIL');
+  const [symbolSuggestions, setSymbolSuggestions] = useState([]);
+  const [showSymbolSuggestions, setShowSymbolSuggestions] = useState(false);
   const [query, setQuery] = useState('');
   const [groqApiKey, setGroqApiKey] = useState('');
   const [showKeyInput, setShowKeyInput] = useState(false);
@@ -11,14 +13,10 @@ export default function RAGAssistant() {
   const [chatHistory, setChatHistory] = useState([
     {
       type: 'assistant',
-      text: 'Welcome to NEPSE AI Stock Advisor & Financial RAG Assistant. Ask me which stocks to BUY, request target price advice, or query company balance sheets & annual reports.',
+      text: 'Namaste! Welcome to your NEPSE AI Financial Advisor. I am powered by Groq Llama-3.3 AI.\n\nAsk me anything about any NEPSE company in plain English — for example: "Which stocks should I buy?", "What can you tell me about GBIME or CHCL?", or "Hi!"',
       citations: [],
-      recommendations: [
-        { symbol: "CHCL", signal: "STRONG BUY", confidence: 78.0, targetPrice: "Rs. 540", peRatio: 22.4, dividendYield: 2.5, reason: "Breakout momentum with expanding clean energy cash flows" },
-        { symbol: "NABIL", signal: "BUY", confidence: 72.0, targetPrice: "Rs. 650", peRatio: 16.8, dividendYield: 3.8, reason: "Solid tier-1 capital adequacy with high 14.2% ROE" },
-        { symbol: "GBIME", signal: "VALUE BUY", confidence: 66.0, targetPrice: "Rs. 285", peRatio: 14.2, dividendYield: 4.2, reason: "Low P/E ratio with high dividend yield support" }
-      ],
-      groqPowered: false
+      recommendations: [],
+      groqPowered: true
     }
   ]);
 
@@ -43,7 +41,7 @@ export default function RAGAssistant() {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:5000/api/ai/rag/query', {
+      const res = await fetch('/api/ai/rag/query', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ symbol, query: userMsg, groqApiKey: groqApiKey.trim() || undefined })
@@ -77,7 +75,7 @@ export default function RAGAssistant() {
     formData.append('file', file);
 
     try {
-      await fetch('http://localhost:8000/api/v1/rag/upload', {
+      await fetch('/api/ai/rag/upload', {
         method: 'POST',
         body: formData
       });
@@ -163,26 +161,77 @@ export default function RAGAssistant() {
           {/* Left: Chat Workspace */}
           <div className="card" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', height: 540, gridColumn: 'span 2' }}>
             {/* Scrip Selector Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border)', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border)', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
               <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>Target Scrip / Focus Symbol:</span>
-              <select
-                value={symbol}
-                onChange={e => setSymbol(e.target.value)}
-                style={{
-                  background: 'var(--bg-surface)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-md)',
-                  padding: '0.3rem 0.75rem',
-                  fontSize: '0.8rem',
-                  color: 'var(--text-primary)'
-                }}
-              >
-                <option value="NABIL">NABIL Bank</option>
-                <option value="GBIME">GBIME Bank</option>
-                <option value="CHCL">Chilime Hydro</option>
-                <option value="SHIVM">Shivam Cements</option>
-                <option value="NTC">Nepal Telecom</option>
-              </select>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="text"
+                  placeholder="Enter symbol (e.g. NABIL, NIMB, CHCL)"
+                  value={symbol}
+                  onChange={e => {
+                    const val = e.target.value.toUpperCase();
+                    setSymbol(val);
+                    if (val.trim()) {
+                      const filtered = ['NABIL', 'NIMB', 'SCB', 'HBL', 'SBI', 'EBL', 'NICA', 'GBIME', 'CHCL', 'SHIVM', 'NTC', 'NLIC', 'NLG', 'OHL', 'ICFC', 'CBBL', 'AKPL', 'UPPER', 'HDL', 'STC', 'RADHI'].filter(s => s.includes(val)).slice(0, 6);
+                      setSymbolSuggestions(filtered);
+                      setShowSymbolSuggestions(true);
+                    } else {
+                      setShowSymbolSuggestions(false);
+                    }
+                  }}
+                  onFocus={() => symbol.trim() && setShowSymbolSuggestions(true)}
+                  style={{
+                    background: 'var(--bg-surface)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '0.35rem 0.75rem',
+                    fontSize: '0.8rem',
+                    color: 'var(--text-primary)',
+                    fontWeight: 700,
+                    width: '180px'
+                  }}
+                />
+                {showSymbolSuggestions && symbolSuggestions.length > 0 && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    right: 0,
+                    marginTop: '4px',
+                    background: 'var(--bg-surface)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-md)',
+                    boxShadow: 'var(--shadow-md)',
+                    zIndex: 50,
+                    overflow: 'hidden'
+                  }}>
+                    {symbolSuggestions.map(s => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => {
+                          setSymbol(s);
+                          setShowSymbolSuggestions(false);
+                        }}
+                        style={{
+                          width: '100%',
+                          textAlign: 'left',
+                          padding: '0.4rem 0.75rem',
+                          fontSize: '0.78rem',
+                          color: 'var(--text-primary)',
+                          background: 'transparent',
+                          border: 'none',
+                          borderBottom: '1px solid var(--border)',
+                          cursor: 'pointer',
+                          fontWeight: 600
+                        }}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Message Feed */}

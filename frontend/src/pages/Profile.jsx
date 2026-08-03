@@ -32,7 +32,7 @@ export default function Profile() {
       const token = localStorage.getItem('token');
       if (!token) return navigate('/login');
 
-      const res = await fetch('http://localhost:5000/api/users/profile', {
+      const res = await fetch('/api/users/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ export default function Profile() {
       const token = localStorage.getItem('token');
       if (!token) return navigate('/login');
 
-      const res = await fetch('http://localhost:5000/api/users/password', {
+      const res = await fetch('/api/users/password', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

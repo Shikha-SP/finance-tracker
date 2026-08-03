@@ -37,7 +37,7 @@ export default function StockScreener() {
         maxPe,
         minConfidence
       });
-      const res = await fetch(`http://localhost:5000/api/ai/screener?${params.toString()}`);
+      const res = await fetch(`/api/ai/screener?${params.toString()}`);
       const json = await res.json();
       setResults(json.screenerResults || []);
     } catch (err) {
@@ -51,7 +51,7 @@ export default function StockScreener() {
     setSelectedSymbol(sym);
     setAnalysisLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/ai/analyze/${sym}`);
+      const res = await fetch(`/api/ai/analyze/${sym}`);
       const json = await res.json();
       setAnalysisData(json);
     } catch (err) {

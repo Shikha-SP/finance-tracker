@@ -141,16 +141,24 @@ def stock_screener(
     df_raw = fetch_price_history_csv()
     results = []
     
-    for sym, meta in FUNDAMENTAL_DB.items():
-        if sector != "ALL" and meta['sector'].lower() != sector.lower():
+    # Get list of all available symbols in dataset
+    all_symbols = df_raw['symbol'].str.upper().unique() if 'symbol' in df_raw.columns else list(FUNDAMENTAL_DB.keys())
+    
+    for sym in all_symbols:
+        meta = get_company_fundamentals(sym)
+        if sector != "ALL" and meta.get('sector', '').lower() != sector.lower():
             continue
             
-        if meta['peRatio'] > maxPe or meta['dividendYield'] < minDiv:
+        pe = meta.get('peRatio')
+        div = meta.get('dividendYield')
+        if pe is not None and pe > maxPe:
+            continue
+        if div is not None and div < minDiv:
             continue
             
         sym_df = df_raw[df_raw['symbol'].str.upper() == sym] if 'symbol' in df_raw.columns else pd.DataFrame()
         if len(sym_df) < 5:
-            sym_df = df_raw.head(60)
+            continue
             
         df_ind = compute_all_indicators(sym_df.sort_values('date'))
         latest = df_ind.iloc[-1]
@@ -165,13 +173,13 @@ def stock_screener(
             
         results.append({
             "symbol": sym,
-            "name": meta['name'],
-            "sector": meta['sector'],
+            "name": meta.get('name', sym),
+            "sector": meta.get('sector', 'Equity'),
             "price": round(float(latest['close']), 2),
             "rsi": round(rsi, 1),
-            "peRatio": meta['peRatio'],
-            "dividendYield": meta['dividendYield'],
-            "marketCap": meta['marketCap'],
+            "peRatio": meta.get('peRatio'),
+            "dividendYield": meta.get('dividendYield'),
+            "marketCap": meta.get('marketCap'),
             "aiSignal": pred['signal'],
             "bullishProb": pred['bullishProb'],
             "confidenceScore": pred['confidenceScore']

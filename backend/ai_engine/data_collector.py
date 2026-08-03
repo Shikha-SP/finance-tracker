@@ -61,27 +61,8 @@ def fetch_price_history_csv():
                 print(f"[Data Ingestion Warning] Failed to fetch remote CSV {url}: {e}.")
 
     if not os.path.exists(raw_path):
-        print("[Data Ingestion] Creating synthetic price history baseline for fallback...")
-        records = []
-        dates = pd.date_range(end=pd.Timestamp.today(), periods=180, freq='B')
-        for sym, meta in FUNDAMENTAL_DB.items():
-            base_price = float(np.random.randint(200, 1000))
-            price = base_price
-            for d in dates:
-                change = float(np.random.normal(0.001, 0.02))
-                price = max(50.0, price * (1 + change))
-                records.append({
-                    'symbol': sym,
-                    'date': d.strftime('%Y-%m-%d'),
-                    'open': round(price * 0.99, 2),
-                    'high': round(price * 1.02, 2),
-                    'low': round(price * 0.98, 2),
-                    'close': round(price, 2),
-                    'volume': int(np.random.randint(5000, 150000)),
-                    'turnover': round(price * 10000, 2)
-                })
-        df = pd.DataFrame(records)
-        df.to_csv(raw_path, index=False)
+        print("[Data Ingestion] No price history CSV available. Will attempt to collect data from live sources.")
+        return pd.DataFrame(columns=['symbol', 'date', 'open', 'high', 'low', 'close', 'volume', 'turnover'])
     
     df = pd.read_csv(raw_path)
     df.columns = [c.lower().strip() for c in df.columns]
@@ -192,12 +173,13 @@ def fetch_news_for_symbol(symbol="NEPSE"):
     if not news_items:
         news_items = [
             {
-                'title': f"{clean_sym} reports steady performance in recent NEPSE trading session",
+                'title': f"No recent news available for {clean_sym}",
                 'pubDate': time.strftime("%a, %d %b %Y %H:%M:%S GMT"),
-                'url': "https://news.google.com",
-                'sentimentScore': 0.35,
-                'sentimentLabel': "BULLISH",
-                'symbol': clean_sym
+                'url': "",
+                'sentimentScore': 0.0,
+                'sentimentLabel': "NEUTRAL",
+                'symbol': clean_sym,
+                'unavailable': True
             }
         ]
         
@@ -257,15 +239,15 @@ def get_company_fundamentals(symbol):
         if scraped_data and 'eps' in scraped_data:
             # Merge with default DB or create new
             base = FUNDAMENTAL_DB.get(clean_sym, {
-                "name": f"{clean_sym} Corporation Limited",
-                "sector": "Others",
-                "marketCap": 15000000000,
-                "peRatio": 20.0,
-                "pbRatio": 2.2,
-                "eps": 25.0,
-                "dividendYield": 3.0,
-                "roe": 12.0,
-                "bookValue": 200.0
+                "name": f"{clean_sym}",
+                "sector": "Unknown",
+                "marketCap": None,
+                "peRatio": None,
+                "pbRatio": None,
+                "eps": None,
+                "dividendYield": None,
+                "roe": None,
+                "bookValue": None
             })
             base.update(scraped_data)
             
@@ -280,15 +262,16 @@ def get_company_fundamentals(symbol):
         return FUNDAMENTAL_DB[clean_sym]
     
     return {
-        "name": f"{clean_sym} Corporation Limited",
-        "sector": "Others",
-        "marketCap": 15000000000,
-        "peRatio": 20.0,
-        "pbRatio": 2.2,
-        "eps": 25.0,
-        "dividendYield": 3.0,
-        "roe": 12.0,
-        "bookValue": 200.0
+        "name": f"{clean_sym}",
+        "sector": "Unknown",
+        "marketCap": None,
+        "peRatio": None,
+        "pbRatio": None,
+        "eps": None,
+        "dividendYield": None,
+        "roe": None,
+        "bookValue": None,
+        "dataSource": "unavailable"
     }
 
 if __name__ == "__main__":

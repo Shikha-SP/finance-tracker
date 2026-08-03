@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 
 const TxContext = createContext(null);
-const API_URL = 'http://localhost:5000/api';
+const API_URL = '/api';
 
 const DEFAULT_BUDGETS = {
   'Food & Dining': 0,

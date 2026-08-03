@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTx } from '../context/TxContext';
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = '/api';
 
 const fmtNPR = n => 'रू ' + Math.abs(n).toLocaleString('en-IN', { maximumFractionDigits: 0 });
 

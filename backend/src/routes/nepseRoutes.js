@@ -36,89 +36,32 @@ function saveLtpCache(liveMarket) {
   }
 }
 
-// --- simulated / fallback data ---------------------------------------------
+// --- honest empty-state when no data is available -----------------------------------
 function getEmptyData() { 
   return { 
     summary: { 
       isOpen: false, 
-      isOffline: true, 
+      dataUnavailable: true,
       simulatedData: false,
-      cachedData: true,
-      cachedAt: new Date().toISOString(),
-      nepseIndex: 2074.56, 
-      nepseChange: -8.34, 
-      nepseChangePct: -0.40, 
-      sensitiveIndex: 368.12, 
-      sensitiveChange: -1.20, 
-      floatIndex: 142.05, 
-      floatChange: -0.45, 
-      totalTurnover: 2854129400, 
-      totalVolume: 7412090, 
-      totalTrades: 48920 
+      cachedData: false,
+      cachedAt: null,
+      nepseIndex: null, 
+      nepseChange: null, 
+      nepseChangePct: null, 
+      sensitiveIndex: null, 
+      sensitiveChange: null, 
+      floatIndex: null, 
+      floatChange: null, 
+      totalTurnover: null, 
+      totalVolume: null, 
+      totalTrades: null 
     }, 
-    indices: [
-      { name: 'NEPSE Index', value: 2074.56, change: -8.34, changePct: -0.40 },
-      { name: 'Sensitive Index', value: 368.12, change: -1.20, changePct: -0.32 },
-      { name: 'Float Index', value: 142.05, change: -0.45, changePct: -0.31 },
-      { name: 'Banking SubIndex', value: 1180.40, change: -4.10, changePct: -0.35 },
-      { name: 'Development Bank Index', value: 3840.20, change: 12.50, changePct: 0.33 },
-      { name: 'Finance Index', value: 2150.80, change: 18.20, changePct: 0.85 },
-      { name: 'HydroPower Index', value: 2420.10, change: -15.40, changePct: -0.63 },
-      { name: 'Life Insurance', value: 9850.00, change: -35.00, changePct: -0.35 },
-      { name: 'Non Life Insurance', value: 10420.00, change: 45.00, changePct: 0.43 },
-      { name: 'Manufacturing And Processing', value: 6540.00, change: -12.00, changePct: -0.18 },
-      { name: 'Microfinance Index', value: 4120.00, change: 8.50, changePct: 0.21 },
-      { name: 'Hotels And Tourism Index', value: 4890.00, change: 25.00, changePct: 0.51 },
-      { name: 'Others Index', value: 1650.00, change: -5.00, changePct: -0.30 }
-    ], 
-    gainers: [
-      { symbol: 'CHCL', ltp: 485.00, pointChange: 24.50, pctChange: 5.32, volume: 145000 },
-      { symbol: 'NABIL', ltp: 580.00, pointChange: 15.00, pctChange: 2.65, volume: 210000 },
-      { symbol: 'GBIME', ltp: 242.00, pointChange: 5.80, pctChange: 2.46, volume: 189000 },
-      { symbol: 'SHIVM', ltp: 512.00, pointChange: 11.00, pctChange: 2.20, volume: 98000 },
-      { symbol: 'NLIC', ltp: 685.00, pointChange: 12.00, pctChange: 1.78, volume: 64000 }
-    ], 
-    losers: [
-      { symbol: 'STC', ltp: 4120.00, pointChange: -120.00, pctChange: -2.83, volume: 12000 },
-      { symbol: 'HDL', ltp: 1840.00, pointChange: -45.00, pctChange: -2.39, volume: 34000 },
-      { symbol: 'OHL', ltp: 890.00, pointChange: -18.00, pctChange: -1.98, volume: 22000 },
-      { symbol: 'ICFC', ltp: 445.00, pointChange: -8.50, pctChange: -1.87, volume: 56000 },
-      { symbol: 'NLG', ltp: 780.00, pointChange: -14.00, pctChange: -1.76, volume: 41000 }
-    ], 
-    turnover: [
-      { symbol: 'NABIL', ltp: 580.00, volume: 210000, turnover: 121800000 },
-      { symbol: 'NTC', ltp: 880.00, volume: 125000, turnover: 110000000 },
-      { symbol: 'SHIVM', ltp: 512.00, volume: 98000, turnover: 50176000 },
-      { symbol: 'CHCL', ltp: 485.00, volume: 145000, turnover: 70325000 },
-      { symbol: 'GBIME', ltp: 242.00, volume: 189000, turnover: 45738000 }
-    ], 
-    liveMarket: [
-      { symbol: 'NABIL', lastTradedPrice: 580.00, pointChange: 15.00, percentageChange: 2.65, sectorName: 'Commercial Banks' },
-      { symbol: 'NTC', lastTradedPrice: 880.00, pointChange: -5.00, percentageChange: -0.56, sectorName: 'Others' },
-      { symbol: 'SHIVM', lastTradedPrice: 512.00, pointChange: 11.00, percentageChange: 2.20, sectorName: 'Manufacturing And Processing' },
-      { symbol: 'GBIME', lastTradedPrice: 242.00, pointChange: 5.80, percentageChange: 2.46, sectorName: 'Commercial Banks' },
-      { symbol: 'CHCL', lastTradedPrice: 485.00, pointChange: 24.50, percentageChange: 5.32, sectorName: 'Hydro Power' },
-      { symbol: 'HDL', lastTradedPrice: 1840.00, pointChange: -45.00, percentageChange: -2.39, sectorName: 'Manufacturing And Processing' },
-      { symbol: 'NLIC', lastTradedPrice: 685.00, pointChange: 12.00, percentageChange: 1.78, sectorName: 'Life Insurance' },
-      { symbol: 'NLG', lastTradedPrice: 780.00, pointChange: -14.00, percentageChange: -1.76, sectorName: 'Non Life Insurance' },
-      { symbol: 'OHL', lastTradedPrice: 890.00, pointChange: -18.00, percentageChange: -1.98, sectorName: 'Hotels And Tourism' },
-      { symbol: 'STC', lastTradedPrice: 4120.00, pointChange: -120.00, percentageChange: -2.83, sectorName: 'Trading' },
-      { symbol: 'ICFC', lastTradedPrice: 445.00, pointChange: -8.50, percentageChange: -1.87, sectorName: 'Finance' },
-      { symbol: 'CBBL', lastTradedPrice: 940.00, pointChange: 8.00, percentageChange: 0.86, sectorName: 'Microfinance' }
-    ], 
-    subIndices: [
-      { index: 'Banking SubIndex', currentValue: 1180.40, change: -4.10, perChange: -0.35 },
-      { index: 'Development Bank Index', currentValue: 3840.20, change: 12.50, perChange: 0.33 },
-      { index: 'Finance Index', currentValue: 2150.80, change: 18.20, perChange: 0.85 },
-      { index: 'HydroPower Index', currentValue: 2420.10, change: -15.40, perChange: -0.63 },
-      { index: 'Life Insurance', currentValue: 9850.00, change: -35.00, perChange: -0.35 },
-      { index: 'Non Life Insurance', currentValue: 10420.00, change: 45.00, perChange: 0.43 },
-      { index: 'Manufacturing And Processing', currentValue: 6540.00, change: -12.00, perChange: -0.18 },
-      { index: 'Microfinance Index', currentValue: 4120.00, change: 8.50, perChange: 0.21 },
-      { index: 'Hotels And Tourism Index', currentValue: 4890.00, change: 25.00, perChange: 0.51 },
-      { index: 'Trading Index', currentValue: 3120.00, change: -40.00, perChange: -1.27 },
-      { index: 'Others Index', currentValue: 1650.00, change: -5.00, perChange: -0.30 }
-    ] 
+    indices: [], 
+    gainers: [], 
+    losers: [], 
+    turnover: [], 
+    liveMarket: [], 
+    subIndices: [] 
   }; 
 }
 
@@ -136,7 +79,7 @@ async function getLiveNepseData() {
   fetchPromise = new Promise((resolve) => {
     const script = path.join(__dirname, '../../nepse_fetcher.py');
     // Fast 8.0 second timeout for Python process execution
-    execFile('python', [script], { maxBuffer: 1024 * 1024 * 5, timeout: 8000 }, (err, stdout, stderr) => {
+    execFile('python', [script], { maxBuffer: 1024 * 1024 * 5, timeout: 15000 }, (err, stdout, stderr) => {
       fetchPromise = null;
       if (err) {
         console.warn('[NEPSE Fetcher] Python process error or timeout:', err.message);
@@ -202,16 +145,16 @@ async function getLiveNepseData() {
             simulatedData: false,
             cachedData,
             cachedAt,
-            nepseIndex: nepseIndex.currentValue || 2074.56,
-            nepseChange: nepseIndex.change || -8.34,
-            nepseChangePct: nepseIndex.perChange || -0.40,
-            sensitiveIndex: sensitiveIndex.currentValue || 368.12,
-            sensitiveChange: sensitiveIndex.change || -1.20,
-            floatIndex: floatIndex.currentValue || 142.05,
-            floatChange: floatIndex.change || -0.45,
-            totalTurnover: sm.find(s => s.detail === 'Total Turnover Rs:')?.value || 2854129400,
-            totalVolume: sm.find(s => s.detail === 'Total Traded Shares')?.value || 7412090,
-            totalTrades: sm.find(s => s.detail === 'Total Transactions')?.value || 48920,
+            nepseIndex: nepseIndex.currentValue || null,
+            nepseChange: nepseIndex.change ?? null,
+            nepseChangePct: nepseIndex.perChange ?? null,
+            sensitiveIndex: sensitiveIndex.currentValue || null,
+            sensitiveChange: sensitiveIndex.change ?? null,
+            floatIndex: floatIndex.currentValue || null,
+            floatChange: floatIndex.change ?? null,
+            totalTurnover: sm.find(s => s.detail === 'Total Turnover Rs:')?.value || null,
+            totalVolume: sm.find(s => s.detail === 'Total Traded Shares')?.value || null,
+            totalTrades: sm.find(s => s.detail === 'Total Transactions')?.value || null,
           },
           indices: idxList.length > 0 ? idxList.map(i => ({
             name: i.index,

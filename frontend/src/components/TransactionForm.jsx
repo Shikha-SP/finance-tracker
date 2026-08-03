@@ -122,7 +122,7 @@ function TransactionForm({ onAdd, editTx, onCancelEdit, onUpdate }) {
           />
         </div>
         <div className="field-group">
-          <label className="field-label" htmlFor="tx-amount">Amount (₹)</label>
+          <label className="field-label" htmlFor="tx-amount">Amount (रू)</label>
           <input
             id="tx-amount"
             className="field-input"

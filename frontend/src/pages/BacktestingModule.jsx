@@ -17,7 +17,7 @@ export default function BacktestingModule() {
   const runBacktest = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/ai/backtest', {
+      const res = await fetch('/api/ai/backtest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ symbol, initialCapital, minConfidence })

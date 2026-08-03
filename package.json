@@ -2,9 +2,10 @@
   "name": "summerproject",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:ai\"",
     "dev:backend": "npm run dev --prefix backend",
-    "dev:frontend": "npm run dev --prefix frontend"
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:ai": "cd backend/ai_engine && python -m uvicorn main:app --port 8000 --reload"
   },
   "dependencies": {
     "react-router-dom": "^7.18.1"

@@ -68,17 +68,17 @@ export default function Landing() {
                 <div className="dp-kpi-row">
                   <div className="dp-kpi">
                     <span className="dp-kpi-label">Net Worth</span>
-                    <span className="dp-kpi-val dp-kpi-val--primary">$84,320</span>
+                    <span className="dp-kpi-val dp-kpi-val--primary">रू 8,43,200</span>
                     <span className="dp-kpi-change dp-kpi-change--up">+4.2%</span>
                   </div>
                   <div className="dp-kpi">
                     <span className="dp-kpi-label">Income</span>
-                    <span className="dp-kpi-val dp-kpi-val--green">$6,400</span>
+                    <span className="dp-kpi-val dp-kpi-val--green">रू 64,000</span>
                     <span className="dp-kpi-change dp-kpi-change--up">this month</span>
                   </div>
                   <div className="dp-kpi">
                     <span className="dp-kpi-label">Expenses</span>
-                    <span className="dp-kpi-val dp-kpi-val--red">$3,180</span>
+                    <span className="dp-kpi-val dp-kpi-val--red">रू 31,800</span>
                     <span className="dp-kpi-change dp-kpi-change--down">-8% vs avg</span>
                   </div>
                 </div>
@@ -106,17 +106,17 @@ export default function Landing() {
                   <div className="dp-tx-item">
                     <div className="dp-tx-dot dp-tx-dot--green"></div>
                     <span className="dp-tx-name">Salary</span>
-                    <span className="dp-tx-amt dp-tx-amt--green">+$4,200</span>
+                    <span className="dp-tx-amt dp-tx-amt--green">+रू 42,000</span>
                   </div>
                   <div className="dp-tx-item">
                     <div className="dp-tx-dot dp-tx-dot--red"></div>
                     <span className="dp-tx-name">Rent Payment</span>
-                    <span className="dp-tx-amt dp-tx-amt--red">-$1,400</span>
+                    <span className="dp-tx-amt dp-tx-amt--red">-रू 14,000</span>
                   </div>
                   <div className="dp-tx-item">
                     <div className="dp-tx-dot dp-tx-dot--red"></div>
                     <span className="dp-tx-name">Groceries</span>
-                    <span className="dp-tx-amt dp-tx-amt--red">-$230</span>
+                    <span className="dp-tx-amt dp-tx-amt--red">-रू 2,300</span>
                   </div>
                 </div>
               </div>
@@ -128,13 +128,13 @@ export default function Landing() {
         <div className="stat-strip">
           <div className="stat-strip-inner">
             <div className="strip-stat">
-              <span className="strip-stat-val">10,000+</span>
-              <span className="strip-stat-label">Active users</span>
+              <span className="strip-stat-val">Real-time</span>
+              <span className="strip-stat-label">NEPSE market data</span>
             </div>
             <div className="strip-divider"></div>
             <div className="strip-stat">
-              <span className="strip-stat-val">$2.4B+</span>
-              <span className="strip-stat-label">Tracked this year</span>
+              <span className="strip-stat-val">AI-Powered</span>
+              <span className="strip-stat-label">Stock analysis</span>
             </div>
             <div className="strip-divider"></div>
             <div className="strip-stat">

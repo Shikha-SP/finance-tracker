@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import SECTOR_COMPANIES from '../sectorCompanies.json';
 
-const API = 'http://localhost:5000/api/nepse';
+const API = '/api/nepse';
 
 const fmtPct = n => (n >= 0 ? '+' : '') + Number(n).toFixed(2) + '%';
 const fmtPt  = n => (n >= 0 ? '+' : '') + Number(n).toFixed(2);

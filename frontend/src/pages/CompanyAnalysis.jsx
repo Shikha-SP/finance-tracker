@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid } from 'recharts';
 import { Search, TrendingUp, DollarSign, Activity, BarChart2, Newspaper, RefreshCw } from 'lucide-react';
 import AIExplanationCard from '../components/AIExplanationCard';
@@ -8,6 +9,8 @@ const POPULAR_SCRIPS = ['NABIL', 'CHCL', 'GBIME', 'NTC', 'SHIVM', 'NLIC', 'HDL',
 export default function CompanyAnalysis() {
   const [selectedSymbol, setSelectedSymbol] = useState('NABIL');
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchSuggestions, setSearchSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
 
@@ -18,7 +21,7 @@ export default function CompanyAnalysis() {
   const fetchCompanyData = async (symbol) => {
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/ai/analyze/${symbol}`);
+      const res = await fetch(`/api/ai/analyze/${symbol}`);
       const json = await res.json();
       setData(json);
     } catch (err) {
@@ -47,17 +50,47 @@ export default function CompanyAnalysis() {
           <p className="text-xs text-slate-400">Technical indicators, fundamental valuation, news sentiment & explainable AI signals</p>
         </div>
 
-        {/* Search input */}
-        <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
+        {/* Search input with autocomplete */}
+        <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 relative">
           <div className="relative">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search scrip (e.g. NABIL)"
+              placeholder="Search scrip (e.g. NIMB, CHCL, SHIVM)"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-slate-950 border border-slate-700 text-slate-100 text-xs rounded-lg pl-9 pr-4 py-2 w-48 focus:outline-none focus:border-indigo-500"
+              onChange={(e) => {
+                const val = e.target.value;
+                setSearchQuery(val);
+                if (val.trim()) {
+                  const filtered = ['NABIL', 'NIMB', 'SCB', 'HBL', 'SBI', 'EBL', 'NICA', 'GBIME', 'CHCL', 'SHIVM', 'NTC', 'NLIC', 'NLG', 'OHL', 'ICFC', 'CBBL', 'AKPL', 'UPPER', 'HDL', 'STC', 'RADHI'].filter(s => s.toLowerCase().includes(val.toLowerCase())).slice(0, 8);
+                  setSearchSuggestions(filtered);
+                  setShowSuggestions(true);
+                } else {
+                  setShowSuggestions(false);
+                }
+              }}
+              onFocus={() => searchQuery.trim() && setShowSuggestions(true)}
+              className="bg-slate-950 border border-slate-700 text-slate-100 text-xs rounded-lg pl-9 pr-4 py-2 w-64 focus:outline-none focus:border-indigo-500"
             />
+            {showSuggestions && searchSuggestions.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-slate-900 border border-slate-700 rounded-lg shadow-xl z-50 overflow-hidden max-h-48 overflow-y-auto">
+                {searchSuggestions.map((sym) => (
+                  <button
+                    key={sym}
+                    type="button"
+                    onClick={() => {
+                      setSelectedSymbol(sym);
+                      setSearchQuery(sym);
+                      setShowSuggestions(false);
+                    }}
+                    className="w-full text-left px-3 py-2 text-xs text-slate-200 hover:bg-indigo-600/30 hover:text-white flex items-center justify-between border-b border-slate-800/50 last:border-0"
+                  >
+                    <span className="font-bold">{sym}</span>
+                    <span className="text-[10px] text-slate-400">Analyze →</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           <button type="submit" className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition-colors">
             Analyze
@@ -164,12 +197,12 @@ export default function CompanyAnalysis() {
                 <h4 className="text-sm font-bold text-indigo-200">Want RAG AI Stock Recommendation?</h4>
                 <p className="text-xs text-slate-400">Ask the Financial RAG Assistant to explain whether {data.symbol} is recommended to BUY based on disclosures and ML models.</p>
               </div>
-              <a
-                href="/investment/rag"
+              <Link
+                to="/investment/rag"
                 className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-4 py-2 rounded-lg font-bold shrink-0 transition-colors"
               >
                 Ask RAG Stock Advisor →
-              </a>
+              </Link>
             </div>
           </div>
 

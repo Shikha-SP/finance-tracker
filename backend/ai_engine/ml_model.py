@@ -35,43 +35,48 @@ class MovementClassifier:
         features = features.ffill().bfill().fillna(0)
         return features
 
-    def train_baseline(self):
+    def train_baseline(self, df=None):
         """
-        Trains model on synthetic/historical multi-factor signals
+        Trains model on real historical data with technical indicators.
+        Refuses to train on synthetic data — requires at least 30 rows of real data.
         """
-        np.random.seed(42)
-        n_samples = 1500
+        if df is not None and len(df) >= 30:
+            features_df = self.extract_features(df)
+            # Generate labels from actual future price movement
+            future_returns = df['close'].pct_change(5).shift(-5)
+            y = np.where(future_returns > 0.02, 2, np.where(future_returns < -0.02, 0, 1))
+            
+            # Trim to match features
+            valid_mask = ~np.isnan(future_returns) & (features_df.sum(axis=1) != 0)
+            X = features_df[valid_mask].values
+            y_valid = y[valid_mask]
+            
+            if len(X) >= 30:
+                self.model.fit(X, y_valid)
+                self.is_trained = True
+                print(f"[ML Classifier] Trained on {len(X)} real data points.")
+                return
         
-        # Synthetic feature distribution
-        rsi = np.random.uniform(25, 80, n_samples)
-        macd_hist = np.random.normal(0.5, 2.0, n_samples)
-        sma_20_ratio = np.random.normal(1.01, 0.03, n_samples)
-        sma_50_ratio = np.random.normal(1.02, 0.05, n_samples)
-        bb_width = np.random.uniform(0.02, 0.15, n_samples)
-        volatility_pct = np.random.uniform(0.8, 4.0, n_samples)
-        momentum_5d = np.random.normal(1.5, 4.0, n_samples)
-        vol_change = np.random.normal(0.1, 0.5, n_samples)
-
-        X = np.column_stack([
-            rsi, macd_hist, sma_20_ratio, sma_50_ratio,
-            bb_width, volatility_pct, momentum_5d, vol_change
-        ])
-        
-        # Generate multi-class directional target: 0=Bearish, 1=Neutral, 2=Bullish
-        score = (0.04 * (rsi - 50)) + (0.5 * macd_hist) + (10 * (sma_20_ratio - 1.0)) + (0.3 * momentum_5d)
-        y = np.where(score > 1.2, 2, np.where(score < -1.2, 0, 1))
-
-        self.model.fit(X, y)
-        self.is_trained = True
-        print("[ML Classifier] Movement probability classifier trained successfully.")
+        print("[ML Classifier] Insufficient real data for training. Model will use rule-based fallback.")
+        self.is_trained = False
 
     def predict_movement_probabilities(self, df, sentiment_score=0.0):
         if not self.is_trained:
-            self.train_baseline()
+            # Try training on the provided data first
+            self.train_baseline(df)
             
         features_df = self.extract_features(df)
         if len(features_df) == 0:
-            return {"bullishProb": 50.0, "neutralProb": 30.0, "bearishProb": 20.0, "signal": "NEUTRAL", "confidenceScore": 60.0}
+            return {"bullishProb": 33.3, "neutralProb": 33.4, "bearishProb": 33.3, "signal": "NEUTRAL", "confidenceScore": 0.0, "dataQuality": "insufficient"}
+
+        if not self.is_trained:
+            # Rule-based fallback using RSI when ML model can't train
+            rsi = features_df['rsi'].iloc[-1] if 'rsi' in features_df.columns else 50.0
+            if rsi > 70: bear_p, neut_p, bull_p = 15.0, 25.0, 60.0
+            elif rsi < 30: bear_p, neut_p, bull_p = 60.0, 25.0, 15.0
+            else: bear_p, neut_p, bull_p = 30.0, 40.0, 30.0
+            signal = "BULLISH" if bull_p > 50 else ("BEARISH" if bear_p > 50 else "NEUTRAL")
+            return {"bullishProb": bull_p, "neutralProb": neut_p, "bearishProb": bear_p, "signal": signal, "confidenceScore": 0.0, "dataQuality": "rule-based (insufficient training data)"}
 
         # Select latest row
         latest_X = features_df.iloc[-1:].values
@@ -107,7 +112,6 @@ class MovementClassifier:
         }
 
 classifier = MovementClassifier()
-classifier.train_baseline()
 
 if __name__ == "__main__":
     # Test prediction

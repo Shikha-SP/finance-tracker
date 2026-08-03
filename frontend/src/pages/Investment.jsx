@@ -63,7 +63,7 @@ function processGraphData(rawData, chartType) {
   return Object.values(buckets).sort((a, b) => a.time - b.time);
 }
 
-const API = 'http://localhost:5000/api/nepse';
+const API = '/api/nepse';
 
 async function tryFetch(path) {
   const res = await fetch(`${API}${path}`, { signal: AbortSignal.timeout(8000) });

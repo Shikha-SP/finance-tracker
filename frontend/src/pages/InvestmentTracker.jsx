@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import SECTOR_COMPANIES from '../sectorCompanies.json';
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = '/api';
 const LOCAL_KEY = 'portfolio_local';
 
 const fmtNPR = n => 'रू ' + Math.abs(n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
@@ -143,22 +143,48 @@ export default function InvestmentTracker() {
     }
   });
 
+  // Helper function for NEPSE Brokerage & Charges (0.36% avg + NPR 25 DP fee + 0.015% SEBON fee)
+  const calcBuyCharges = (amount) => {
+    if (amount <= 0) return 0;
+    let comm = 0;
+    if (amount <= 50000) comm = Math.max(10, amount * 0.0040);
+    else if (amount <= 500000) comm = amount * 0.0037;
+    else if (amount <= 2000000) comm = amount * 0.0034;
+    else if (amount <= 10000000) comm = amount * 0.0030;
+    else comm = amount * 0.0027;
+    const sebon = amount * 0.00015;
+    const dpFee = 25;
+    return comm + sebon + dpFee;
+  };
+
   const holdingsList = Object.values(holdings).map(h => {
     const qtyHeld = h.totalBuyQty - h.totalSellQty;
+    
+    // WACC Calculation including buy charges
+    const totalBuyCostWithCharges = h.totalBuyCost + calcBuyCharges(h.totalBuyCost);
+    const waccPrice = h.totalBuyQty > 0 ? totalBuyCostWithCharges / h.totalBuyQty : 0;
+    
     const avgBuyPrice = h.totalBuyQty > 0 ? h.totalBuyCost / h.totalBuyQty : 0;
     const currentLTP = ltpMap[h.symbol] || 0;
     const currentValue = qtyHeld * currentLTP;
-    const investedValue = qtyHeld * avgBuyPrice;
-    const unrealizedPL = currentValue - investedValue;
+    const investedValue = qtyHeld * waccPrice;
+    
+    // Sell charges deduction on current liquidation value
+    const estSellCharges = calcBuyCharges(currentValue);
+    const netCurrentValue = Math.max(0, currentValue - estSellCharges);
+    
+    const unrealizedPL = netCurrentValue - investedValue;
     const unrealizedPLPct = investedValue > 0 ? (unrealizedPL / investedValue) * 100 : 0;
-    const realizedPL = h.totalSellRevenue - (h.totalSellQty * avgBuyPrice);
+    const realizedPL = h.totalSellRevenue - (h.totalSellQty * waccPrice);
 
     return {
       ...h,
       qtyHeld,
       avgBuyPrice,
+      waccPrice,
       currentLTP,
       currentValue,
+      netCurrentValue,
       investedValue,
       unrealizedPL,
       unrealizedPLPct,

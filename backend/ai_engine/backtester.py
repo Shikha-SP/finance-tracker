@@ -8,18 +8,25 @@ def run_strategy_backtest(df_price_history, initial_capital=100000.0, min_confid
     Expects df_price_history with columns: date, close, rsi, macd_hist, etc.
     """
     if len(df_price_history) < 20:
-        # Generate clean synthetic backtest series if historical length is limited
-        dates = pd.date_range('2023-01-01', '2026-06-30', freq='B')
-        n = len(dates)
-        price = 200.0
-        prices = []
-        for _ in range(n):
-            price *= (1 + np.random.normal(0.0004, 0.012))
-            prices.append(price)
-            
-        df_price_history = pd.DataFrame({'date': dates.strftime('%Y-%m-%d'), 'close': prices})
-        df_price_history['rsi'] = 50 + np.sin(np.linspace(0, 20, n)) * 20
-        df_price_history['macd_hist'] = np.cos(np.linspace(0, 15, n)) * 2.0
+        return {
+            "error": True,
+            "message": f"Insufficient price history for backtesting. Need at least 20 data points, got {len(df_price_history)}.",
+            "summary": {
+                "initialCapital": initial_capital,
+                "aiFinalValue": initial_capital,
+                "bhFinalValue": initial_capital,
+                "aiReturnPct": 0.0,
+                "bhReturnPct": 0.0,
+                "aiCagr": 0.0,
+                "bhCagr": 0.0,
+                "maxAiDrawdown": 0.0,
+                "maxBhDrawdown": 0.0,
+                "sharpeRatio": 0.0,
+                "totalTrades": 0,
+                "winRate": 0.0
+            },
+            "equityCurve": []
+        }
     
     df = df_price_history.copy().sort_values('date').reset_index(drop=True)
     n = len(df)

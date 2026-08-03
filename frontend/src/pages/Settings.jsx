@@ -10,7 +10,22 @@ export default function Settings() {
   const [pushNotifications, setPushNotifications] = useState(false);
 
   useEffect(() => {
-    // Optionally fetch settings from backend here
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetch('/api/users/settings', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data) {
+            if (data.notifications) {
+              setEmailAlerts(data.notifications.emailAlerts ?? true);
+              setPushNotifications(data.notifications.pushNotifications ?? false);
+            }
+          }
+        })
+        .catch(() => {});
+    }
   }, []);
 
   const handleClearData = () => {
@@ -26,7 +41,7 @@ export default function Settings() {
     try {
       const token = localStorage.getItem('token');
       if (token) {
-        await fetch('http://localhost:5000/api/users/settings', {
+        await fetch('/api/users/settings', {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
