@@ -1,7 +1,12 @@
 # Environment secrets
 .env
+backend/.env
+backend/ai_engine/.env
 
-# Frontend build output and dependencies
+# Dependency folders and caches
+node_modules/
+backend/node_modules/
+backend/node_modules/.cache/
 frontend/node_modules/
 frontend/dist/
 frontend/dist-ssr/
