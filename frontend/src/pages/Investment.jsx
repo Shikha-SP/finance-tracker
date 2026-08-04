@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { TrendingUp, TrendingDown, Activity, RefreshCw, WifiOff, ChevronUp, ChevronDown, Clock, Layers, Zap, Maximize2, X, Calendar } from 'lucide-react';
+import { TrendingUp, TrendingDown, Activity, RefreshCw, WifiOff, ChevronUp, ChevronDown, Clock, Maximize2, X, Calendar } from 'lucide-react';
 import SECTOR_COMPANIES from '../sectorCompanies.json';
 import TradingChart from '../components/TradingChart';
 
@@ -22,33 +22,63 @@ function processGraphData(rawData, chartType) {
   // Check if first item is object { time, open, high, low, close, value } vs array [ts, val]
   const isObject = typeof rawData[0] === 'object' && !Array.isArray(rawData[0]);
 
+  // Normalize: dedupe by time and sort ascending so lightweight-charts never throws
+  const byTime = new Map();
+
+  if (isObject) {
+    rawData.forEach(item => {
+      if (item && item.time !== undefined) {
+        byTime.set(String(item.time), item);
+      }
+    });
+  } else {
+    rawData.forEach(([ts, val]) => {
+      if (ts !== undefined && ts !== null && !isNaN(ts)) {
+        byTime.set(String(ts), [ts, val]);
+      }
+    });
+  }
+
+  const toTimeNum = v => {
+    if (typeof v === 'string') {
+      const t = Date.parse(v);
+      return isNaN(t) ? 0 : t;
+    }
+    return Number(v) || 0;
+  };
+
+  const sorted = [...byTime.values()].sort((a, b) => {
+    const ta = (Array.isArray(a) ? a[0] : a.time);
+    const tb = (Array.isArray(b) ? b[0] : b.time);
+    return toTimeNum(ta) - toTimeNum(tb);
+  });
+
   if (isObject) {
     if (chartType === 'line') {
-      return rawData.map(item => ({
+      return sorted.map(item => ({
         time: item.time,
         value: item.close !== undefined ? item.close : item.value
       }));
-    } else {
-      return rawData.map(item => ({
-        time: item.time,
-        open: item.open || item.close || item.value,
-        high: item.high || item.close || item.value,
-        low: item.low || item.close || item.value,
-        close: item.close || item.value
-      }));
     }
+    return sorted.map(item => ({
+      time: item.time,
+      open: item.open || item.close || item.value,
+      high: item.high || item.close || item.value,
+      low: item.low || item.close || item.value,
+      close: item.close || item.value
+    }));
   }
 
   // Tuple array format [ts, val]
   if (chartType === 'line') {
-    return rawData.map(([ts, val]) => ({ time: ts, value: val })).sort((a, b) => a.time - b.time);
+    return sorted.map(([ts, val]) => ({ time: ts, value: val }));
   }
 
   // Candlestick bucket by 5 minutes (300 seconds)
-  const bucketSize = 300; 
+  const bucketSize = 300;
   const buckets = {};
 
-  rawData.forEach(([ts, val]) => {
+  sorted.forEach(([ts, val]) => {
     const bucketTime = Math.floor(ts / bucketSize) * bucketSize;
     if (!buckets[bucketTime]) {
       buckets[bucketTime] = { time: bucketTime, open: val, high: val, low: val, close: val };
@@ -408,7 +438,11 @@ function IndexChart({ indices }) {
       }
     };
     fetchGraph();
-    return () => { active = false; };
+    let poll = null;
+    if (liveMode && timeRange === '1D') {
+      poll = setInterval(fetchGraph, 60000);
+    }
+    return () => { active = false; if (poll) clearInterval(poll); };
   }, [sel, idx.name, timeRange, liveMode]);
 
   const chartData = processGraphData(rawData, chartType);
@@ -432,6 +466,7 @@ function IndexChart({ indices }) {
 /* ─── Market History & Performance Section Component ────────────────────── */
 function MarketHistorySection() {
   const [period, setPeriod] = useState('1M');
+  const [showHistory, setShowHistory] = useState(false);
   const [historyData, setHistoryData] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -477,9 +512,15 @@ function MarketHistorySection() {
           </div>
         </div>
 
-        {/* Timeframe selector */}
         <div className="chart-type-toggle" style={{ background: 'var(--bg-surface)', padding: '3px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
-          {periods.map(p => (
+          <button
+            className={`chart-type-btn${showHistory ? ' active' : ''}`}
+            onClick={() => setShowHistory(!showHistory)}
+            style={{ padding: '0.3rem 0.75rem', fontSize: '0.8rem', fontWeight: 600 }}
+          >
+            {showHistory ? 'Hide' : 'Show'} History
+          </button>
+          {showHistory && periods.map(p => (
             <button
               key={p}
               className={`chart-type-btn${period === p ? ' active' : ''}`}
@@ -492,7 +533,7 @@ function MarketHistorySection() {
         </div>
       </div>
 
-      {loading ? (
+      {showHistory && (loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem 0' }}>
           <RefreshCw size={24} className="spin" style={{ color: 'var(--accent)' }} />
         </div>
@@ -571,7 +612,7 @@ function MarketHistorySection() {
         <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
           No market history data available.
         </div>
-      )}
+      ))}
     </div>
   );
 }
@@ -707,22 +748,6 @@ export default function Investment() {
             sub={`Vol: ${fmtNum(summary?.totalVolume ?? 0)} shares`}
             icon={Activity}
             color="var(--blue)"
-            loading={loading}
-          />
-          <StatKPICard
-            name="Total Trades"
-            value={fmtNum(summary?.totalTrades ?? 0)}
-            sub="Executed orders"
-            icon={Layers}
-            color="var(--amber)"
-            loading={loading}
-          />
-          <StatKPICard
-            name="Market Status"
-            value={summary?.isOpen ? 'OPEN' : 'CLOSED'}
-            sub={summary?.isOpen ? 'Trading in progress' : (summary?.statusText && (summary.statusText.includes('Fallback') || summary.statusText.includes('past data')) ? summary.statusText : 'Next: 11:00 AM NST')}
-            icon={Zap}
-            color={summary?.isOpen ? 'var(--green)' : 'var(--red)'}
             loading={loading}
           />
         </div>

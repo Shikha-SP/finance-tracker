@@ -9,6 +9,7 @@
    DARK THEME (default) — deep navy, not developer grey
 ════════════════════════════════════════════════════════ */
 :root {
+  color-scheme: dark;
   /* Backgrounds */
   --bg-base:        #09090B;
   --bg-surface:     #18181B;
@@ -63,6 +64,7 @@
    LIGHT THEME — crisp, institutional white
 ════════════════════════════════════════════════════════ */
 :root[data-theme="light"] {
+  color-scheme: light;
   /* Backgrounds */
   --bg-base:        #FAFAFA;
   --bg-surface:     #FFFFFF;
@@ -1458,9 +1460,9 @@ button[title] { cursor: pointer; }
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 .spin { animation: spin 0.8s linear infinite; }
 .investment-content { display: flex; flex-direction: column; gap: 1.5rem; }
-.index-kpi-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem; }
-@media (max-width: 1200px) { .index-kpi-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 768px)  { .index-kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+.index-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+@media (max-width: 1100px) { .index-kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px)  { .index-kpi-grid { grid-template-columns: 1fr; } }
 .index-kpi-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.1rem 1.2rem; display: flex; flex-direction: column; gap: 0.4rem; transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease; position: relative; overflow: hidden; }
 .index-kpi-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 0.2s ease; }
 .index-kpi-card:hover { border-color: var(--border-strong); transform: translateY(-2px); box-shadow: var(--shadow-md); }
@@ -1479,6 +1481,10 @@ button[title] { cursor: pointer; }
 .loading-shimmer { background: linear-gradient(90deg, var(--bg-elevated) 25%, var(--border) 50%, var(--bg-elevated) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 4px; color: transparent !important; min-width: 80px; }
 .skeleton { height: 1rem; background: linear-gradient(90deg, var(--bg-elevated) 25%, var(--border) 50%, var(--bg-elevated) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 4px; width: 80%; }
 .investment-chart-row { display: flex; gap: 1.25rem; align-items: stretch; }
+@media (max-width: 1100px) {
+  .investment-chart-row { flex-direction: column; }
+  .indices-panel { width: 100%; max-height: 320px; }
+}
 
 /* ─── Premium Chart Panel ─────────────────────────────────────────────── */
 .index-chart-block {

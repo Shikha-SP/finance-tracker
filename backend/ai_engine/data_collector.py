@@ -4,6 +4,7 @@ import time
 import urllib.request
 import urllib.parse
 from urllib.error import URLError, HTTPError
+from datetime import datetime, timezone
 import xml.etree.ElementTree as ET
 import pandas as pd
 import numpy as np
@@ -41,6 +42,57 @@ FUNDAMENTAL_DB = {
     "CHCL": {"name": "Chilime Hydropower Co. Ltd.", "sector": "Hydro Power", "marketCap": 34200000000, "peRatio": 22.4, "pbRatio": 2.8, "eps": 21.6, "dividendYield": 2.5, "roe": 12.8, "bookValue": 173.2},
     "SHIVM": {"name": "Shivam Cements Limited", "sector": "Manufacturing And Processing", "marketCap": 26800000000, "peRatio": 28.6, "pbRatio": 2.9, "eps": 17.9, "dividendYield": 1.8, "roe": 10.1, "bookValue": 176.5},
 }
+
+def relative_time(pub_date):
+    """Convert a news/pubDate string into a human 'X ago' relative time."""
+    if not pub_date:
+        return "unknown"
+    s = str(pub_date).strip()
+    lower = s.lower()
+    if any(w in lower for w in ["ago", "today", "yesterday", "just now"]):
+        return s
+
+    dt = None
+    try:
+        from email.utils import parsedate_to_datetime
+        dt = parsedate_to_datetime(s)
+    except Exception:
+        dt = None
+    if dt is None:
+        for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d",
+                    "%b %d, %Y", "%d %b %Y", "%B %d, %Y", "%d/%m/%Y"):
+            try:
+                dt = datetime.strptime(s, fmt)
+                break
+            except ValueError:
+                continue
+    if dt is None:
+        return s
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+
+    diff = datetime.now(timezone.utc) - dt
+    seconds = int(diff.total_seconds())
+    if seconds < 0:
+        return s
+    if seconds < 60:
+        return "just now"
+    minutes = seconds // 60
+    if minutes < 60:
+        return f"{minutes}m ago"
+    hours = minutes // 60
+    if hours < 24:
+        return f"{hours}h ago"
+    days = hours // 24
+    if days < 7:
+        return f"{days}d ago"
+    weeks = days // 7
+    if weeks < 5:
+        return f"{weeks}w ago"
+    months = days // 30
+    if months < 12:
+        return f"{months}mo ago"
+    return f"{days // 365}y ago"
 
 def fetch_price_history_csv():
     ensure_directories()

@@ -276,7 +276,7 @@ export default function CompanyAnalysis() {
                       {item.title}
                     </p>
                     <div className="flex justify-between items-center mt-2 text-[10px] text-slate-500">
-                      <span>{item.pubDate}</span>
+                      <span>{item.publishedAgo || item.pubDate}</span>
                       <span className={item.sentimentLabel === 'BULLISH' ? 'text-emerald-400 font-semibold' : 'text-slate-400'}>
                         {item.sentimentLabel}
                       </span>

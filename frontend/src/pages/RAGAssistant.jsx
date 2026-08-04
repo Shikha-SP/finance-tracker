@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { Bot, Send, Upload, FileText, CheckCircle2, BookOpen, Sparkles, RefreshCw, Key } from 'lucide-react';
 
 export default function RAGAssistant() {
@@ -86,6 +87,22 @@ export default function RAGAssistant() {
     } finally {
       setUploading(false);
     }
+  };
+
+  const markdownComponents = {
+    p: ({ children }) => <p style={{ margin: '0 0 0.55rem', lineHeight: '1.6' }}>{children}</p>,
+    h1: ({ children }) => <h1 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0.6rem 0 0.4rem', lineHeight: '1.4' }}>{children}</h1>,
+    h2: ({ children }) => <h2 style={{ fontSize: '0.98rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0.6rem 0 0.4rem', lineHeight: '1.4' }}>{children}</h2>,
+    h3: ({ children }) => <h3 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0.6rem 0 0.4rem', lineHeight: '1.4' }}>{children}</h3>,
+    h4: ({ children }) => <h4 style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)', margin: '0.5rem 0 0.35rem', lineHeight: '1.4' }}>{children}</h4>,
+    strong: ({ children }) => <strong style={{ fontWeight: 700, color: 'var(--accent)' }}>{children}</strong>,
+    em: ({ children }) => <em style={{ color: 'var(--text-muted)' }}>{children}</em>,
+    ul: ({ children }) => <ul style={{ margin: '0 0 0.55rem', paddingLeft: '1.15rem', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>{children}</ul>,
+    ol: ({ children }) => <ol style={{ margin: '0 0 0.55rem', paddingLeft: '1.4rem', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>{children}</ol>,
+    li: ({ children }) => <li style={{ lineHeight: '1.55' }}>{children}</li>,
+    a: ({ href, children }) => <a href={href} target="_blank" rel="noreferrer" style={{ color: 'var(--accent)', textDecoration: 'underline' }}>{children}</a>,
+    code: ({ children }) => <code style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '4px', padding: '0.1rem 0.3rem', fontSize: '0.78rem', fontFamily: 'monospace' }}>{children}</code>,
+    hr: () => <hr style={{ border: 'none', borderTop: '1px solid var(--border)', margin: '0.6rem 0' }} />
   };
 
   return (
@@ -252,7 +269,9 @@ export default function RAGAssistant() {
                     color: msg.type === 'user' ? '#fff' : 'var(--text-primary)',
                     border: msg.type === 'user' ? 'none' : '1px solid var(--border)'
                   }}>
-                    <div style={{ whitespace: 'pre-line', lineHeight: '1.5' }}>{msg.text}</div>
+                    <div style={{ lineHeight: '1.5' }}>
+                      <ReactMarkdown components={markdownComponents}>{msg.text || ''}</ReactMarkdown>
+                    </div>
 
                     {/* Stock Recommendation Cards */}
                     {msg.recommendations && msg.recommendations.length > 0 && (
@@ -268,9 +287,9 @@ export default function RAGAssistant() {
                                   fontWeight: 700,
                                   padding: '2px 6px',
                                   borderRadius: '4px',
-                                  background: rec.signal.includes('BUY') ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)',
-                                  color: rec.signal.includes('BUY') ? 'var(--green)' : 'var(--amber)',
-                                  border: rec.signal.includes('BUY') ? '1px solid var(--green)' : '1px solid var(--amber)'
+                                  background: (rec.signal || '').includes('BUY') ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)',
+                                  color: (rec.signal || '').includes('BUY') ? 'var(--green)' : 'var(--amber)',
+                                  border: (rec.signal || '').includes('BUY') ? '1px solid var(--green)' : '1px solid var(--amber)'
                                 }}>
                                   {rec.signal}
                                 </span>
@@ -297,6 +316,21 @@ export default function RAGAssistant() {
                           <div key={i} style={{ background: 'var(--bg-card)', padding: '0.4rem 0.6rem', borderRadius: '4px', border: '1px solid var(--border)', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                             <strong style={{ color: 'var(--text-primary)', display: 'block' }}>{c.source} (Chunk #{c.chunkIndex})</strong>
                             <span style={{ fontStyle: 'italic' }}>{c.snippet}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {msg.sources && msg.sources.length > 0 && (
+                      <div style={{ marginTop: '0.75rem', paddingTop: '0.5rem', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                        <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <BookOpen size={12} style={{ color: 'var(--accent)' }} />
+                          Data Sources:
+                        </span>
+                        {msg.sources.map((s, i) => (
+                          <div key={i} style={{ background: 'var(--bg-card)', padding: '0.4rem 0.6rem', borderRadius: '4px', border: '1px solid var(--border)', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                            <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{s.title}</span>
+                            <span style={{ marginLeft: '0.4rem', color: 'var(--green)', fontWeight: 700 }}>{s.publishedAgo}</span>
                           </div>
                         ))}
                       </div>

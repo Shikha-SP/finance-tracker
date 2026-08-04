@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from typing import Optional, List
 
 # Local imports
-from data_collector import fetch_price_history_csv, get_company_fundamentals, fetch_news_for_symbol, FUNDAMENTAL_DB
+from data_collector import fetch_price_history_csv, get_company_fundamentals, fetch_news_for_symbol, FUNDAMENTAL_DB, relative_time
 from indicators import compute_all_indicators
 from ml_model import classifier
 from explainer import generate_explainable_reasons
@@ -116,7 +116,10 @@ def analyze_company(symbol: str):
         "sentiment": {
             "score": round(avg_sentiment, 2),
             "label": "BULLISH" if avg_sentiment > 0.1 else ("BEARISH" if avg_sentiment < -0.1 else "NEUTRAL"),
-            "articles": news_items
+            "articles": [
+                {**item, "publishedAgo": relative_time(item.get('pubDate'))}
+                for item in news_items
+            ]
         },
         "technicalIndicators": {
             "rsi": round(float(latest_bar.get('rsi', 50.0)), 2),

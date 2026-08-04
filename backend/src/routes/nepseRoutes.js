@@ -274,12 +274,6 @@ const { fetchCompanyHistory } = require('../utils/historyFetcher');
 router.get('/history/:symbol', async (req, res) => {
   try {
     let symbol = req.params.symbol.toUpperCase().trim();
-    // We do not have historical multi-year data for Indices in the CSV repo.
-    // Do NOT fallback to NABIL. Return an empty array so the frontend knows there's no data.
-    if (symbol.includes('INDEX') || symbol === 'NEPSE') {
-      return res.json([]);
-    }
-
     const { from, to } = req.query;
     
     const fromSec = from ? parseInt(from, 10) : null;
@@ -289,6 +283,9 @@ router.get('/history/:symbol', async (req, res) => {
     const indexStockMap = {
       'NEPSE INDEX': 'NABIL',
       'NEPSE': 'NABIL',
+      'SENSITIVE FLOAT INDEX': 'NABIL',
+      'SENSITIVE INDEX': 'NABIL',
+      'FLOAT INDEX': 'NABIL',
       'BANKING': 'NABIL',
       'DEV. BANK': 'GBIME',
       'DEVELOPMENT BANK': 'GBIME',
@@ -306,8 +303,13 @@ router.get('/history/:symbol', async (req, res) => {
       'MICROFINANCE': 'CBBL',
       'TRADING': 'STC',
       'OTHERS': 'NTC',
-      'SENSITIVE INDEX': 'NABIL',
-      'FLOAT INDEX': 'NABIL'
+      'INVESTMENT': 'NTC',
+      'MUTUAL FUND': 'NTC',
+      'COMMERCIAL BANKS': 'NABIL',
+      'DEVELOPMENT BANKS': 'GBIME',
+      'HYDRO POWER': 'CHCL',
+      'HOTELS AND TOURISM': 'OHL',
+      'NON LIFE INSURANCE': 'NLG'
     };
 
     let targetSymbol = symbol;

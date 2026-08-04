@@ -1,6 +1,23 @@
 import { useEffect, useRef } from 'react';
 import { createChart, ColorType, CandlestickSeries, AreaSeries } from 'lightweight-charts';
 
+function resolveColor(value) {
+  if (typeof value !== 'string' || !value.includes('var(')) return value;
+  const probe = document.createElement('span');
+  probe.style.color = value;
+  document.body.appendChild(probe);
+  const resolved = window.getComputedStyle(probe).color;
+  document.body.removeChild(probe);
+  return resolved || value;
+}
+
+function withAlpha(rgb, alpha) {
+  if (alpha <= 0) return 'rgba(0, 0, 0, 0)';
+  const parts = String(rgb).match(/[\d.]+/g);
+  if (parts && parts.length >= 3) return `rgba(${parts[0]}, ${parts[1]}, ${parts[2]}, ${alpha})`;
+  return rgb;
+}
+
 export default function TradingChart({
   data,
   type = 'candle', // 'candle' or 'line'
@@ -17,21 +34,22 @@ export default function TradingChart({
   const seriesRef = useRef();
 
   useEffect(() => {
-    const handleResize = () => {
-      if (chartRef.current && chartContainerRef.current) {
-        chartRef.current.applyOptions({ width: chartContainerRef.current.clientWidth });
-      }
-    };
+    const resolvedBg = resolveColor(backgroundColor);
+    const resolvedText = resolveColor(textColor);
+    const resolvedBorder = resolveColor('var(--border, #27272a)');
+    const resolvedMuted = resolveColor('var(--text-muted, #94a3b8)');
+    const resolvedUp = resolveColor(upColor);
+    const resolvedDown = resolveColor(downColor);
+    const resolvedLine = resolveColor(lineColor);
 
     const chart = createChart(chartContainerRef.current, {
+      autoSize: true,
       layout: {
-        background: { type: ColorType.Solid, color: backgroundColor },
-        textColor,
+        background: { type: ColorType.Solid, color: resolvedBg },
+        textColor: resolvedText,
         fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
         fontSize: 12,
       },
-      width: chartContainerRef.current.clientWidth,
-      height: chartContainerRef.current.clientHeight,
       handleScale: {
         mouseWheel: true,
         pinch: true,
@@ -44,22 +62,22 @@ export default function TradingChart({
         vertTouchDrag: true,
       },
       grid: {
-        vertLines: { color: 'var(--border, #e5e7eb)', style: 4 }, // Dotted
-        horzLines: { color: 'var(--border, #e5e7eb)', style: 4 }, // Dotted
+        vertLines: { color: resolvedBorder, style: 4 }, // Dotted
+        horzLines: { color: resolvedBorder, style: 4 }, // Dotted
       },
       crosshair: {
         mode: 1, // Normal mode
         vertLine: {
           width: 1,
-          color: 'var(--text-muted, #9ca3af)',
+          color: resolvedMuted,
           style: 3, // Dashed
-          labelBackgroundColor: 'var(--text-primary, #111)',
+          labelBackgroundColor: resolvedText,
         },
         horzLine: {
           width: 1,
-          color: 'var(--text-muted, #9ca3af)',
+          color: resolvedMuted,
           style: 3,
-          labelBackgroundColor: 'var(--text-primary, #111)',
+          labelBackgroundColor: resolvedText,
         },
       },
       timeScale: {
@@ -94,17 +112,17 @@ export default function TradingChart({
     let series;
     if (type === 'candle') {
       series = chart.addSeries(CandlestickSeries, {
-        upColor: upColor,
-        downColor: downColor,
+        upColor: resolvedUp,
+        downColor: resolvedDown,
         borderVisible: false,
-        wickUpColor: upColor,
-        wickDownColor: downColor,
+        wickUpColor: resolvedUp,
+        wickDownColor: resolvedDown,
       });
     } else {
       series = chart.addSeries(AreaSeries, {
-        lineColor: lineColor,
-        topColor: lineColor + '33',
-        bottomColor: lineColor + '00',
+        lineColor: resolvedLine,
+        topColor: withAlpha(resolvedLine, 0.2),
+        bottomColor: withAlpha(resolvedLine, 0),
         lineWidth: 2,
         priceLineVisible: false,
       });
@@ -115,10 +133,7 @@ export default function TradingChart({
 
     chart.timeScale().fitContent();
 
-    window.addEventListener('resize', handleResize);
-
     return () => {
-      window.removeEventListener('resize', handleResize);
       chart.remove();
     };
   }, [data, type, backgroundColor, textColor, upColor, downColor, lineColor]);

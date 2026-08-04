@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { TxProvider } from './context/TxContext';
+import ErrorBoundary from './components/ErrorBoundary';
 import TopNavbar from './components/TopNavbar';
 import BudgetLayout from './components/BudgetLayout';
 import InvestmentLayout from './components/InvestmentLayout';
@@ -38,7 +39,8 @@ function AppLayout({ children }) {
 export default function App() {
   return (
     <TxProvider>
-      <Router>
+      <ErrorBoundary>
+        <Router>
         <Routes>
           {/* Auth pages – NO navbar */}
           <Route path="/"       element={<Landing />} />
@@ -109,7 +111,8 @@ export default function App() {
             }
           />
         </Routes>
-      </Router>
+        </Router>
+      </ErrorBoundary>
     </TxProvider>
   );
 }

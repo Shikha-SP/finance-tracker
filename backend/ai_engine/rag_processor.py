@@ -5,6 +5,8 @@ import json
 import urllib.request
 from collections import Counter
 
+from data_collector import relative_time
+
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 class FinancialRAGProcessor:
@@ -243,10 +245,38 @@ class FinancialRAGProcessor:
             for c in top_chunks
         ]
 
+        # Sources = news articles with title + how long ago they were published
+        sources = []
+        if os.path.exists(news_file):
+            try:
+                with open(news_file, 'r', encoding='utf-8') as f:
+                    for item in json.load(f)[:6]:
+                        sources.append({
+                            "title": item.get('title', ''),
+                            "url": item.get('url', ''),
+                            "pubDate": item.get('pubDate', ''),
+                            "publishedAgo": relative_time(item.get('pubDate')),
+                            "sentimentLabel": item.get('sentimentLabel', 'NEUTRAL')
+                        })
+            except Exception as e:
+                print(f"[RAG Sources Warning] Could not read {news_file}: {e}")
+        if not sources:
+            sources = [
+                {
+                    "title": c.get('source', f"{symbol} Financial Report"),
+                    "url": "",
+                    "pubDate": "",
+                    "publishedAgo": "report chunk",
+                    "sentimentLabel": "DOCUMENT"
+                }
+                for c in citations
+            ]
+
         return {
             "answer": answer,
             "recommendations": recommendations,
             "citations": citations,
+            "sources": sources,
             "symbol": symbol,
             "query": query,
             "groqPowered": bool(api_key)
