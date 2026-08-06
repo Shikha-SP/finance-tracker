@@ -4,10 +4,18 @@ const { execFile } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
+// Windows ships `python`, Linux/macOS hosts (Render, etc.) ship `python3`.
+function getPythonCmd() {
+  return process.platform === 'win32' ? 'python' : 'python3';
+}
+
 // --- Persistent LTP disk cache -----------------------------------------------
 // Saves real LTP data whenever the market is open, so we can show it later
 // instead of fake simulated prices when the market is closed.
 const LTP_CACHE_FILE = path.join(__dirname, '../../data/ltp_cache.json');
+// Full real snapshot (indices, sub-indices, summary + live market) written by
+// nepse_fetcher.py whenever it gets a fresh response from the NEPSE API.
+const SNAPSHOT_CACHE_FILE = path.join(__dirname, '../../data/nepse_snapshot.json');
 
 function loadLtpCache() {
   try {
@@ -36,6 +44,62 @@ function saveLtpCache(liveMarket) {
   }
 }
 
+function loadSnapshotCache() {
+  try {
+    if (fs.existsSync(SNAPSHOT_CACHE_FILE)) {
+      const raw = fs.readFileSync(SNAPSHOT_CACHE_FILE, 'utf8');
+      const snap = JSON.parse(raw);
+      if (snap && snap.liveMarket) return snap;
+    }
+  } catch (e) {
+    console.warn('[Snapshot Cache] Failed to load snapshot:', e.message);
+  }
+  return null;
+}
+
+// Builds the frontend data structure from a real NEPSE snapshot (from disk).
+function buildFromSnapshot(snap, statusText) {
+  const st = snap.status || {};
+  const sm = snap.summary || [];
+  const idxList = snap.indices || [];
+  const nepseIndex = idxList.find(i => i.index === 'NEPSE Index') || idxList[0] || {};
+  const sensitiveIndex = idxList.find(i => i.index === 'Sensitive Index') || {};
+  const floatIndex = idxList.find(i => i.index === 'Float Index') || {};
+
+  return {
+    summary: {
+      isOpen: false,
+      statusText: statusText || (st.isOpen || 'CLOSED'),
+      simulatedData: false,
+      cachedData: true,
+      cachedAt: snap.savedAt || null,
+      asOf: snap.asOf || snap.savedAt || null,
+      dataSource: 'snapshot',
+      nepseIndex: nepseIndex.currentValue || null,
+      nepseChange: nepseIndex.change ?? null,
+      nepseChangePct: nepseIndex.perChange ?? null,
+      sensitiveIndex: sensitiveIndex.currentValue || null,
+      sensitiveChange: sensitiveIndex.change ?? null,
+      floatIndex: floatIndex.currentValue || null,
+      floatChange: floatIndex.change ?? null,
+      totalTurnover: sm.find(s => s.detail === 'Total Turnover Rs:')?.value || null,
+      totalVolume: sm.find(s => s.detail === 'Total Traded Shares')?.value || null,
+      totalTrades: sm.find(s => s.detail === 'Total Transactions')?.value || null,
+    },
+    indices: idxList.length > 0 ? idxList.map(i => ({
+      name: i.index,
+      value: i.currentValue,
+      change: i.change,
+      changePct: i.perChange
+    })) : [],
+    gainers: snap.gainers || [],
+    losers: snap.losers || [],
+    turnover: snap.turnover || [],
+    liveMarket: snap.liveMarket || [],
+    subIndices: snap.subIndices || [],
+  };
+}
+
 // --- honest empty-state when no data is available -----------------------------------
 function getEmptyData() { 
   return { 
@@ -45,6 +109,7 @@ function getEmptyData() {
       simulatedData: false,
       cachedData: false,
       cachedAt: null,
+      asOf: null,
       nepseIndex: null, 
       nepseChange: null, 
       nepseChangePct: null, 
@@ -78,13 +143,19 @@ async function getLiveNepseData() {
 
   fetchPromise = new Promise((resolve) => {
     const script = path.join(__dirname, '../../nepse_fetcher.py');
-    // Fast 8.0 second timeout for Python process execution
-    execFile('python', [script], { maxBuffer: 1024 * 1024 * 5, timeout: 15000 }, (err, stdout, stderr) => {
+    // Allow time for the NEPSE API gather plus the MeroLagani live-market scrape.
+    execFile(getPythonCmd(), [script], { maxBuffer: 1024 * 1024 * 5, timeout: 45000 }, (err, stdout, stderr) => {
       fetchPromise = null;
       if (err) {
         console.warn('[NEPSE Fetcher] Python process error or timeout:', err.message);
-        // On exec error: try in-memory cache, then disk cache, then structured historic fallback
+        // On exec error: try in-memory cache, then real snapshot, then LTP disk cache
         if (cache) { resolve(cache); return; }
+        const snapshot = loadSnapshotCache();
+        if (snapshot) {
+          const fallback = buildFromSnapshot(snapshot, `CLOSED (Cached data from ${snapshot.savedAt})`);
+          resolve(fallback);
+          return;
+        }
         const diskCache = loadLtpCache();
         if (diskCache && diskCache.liveMarket && diskCache.liveMarket.length > 0) {
           const fallback = getEmptyData();
@@ -112,39 +183,45 @@ async function getLiveNepseData() {
         let floatIndex = idxList.find(i => i.index === 'Float Index') || {};
 
         const hasRealLtp = raw.liveMarket && raw.liveMarket.length > 0;
+        const fromCache = raw.cachedData === true;
 
-        // If market gave us real LTP data → save it to disk for future use
-        if (hasRealLtp) {
+        // If market gave us fresh real LTP data → save it to disk for future use.
+        // Never overwrite the cache with already-cached data.
+        if (hasRealLtp && !fromCache) {
           saveLtpCache(raw.liveMarket);
         }
 
         // Fallback chain: real data → disk cache → historic latest (last resort)
         let liveMarket;
-        let cachedData = false;
-        let cachedAt = null;
+        let diskCachedData = fromCache;
+        let diskCachedAt = fromCache ? (raw.cachedAt || null) : null;
         if (hasRealLtp) {
           liveMarket = raw.liveMarket;
         } else {
           const diskCache = loadLtpCache();
           if (diskCache && diskCache.liveMarket && diskCache.liveMarket.length > 0) {
             liveMarket = diskCache.liveMarket;
-            cachedData = true;
-            cachedAt = diskCache.savedAt;
-            console.log('[NEPSE] Live market empty — using disk cache from', cachedAt);
+            diskCachedData = true;
+            diskCachedAt = diskCache.savedAt;
+            console.log('[NEPSE] Live market empty — using disk cache from', diskCachedAt);
           } else {
             liveMarket = getEmptyData().liveMarket;
-            cachedData = true;
-            cachedAt = new Date().toISOString();
+            diskCachedData = true;
+            diskCachedAt = new Date().toISOString();
           }
         }
 
         const data = {
           summary: {
             isOpen: st.isOpen === 'OPEN',
-            statusText: st.isOpen || 'CLOSED',
+            statusText: fromCache
+              ? `Cached data from ${raw.cachedAt ? String(raw.cachedAt).slice(0, 10) : 'last session'} (${st.isOpen || 'CLOSED'})`
+              : (st.isOpen || 'CLOSED'),
             simulatedData: false,
-            cachedData,
-            cachedAt,
+            cachedData: diskCachedData,
+            cachedAt: diskCachedAt,
+            asOf: raw.asOf || null,
+            dataSource: raw.dataSource || 'live',
             nepseIndex: nepseIndex.currentValue || null,
             nepseChange: nepseIndex.change ?? null,
             nepseChangePct: nepseIndex.perChange ?? null,
@@ -192,6 +269,12 @@ async function getLiveNepseData() {
       } catch (parseErr) {
         console.error('[NEPSE Fetcher] Parse Error:', parseErr.message);
         if (cache) { resolve(cache); return; }
+        const snapshot = loadSnapshotCache();
+        if (snapshot) {
+          const fallback = buildFromSnapshot(snapshot, `CLOSED (Cached data from ${snapshot.savedAt})`);
+          resolve(fallback);
+          return;
+        }
         const diskCache = loadLtpCache();
         if (diskCache && diskCache.liveMarket && diskCache.liveMarket.length > 0) {
           const fallback = getEmptyData();
@@ -218,7 +301,14 @@ router.get('/summary', async (req, res) => {
 
 router.get('/indices', async (req, res) => {
   const data = await getLiveNepseData();
-  res.json({ simulatedData: data.summary.simulatedData, indices: data.indices });
+  // Only the main NEPSE index has real history kept current; the sub-indices
+  // (Sensitive/Float/Sensitive Float) have no reliable live daily source, so
+  // they are removed rather than shown with stale chart data.
+  const mainIndex = data.indices.find(i => i.name === 'NEPSE Index');
+  res.json({
+    simulatedData: data.summary.simulatedData,
+    indices: mainIndex ? [mainIndex] : (data.indices.length ? data.indices.slice(0, 1) : [])
+  });
 });
 
 router.get('/top-gainers', async (req, res) => {
@@ -254,7 +344,7 @@ router.get('/sub-indices', async (req, res) => {
 router.get('/graph/:indexName', (req, res) => {
   const indexName = req.params.indexName || 'nepse';
   const script = path.join(__dirname, '../../fetch_graph.py');
-  execFile('python', [script, indexName], (err, stdout, stderr) => {
+  execFile(getPythonCmd(), [script, indexName], (err, stdout, stderr) => {
     if (err) {
       console.error('[NEPSE Graph Fetcher] Error:', err.message);
       return res.status(500).json({ error: 'Failed to fetch graph data' });
@@ -269,7 +359,20 @@ router.get('/graph/:indexName', (req, res) => {
   });
 });
 
-const { fetchCompanyHistory } = require('../utils/historyFetcher');
+const { fetchCompanyHistory, fetchIndexHistory } = require('../utils/historyFetcher');
+
+// Main NEPSE indices have real daily history (from Bibek773/nepse_historical_data).
+const mainIndexMap = {
+  'NEPSE INDEX': 'NEPSE',
+  'NEPSE': 'NEPSE',
+  'SENSITIVE FLOAT INDEX': 'SENFLOAT',
+  'SENSITIVE FLOAT': 'SENFLOAT',
+  'SENFLOAT': 'SENFLOAT',
+  'SENSITIVE INDEX': 'SENSITIVE',
+  'SENSITIVE': 'SENSITIVE',
+  'FLOAT INDEX': 'FLOAT',
+  'FLOAT': 'FLOAT'
+};
 
 router.get('/history/:symbol', async (req, res) => {
   try {
@@ -281,11 +384,6 @@ router.get('/history/:symbol', async (req, res) => {
 
     // Index to major representative stock mapping for sector charts fallback
     const indexStockMap = {
-      'NEPSE INDEX': 'NABIL',
-      'NEPSE': 'NABIL',
-      'SENSITIVE FLOAT INDEX': 'NABIL',
-      'SENSITIVE INDEX': 'NABIL',
-      'FLOAT INDEX': 'NABIL',
       'BANKING': 'NABIL',
       'DEV. BANK': 'GBIME',
       'DEVELOPMENT BANK': 'GBIME',
@@ -312,14 +410,21 @@ router.get('/history/:symbol', async (req, res) => {
       'NON LIFE INSURANCE': 'NLG'
     };
 
-    let targetSymbol = symbol;
-    let records = await fetchCompanyHistory(targetSymbol, fromSec, toSec);
+    let records = null;
 
-    // If requested symbol was an index or had no direct CSV, try representative stock mapping
-    if ((!records || records.length === 0) && indexStockMap[symbol]) {
-      targetSymbol = indexStockMap[symbol];
-      console.log(`[NEPSE History] Mapping index "${symbol}" to stock "${targetSymbol}"`);
-      records = await fetchCompanyHistory(targetSymbol, fromSec, toSec);
+    // Main indices → real NEPSE index history (never a stock proxy).
+    const indexKey = mainIndexMap[symbol];
+    if (indexKey) {
+      records = await fetchIndexHistory(indexKey, fromSec, toSec);
+      console.log(`[NEPSE History] Serving real index history for "${symbol}" (${records.length} records)`);
+    } else {
+      records = await fetchCompanyHistory(symbol, fromSec, toSec);
+      // If requested symbol was a sub-index with no direct CSV, use representative stock
+      if ((!records || records.length === 0) && indexStockMap[symbol]) {
+        const targetSymbol = indexStockMap[symbol];
+        console.log(`[NEPSE History] Mapping sub-index "${symbol}" to stock "${targetSymbol}"`);
+        records = await fetchCompanyHistory(targetSymbol, fromSec, toSec);
+      }
     }
 
     res.json(records || []);

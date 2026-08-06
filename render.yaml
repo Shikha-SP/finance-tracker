@@ -4,7 +4,7 @@ services:
     env: node
     rootDir: backend
     plan: free
-    buildCommand: npm install && npm install --prefix ../frontend && npm run build --prefix ../frontend
+    buildCommand: (python3 -m pip install --upgrade pip && python3 -m pip install nepse aiohttp) || echo "python3 unavailable, skipping live NEPSE deps"; npm install; npm install --prefix ../frontend; npm run build --prefix ../frontend
     startCommand: npm start
     envVars:
       - key: NODE_ENV
@@ -18,7 +18,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: PYTHON_AI_URL
-        sync: false
+        value: https://financetracker-ai.onrender.com
 
   - type: web
     name: financetracker-ai

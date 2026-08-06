@@ -7,7 +7,7 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const cookieParser = require('cookie-parser');
-require('dotenv').config();
+require('dotenv').config({ path: path.resolve(__dirname, './.env') });
 
 const app = express();
 const frontendDist = path.resolve(__dirname, '../frontend/dist');
@@ -58,21 +58,31 @@ app.get('/api/health', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-const PRIMARY_MONGO_URI = process.env.MONGO_URI || process.env.MONGO_URI_ATLAS;
+const PRIMARY_MONGO_URI = process.env.MONGO_URI_ATLAS || process.env.MONGO_URI;
 const LOCAL_MONGO_URI = 'mongodb://127.0.0.1:27017/summerproject';
 const ALLOW_MEMORY_FALLBACK = process.env.ALLOW_MEMORY_FALLBACK === 'true';
+
+function redactMongoUri(uri) {
+  try {
+    return uri.replace(/\/\/[^@/]+@/, '//***:***@');
+  } catch {
+    return uri;
+  }
+}
 
 async function connectDatabase() {
   const candidates = [PRIMARY_MONGO_URI, LOCAL_MONGO_URI].filter(Boolean);
   let lastError = null;
 
+  console.log('Mongo URI loaded:', PRIMARY_MONGO_URI ? 'yes' : 'no');
+
   for (const candidate of candidates) {
     try {
       await mongoose.connect(candidate, { serverSelectionTimeoutMS: 4000 });
-      console.log(`MongoDB connected (${candidate})`);
+      console.log(`MongoDB connected (${redactMongoUri(candidate)})`);
       return;
     } catch (err) {
-      console.error(`MongoDB connection failed for ${candidate}: ${err.message}`);
+      console.error(`MongoDB connection failed for ${redactMongoUri(candidate)}: ${err.message}`);
       lastError = err;
     }
   }

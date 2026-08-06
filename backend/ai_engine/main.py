@@ -12,7 +12,10 @@ from pydantic import BaseModel
 from typing import Optional, List
 
 # Local imports
-from data_collector import fetch_price_history_csv, get_company_fundamentals, fetch_news_for_symbol, FUNDAMENTAL_DB, relative_time
+from data_collector import (
+    fetch_price_history_csv, get_company_fundamentals, fetch_news_for_symbol,
+    get_symbol_ohlcv, background_refresh, relative_time
+)
 from indicators import compute_all_indicators
 from ml_model import classifier
 from explainer import generate_explainable_reasons
@@ -33,6 +36,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+import threading
+
+def _startup_background_refresh():
+    """Refreshes the full price CSV + fundamentals cache without blocking requests."""
+    def worker():
+        try:
+            background_refresh()
+        except Exception as e:
+            print(f"[Startup] Background refresh error: {e}")
+    threading.Thread(target=worker, daemon=True).start()
+
+@app.on_event("startup")
+def _on_startup():
+    _startup_background_refresh()
+
 class BacktestRequest(BaseModel):
     symbol: Optional[str] = "NABIL"
     initialCapital: Optional[float] = 100000.0
@@ -52,16 +70,19 @@ def health_check():
 def analyze_company(symbol: str):
     clean_sym = symbol.upper().strip()
     
-    # 1. Fetch Price History & calculate indicators
-    df_raw = fetch_price_history_csv()
-    sym_df = df_raw[df_raw['symbol'].str.upper() == clean_sym] if 'symbol' in df_raw.columns else pd.DataFrame()
-    
+    # 1. Fetch the freshest price history for this symbol (live NEPSE API first,
+    #    bundled CSV as fallback) & calculate indicators.
+    sym_df = get_symbol_ohlcv(clean_sym)
+
     if len(sym_df) < 5:
-        # Filter fallback or default symbol NABIL
-        sym_df = df_raw[df_raw['symbol'].str.upper() == 'NABIL'] if 'symbol' in df_raw.columns else df_raw.head(60)
+        # Fallback to a default symbol with enough history.
+        fallback = get_symbol_ohlcv('NABIL')
+        if len(fallback) > len(sym_df):
+            sym_df = fallback
 
     sym_df = sym_df.sort_values('date').reset_index(drop=True)
     df_indicators = compute_all_indicators(sym_df)
+    latest_date = str(sym_df['date'].iloc[-1])[:10] if len(sym_df) else None
     
     # 2. News & Sentiment
     news_items = fetch_news_for_symbol(clean_sym)
@@ -104,6 +125,7 @@ def analyze_company(symbol: str):
         "companyName": fundamentals['name'],
         "sector": fundamentals['sector'],
         "currentPrice": round(float(latest_bar['close']), 2),
+        "asOf": latest_date,
         "prediction": {
             "bullishProb": prediction['bullishProb'],
             "neutralProb": prediction['neutralProb'],
@@ -145,10 +167,12 @@ def stock_screener(
     results = []
     
     # Get list of all available symbols in dataset
-    all_symbols = df_raw['symbol'].str.upper().unique() if 'symbol' in df_raw.columns else list(FUNDAMENTAL_DB.keys())
+    all_symbols = df_raw['symbol'].str.upper().unique() if 'symbol' in df_raw.columns else []
     
     for sym in all_symbols:
-        meta = get_company_fundamentals(sym)
+        # use_cache_only: real name/sector come from NEPSE company metadata; numeric
+        # ratios come from the local DB/cache. No per-symbol network scraping (too slow).
+        meta = get_company_fundamentals(sym, use_cache_only=True)
         if sector != "ALL" and meta.get('sector', '').lower() != sector.lower():
             continue
             
@@ -170,7 +194,7 @@ def stock_screener(
         if rsi < minRsi or rsi > maxRsi:
             continue
             
-        pred = classifier.predict_movement_probabilities(df_ind)
+        pred = classifier.predict_movement_probabilities(df_ind, cache_key=sym)
         if pred['confidenceScore'] < minConfidence:
             continue
             

@@ -104,7 +104,7 @@ async function tryFetch(path) {
 /* ─── Sub-components ─────────────────────────────────────────────────────── */
 
 function MarketStatusBar({ isOpen, statusText, backendOnline, lastUpdated, onRefresh, loading }) {
-  const isFallback = statusText && (statusText.includes('Fallback') || statusText.includes('past data'));
+  const isFallback = statusText && (statusText.includes('Fallback') || statusText.includes('past data') || statusText.includes('Cached data'));
   
   let fallbackDate = '';
   if (isFallback) {
@@ -392,7 +392,7 @@ function IndexChart({ indices }) {
   const [timeRange, setTimeRange] = useState('1D');
   const [liveMode, setLiveMode] = useState(true);
   const [expanded, setExpanded] = useState(false);
-  const idx = indices[sel] || { name: 'NEPSE Index', value: 2074.56, change: -8.34, changePct: -0.40 };
+  const idx = indices[sel] || { name: 'NEPSE Index', value: 0, change: 0, changePct: 0 };
   const up = idx.change >= 0;
 
   const [rawData, setRawData] = useState([]);
@@ -646,7 +646,9 @@ export default function Investment() {
       setTurnover(turnData.turnover || []);
       setBackendOnline(true);
       setLastUpdated(
-        new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+        sumData?.asOf
+          ? new Date(sumData.asOf).toLocaleString('en-US', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+          : new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
       );
     } catch {
       setBackendOnline(false);
@@ -718,28 +720,6 @@ export default function Investment() {
             value={summary?.nepseIndex ?? 0}
             change={summary?.nepseChange ?? 0}
             changePct={summary?.nepseChangePct ?? 0}
-            loading={loading}
-          />
-          <IndexKPICard
-            name="Sensitive Index"
-            value={summary?.sensitiveIndex ?? 0}
-            change={summary?.sensitiveChange ?? 0}
-            changePct={
-              summary?.sensitiveIndex
-                ? (summary.sensitiveChange / summary.sensitiveIndex) * 100
-                : 0
-            }
-            loading={loading}
-          />
-          <IndexKPICard
-            name="Float Index"
-            value={summary?.floatIndex ?? 0}
-            change={summary?.floatChange ?? 0}
-            changePct={
-              summary?.floatIndex
-                ? (summary.floatChange / summary.floatIndex) * 100
-                : 0
-            }
             loading={loading}
           />
           <StatKPICard

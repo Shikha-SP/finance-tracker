@@ -120,6 +120,7 @@ export function TxProvider({ children }) {
   /* ── Theme ── */
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
+    window.dispatchEvent(new CustomEvent('themechange', { detail: theme }));
   }, [theme]);
 
   const toggleTheme = useCallback(() => {

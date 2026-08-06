@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createChart, ColorType, CandlestickSeries, AreaSeries } from 'lightweight-charts';
 
 function resolveColor(value) {
@@ -18,6 +18,35 @@ function withAlpha(rgb, alpha) {
   return rgb;
 }
 
+function formatDateLabel(time) {
+  // Accepts ISO "YYYY-MM-DD" strings, "YYYY-MM-DD HH:mm:ss" strings, epoch
+  // seconds numbers, or lightweight-charts BusinessDay objects, and returns a
+  // compact label like "Aug 6 '26" or "10:30 AM".
+  let date = null;
+  let isIntraday = false;
+
+  if (typeof time === 'string') {
+    const clean = time.includes(' ') ? time.replace(' ', 'T') : time;
+    const parsed = new Date(clean);
+    if (!isNaN(parsed.getTime())) {
+      date = parsed;
+      isIntraday = time.includes(' ');
+    }
+  } else if (typeof time === 'number') {
+    date = new Date(time * 1000);
+    isIntraday = !(date.getUTCHours() === 0 && date.getUTCMinutes() === 0);
+  } else if (time && typeof time === 'object' && time.year && time.month && time.day) {
+    date = new Date(Date.UTC(time.year, time.month - 1, time.day));
+  }
+
+  if (!date || isNaN(date.getTime())) return String(time);
+
+  if (isIntraday) {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' });
+}
+
 export default function TradingChart({
   data,
   type = 'candle', // 'candle' or 'line'
@@ -33,7 +62,17 @@ export default function TradingChart({
   const chartRef = useRef();
   const seriesRef = useRef();
 
+  // Re-resolve CSS-variable colors whenever the app theme (light/dark) changes.
+  const [themeVersion, setThemeVersion] = useState(0);
+
   useEffect(() => {
+    const handler = () => setThemeVersion(v => v + 1);
+    window.addEventListener('themechange', handler);
+    return () => window.removeEventListener('themechange', handler);
+  }, []);
+
+  useEffect(() => {
+    void themeVersion; // re-run this effect when the theme changes
     const resolvedBg = resolveColor(backgroundColor);
     const resolvedText = resolveColor(textColor);
     const resolvedBorder = resolveColor('var(--border, #27272a)');
@@ -71,13 +110,13 @@ export default function TradingChart({
           width: 1,
           color: resolvedMuted,
           style: 3, // Dashed
-          labelBackgroundColor: resolvedText,
+          labelBackgroundColor: resolvedBorder,
         },
         horzLine: {
           width: 1,
           color: resolvedMuted,
           style: 3,
-          labelBackgroundColor: resolvedText,
+          labelBackgroundColor: resolvedBorder,
         },
       },
       timeScale: {
@@ -85,22 +124,7 @@ export default function TradingChart({
         secondsVisible: false,
         borderVisible: false,
         shiftVisibleRangeOnNewBar: true,
-        tickMarkFormatter: (time) => {
-          if (typeof time === 'string') {
-            return time; // e.g. "2026-02-12"
-          }
-          if (typeof time === 'number') {
-            const date = new Date(time * 1000);
-            if (date.getUTCHours() === 0 && date.getUTCMinutes() === 0) {
-              return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' });
-            }
-            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-          }
-          if (typeof time === 'object' && time.year && time.month && time.day) {
-            return `${time.year}-${String(time.month).padStart(2, '0')}-${String(time.day).padStart(2, '0')}`;
-          }
-          return String(time);
-        },
+        tickMarkFormatter: formatDateLabel,
       },
       rightPriceScale: {
         borderVisible: false,
@@ -109,34 +133,58 @@ export default function TradingChart({
 
     chartRef.current = chart;
 
-    let series;
+    // Daily (date-string) records merged from close-only sources (e.g. the recent
+    // NEPSE index series) arrive as flat candles (open=high=low=close). Those
+    // have no real OHLC, so render only genuine candles and overlay a thin line
+    // of the real closes so the series still runs to today.
+    const isDailyStrings = data.length > 0 && typeof data[0].time === 'string';
+    const hasRealOhlc = d => !(d.open === d.high && d.high === d.low && d.low === d.close);
+    const candleData = isDailyStrings ? data.filter(hasRealOhlc) : data;
+    const closeData = type === 'candle'
+      ? data.map(d => ({ time: d.time, value: d.close }))
+      : data;
+
     if (type === 'candle') {
-      series = chart.addSeries(CandlestickSeries, {
+      const candleSeries = chart.addSeries(CandlestickSeries, {
         upColor: resolvedUp,
         downColor: resolvedDown,
         borderVisible: false,
         wickUpColor: resolvedUp,
         wickDownColor: resolvedDown,
       });
+      candleSeries.setData(candleData);
+      seriesRef.current = candleSeries;
+
+      if (closeData.length > 0) {
+        const closeLine = chart.addSeries(AreaSeries, {
+          lineColor: resolvedLine,
+          topColor: 'rgba(0, 0, 0, 0)',
+          bottomColor: 'rgba(0, 0, 0, 0)',
+          lineWidth: 1,
+          priceLineVisible: false,
+          lastValueVisible: false,
+          crosshairMarkerVisible: false,
+        });
+        closeLine.setData(closeData);
+      }
     } else {
-      series = chart.addSeries(AreaSeries, {
+      const series = chart.addSeries(AreaSeries, {
         lineColor: resolvedLine,
         topColor: withAlpha(resolvedLine, 0.2),
         bottomColor: withAlpha(resolvedLine, 0),
         lineWidth: 2,
         priceLineVisible: false,
       });
+      series.setData(closeData);
+      seriesRef.current = series;
     }
-    
-    series.setData(data);
-    seriesRef.current = series;
 
     chart.timeScale().fitContent();
 
     return () => {
       chart.remove();
     };
-  }, [data, type, backgroundColor, textColor, upColor, downColor, lineColor]);
+  }, [data, type, backgroundColor, textColor, upColor, downColor, lineColor, themeVersion]);
 
   const zoomIn = () => {
     if (chartRef.current) {
