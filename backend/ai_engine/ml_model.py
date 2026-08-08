@@ -175,6 +175,206 @@ class MovementClassifier:
         }
 
 
+def investment_rating(prediction=None, fundamentals=None, sentiment=None, market_bias=None):
+    """
+    Single transparent 0..100 investment score combining technicals (from the
+    scorer), fundamentals (real MeroLagani) and news sentiment, plus a
+    plain-language verdict. Every contribution is a labelled part so the UI can
+    show *why* a stock is a BUY or SELL.
+    """
+    parts = []
+    score = 50.0
+
+    if prediction:
+        sig = prediction.get('signal')
+        conf = float(prediction.get('confidenceScore') or 0.0)
+        if sig == 'BULLISH':
+            t = 15.0 * (0.5 + conf / 200.0)
+            score += t
+            parts.append(("Technical trend", f"BULLISH with {conf}% confidence", f"+{t:.1f}"))
+        elif sig == 'BEARISH':
+            t = -15.0 * (0.5 + conf / 200.0)
+            score += t
+            parts.append(("Technical trend", f"BEARISH with {conf}% confidence", f"{t:.1f}"))
+        else:
+            parts.append(("Technical trend", "NEUTRAL", "0"))
+
+    if fundamentals:
+        pe = fundamentals.get('peRatio')
+        roe = fundamentals.get('roe')
+        dy = fundamentals.get('dividendYield')
+        eps = fundamentals.get('eps')
+        if eps is not None and float(eps) < 0:
+            score -= 12.0
+            parts.append(("Profitability", f"Loss-making (EPS {eps})", "-12"))
+        else:
+            if pe is not None and float(pe) > 0:
+                if pe < 15:
+                    score += 8.0; parts.append(("Valuation", f"P/E {pe}x (cheap)", "+8"))
+                elif pe < 20:
+                    score += 5.0; parts.append(("Valuation", f"P/E {pe}x (fair)", "+5"))
+                elif pe < 30:
+                    score += 1.0; parts.append(("Valuation", f"P/E {pe}x", "+1"))
+                else:
+                    score -= 6.0; parts.append(("Valuation", f"P/E {pe}x (expensive)", "-6"))
+            if roe is not None and float(roe) != 0:
+                if roe > 18:
+                    score += 7.0; parts.append(("Returns", f"ROE {roe}% (excellent)", "+7"))
+                elif roe > 12:
+                    score += 5.0; parts.append(("Returns", f"ROE {roe}% (good)", "+5"))
+                elif roe > 8:
+                    score += 2.0; parts.append(("Returns", f"ROE {roe}%", "+2"))
+                else:
+                    score -= 2.0; parts.append(("Returns", f"ROE {roe}% (weak)", "-2"))
+            if dy is not None and float(dy) > 0:
+                if dy > 4:
+                    score += 6.0; parts.append(("Income", f"Div yield {dy}%", "+6"))
+                elif dy > 2.5:
+                    score += 4.0; parts.append(("Income", f"Div yield {dy}%", "+4"))
+                elif dy > 1.5:
+                    score += 1.0; parts.append(("Income", f"Div yield {dy}%", "+1"))
+
+    if sentiment:
+        s_score = sentiment.get('score')
+        if sentiment.get('available') and s_score is not None:
+            effect = round(float(s_score) * 8.0, 1)
+            score += effect
+            parts.append(("News sentiment", f"{sentiment.get('label')} ({s_score:+})", f"{effect:+.1f}"))
+        elif sentiment.get('newsCount'):
+            parts.append(("News sentiment", "no recent news", "0"))
+
+    if market_bias and market_bias.get('available'):
+        effect = round(float(market_bias['bias']) * 2.0, 1)
+        score += effect
+        parts.append(("Market trend", f"NEPSE {market_bias['trend']} ({market_bias['changePct']:+}%)", f"{effect:+.1f}"))
+
+    score = round(max(0.0, min(100.0, score)), 1)
+    if score >= 70:
+        verdict = "STRONG BUY"
+    elif score >= 55:
+        verdict = "BUY"
+    elif score >= 45:
+        verdict = "HOLD"
+    elif score >= 30:
+        verdict = "SELL"
+    else:
+        verdict = "STRONG SELL"
+
+    return {"score": score, "verdict": verdict, "parts": parts}
+
+
+def _f(v, default=0.0):
+    try:
+        return float(v) if v is not None else default
+    except (TypeError, ValueError):
+        return default
+
+
+def master_score(prediction=None, fundamentals=None, sentiment=None,
+                 market_bias=None, sector_momentum=None):
+    """
+    Multi-factor Master Score on top of investment_rating():
+      base rating (technical + valuation + quality + news + market bias)
+      + sector rotation momentum, then explicit Safety and Upside sub-scores.
+
+    Returns {score, verdict, parts, safetyScore, upsideScore, sector}.
+    """
+    base = investment_rating(prediction, fundamentals, sentiment, market_bias)
+    score = float(base['score'])
+    parts = list(base['parts'])
+
+    sector = (fundamentals or {}).get('sector') or 'Others'
+    sm = None
+    if sector_momentum and isinstance(sector_momentum, dict):
+        sm = sector_momentum.get(sector) or sector_momentum.get('Others')
+    sector_effect = 0.0
+    if sm:
+        mom = _f(sm.get('momentumScore'))
+        sector_effect = round(max(-10.0, min(10.0, mom * 0.6)), 1)
+        score += sector_effect
+        parts.append((
+            "Sector trend",
+            f"{sector}: {sm.get('trend', 'NEUTRAL')} (20d {sm.get('ret20', 0):+.1f}%)",
+            f"{sector_effect:+.1f}"
+        ))
+
+    # ── Safety sub-score: how likely the pick avoids a drawdown ───────────────
+    safety = 50.0
+    if fundamentals:
+        eps = fundamentals.get('eps')
+        if eps is not None and _f(eps) < 0:
+            safety -= 25.0
+        roe = _f(fundamentals.get('roe'))
+        if roe > 18:
+            safety += 15.0
+        elif roe > 12:
+            safety += 10.0
+        pe = _f(fundamentals.get('peRatio'))
+        if 0 < pe < 15:
+            safety += 8.0
+        elif pe >= 30:
+            safety -= 10.0
+        if _f(fundamentals.get('dividendYield')) > 3:
+            safety += 5.0
+    if prediction:
+        sig = prediction.get('signal')
+        conf = _f(prediction.get('confidenceScore'))
+        if sig == 'BEARISH':
+            safety -= 8.0 + conf / 20.0
+        elif sig == 'BULLISH':
+            safety += 5.0
+    if sentiment and sentiment.get('available'):
+        safety += max(-10.0, min(10.0, _f(sentiment.get('score')) * 10.0))
+    if market_bias and market_bias.get('available'):
+        if market_bias.get('trend') == 'FALLING':
+            safety -= 5.0
+    if sm:
+        if sm.get('trend') == 'WEAKENING':
+            safety -= 8.0
+        elif sm.get('trend') == 'STRENGTHENING':
+            safety += 5.0
+    safety = round(max(0.0, min(100.0, safety)), 1)
+
+    # ── Upside sub-score: return potential from trend + valuation + rotation ──
+    upside = 50.0
+    if prediction:
+        sig = prediction.get('signal')
+        conf = _f(prediction.get('confidenceScore'))
+        if sig == 'BULLISH':
+            upside += 15.0 + conf / 10.0
+        elif sig == 'BEARISH':
+            upside -= 12.0
+    pe = _f((fundamentals or {}).get('peRatio'))
+    if 0 < pe < 15:
+        upside += 10.0
+    elif pe >= 30:
+        upside -= 8.0
+    if _f((fundamentals or {}).get('roe')) > 12:
+        upside += 5.0
+    if market_bias and market_bias.get('available'):
+        upside += max(-6.0, min(6.0, _f(market_bias.get('bias')) * 2.0))
+    if sm:
+        upside += max(-10.0, min(10.0, _f(sm.get('momentumScore')) * 0.7))
+    if sentiment and sentiment.get('available'):
+        upside += max(-8.0, min(8.0, _f(sentiment.get('score')) * 8.0))
+    upside = round(max(0.0, min(100.0, upside)), 1)
+
+    score = round(max(0.0, min(100.0, score)), 1)
+    verdict = ("STRONG BUY" if score >= 70 else
+               "BUY" if score >= 55 else
+               "HOLD" if score >= 45 else
+               "SELL" if score >= 30 else "STRONG SELL")
+
+    return {
+        "score": score,
+        "verdict": verdict,
+        "parts": parts,
+        "safetyScore": safety,
+        "upsideScore": upside,
+        "sector": sector,
+    }
+
+
 classifier = MovementClassifier()
 
 if __name__ == "__main__":

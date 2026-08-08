@@ -1,0 +1,98 @@
+[
+  {
+    "title": "Nepse plunges by 21. 15 points on Tuesday - The Annapurna Express",
+    "pubDate": "Tue, 04 Aug 2026 10:29:45 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5aeFZUMUZzWU9TQ3pDT2FlbUg4Zzk5YWx4NXJwX3IxTExRYmlJOXh0c21rZEM1S3dQYkdBT1c0ZjlDSzI5UkY3ekx1a0V2TGNPcnAyY0dfTQ?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "SAPDBL",
+    "llmScore": -0.8,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunges",
+      "loss",
+      "decline"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Saptakoshi Development Bank: A Turnaround Written in Quiet Numbers - NEPSE Trading",
+    "pubDate": "Sun, 02 Aug 2026 05:01:31 GMT",
+    "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxOV3lnZTNQNmdhYkViU3VQVlpRUGE4T2NadU9YbE9nNDRBRGo2amk3ZktEUUZ2TEJCcHpTVUw3ckwzTTdLRUU3NzdDS0xST09JVmZzbGYxTlVZOG5KMTA1R2t3MWZjSGtielZ5c01qOUtEQTB3RkJKX2VsMGZpTW8yMUdzM3Z0NDRnb1ZaakxxS3VFQThyRHVnd3BhTQ?oc=5",
+    "sentimentScore": 0.22,
+    "sentimentLabel": "BULLISH",
+    "symbol": "SAPDBL",
+    "llmScore": 0.6,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "turnaround",
+      "growth",
+      "recovery"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse surges by 19. 70 points on Tuesday - The Annapurna Express",
+    "pubDate": "Tue, 31 Mar 2026 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5DYjFnUWFmXzZyXzJDOGM5eUx5c1UtdHJWSDZTMDJLa05WMk1pdUZQZWVaYkZSM0lTVXRGUGRYTVo4R05pdVl3WERqdTc1ZlA4ZmtHZFV0aw?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "SAPDBL",
+    "llmScore": 0.9,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "gain",
+      "upswing"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Saptakoshi Development Bank Ltd - SAPDBL | Online Khabar Markets - Online Khabar",
+    "pubDate": "Sun, 15 Oct 2023 15:04:15 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE5vWC05S1R0bXZ3T0RKUm9NTlNZSy1Xc2cyemVhSHVXR1VITkJwdlBFQlRMSHh1aXo4d1Y3VVVxMzlhTGtRc3hLeGFIbklTZ183eWFuMzNhS096Wld1bllv?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "SAPDBL",
+    "llmScore": 0.0,
+    "llmLabel": "NEUTRAL",
+    "llmKeywords": [
+      "update",
+      "information",
+      "status"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse index drops over 16 points - The Kathmandu Post",
+    "pubDate": "Sun, 20 Apr 2025 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxORnFIbDREdUZaUDlnamtSWnhNUTZGMlU1YXVzdTMwNHZvcmxIWm81MW55NnZKc3hia2E4LVpFcDNpWTBrSDJNS1JXZUFQQm10TkplNnR1cjVoVGlGRk9fcmtqLTc1SWgwQV9BaTdsX2xzTjIzVndrRXk3ZWk5VEM4Qw?oc=5",
+    "sentimentScore": -0.22,
+    "sentimentLabel": "BEARISH",
+    "symbol": "SAPDBL",
+    "llmScore": -0.7,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "drops",
+      "decline",
+      "fall"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Upper Lohore Khola Hydropower Company Limited - ULHC | Online Khabar Markets - Online Khabar",
+    "pubDate": "Sat, 30 Sep 2023 13:59:55 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE9wUlB2MzA3ejBQMVBJbFdfWEd5N002Y0d4bm1NVDQ2SGhOejVuQkhyVXFtRjlOaGFVLTY2V05zQmdCaG41dGJycGdaYUgteXpRNUFYTXJNYzdlQXY1?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "SAPDBL",
+    "llmScore": 0.0,
+    "llmLabel": "NEUTRAL",
+    "llmKeywords": [
+      "information",
+      "update",
+      "status"
+    ],
+    "llmProcessed": true
+  }
+]

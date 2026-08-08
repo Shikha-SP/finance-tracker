@@ -1,0 +1,92 @@
+[
+  {
+    "title": "NEPSE bounces back as investors add Rs 4.4 billion in trades - The Himalayan Times",
+    "pubDate": "Tue, 07 Jul 2026 09:49:49 GMT",
+    "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxObVlCTGZZUG0yaXluN3hSM1dycmxlbXZ1eE80NDlsUGUxRElmQnllOHJBZGJhaUlBck9NVHQ5Y2VhdEZXaXpacVJOYndBcmFMY1FNWlVZemtkT3dVRFgzT2NneFc1MkVudE9rU0tESmc3WFplMlBYcDJ1S1lZSFhTOTBwVlp0Ry1FUV9jNVlJSEhQVmQza2VMZDEwQVB3U03SAVxBVV95cUxNd2p6T3V4cktHamhWWDFSVDFfd3I4MGppSWwyUTVjRUdzRjRhSVhweC1GZ2xneWZRU0h4aVN4aExaeVhSenVRTTBONFZDMjZyTkI3S2Y5dHJYa1VCOA?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "ANLB",
+    "llmScore": 0.5,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "growth",
+      "investors"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse plunges by 33. 28 points on Monday - The Annapurna Express",
+    "pubDate": "Mon, 27 Jul 2026 10:27:16 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE1CMG5vbm5LT0lUT0RLQWF2emNSazZ5eHlGMzFEenpuTU9lY25zTldHU2xQSGFlQTlVR2NJV3l5clZRUmMyOVZqZ0NSVExWQU1JVVRtVFRCUQ?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "ANLB",
+    "llmScore": -0.8,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "losses",
+      "plunge"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse surges by 24. 57 points on Tuesday - The Annapurna Express",
+    "pubDate": "Tue, 07 Jul 2026 12:38:26 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE8tMUJ3SHpYaXk5bWV3Wno5czRQQy1fLXJjZ1dTYk44TVNHVm1MOGxSZmNKb2RMQThucDBZdVEwc3VQeGNCU2ZVbVV3YU1hV2pRUWt2UWY1bw?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "ANLB",
+    "llmScore": 0.8,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "gains"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse plunges by 885. 32 points on Sunday - The Annapurna Express",
+    "pubDate": "Sun, 01 Mar 2026 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5qSkRLblBXRzZKc2RSb0pWSFJtYWhHUDZJdXNIVWpndTg5dmhqWV9MNHRGN1JWY0xPVmFzS2F0d2l1VGZ5eGpiVHk5WFRPX3hOV1l4ZUdsWQ?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "ANLB",
+    "llmScore": -0.9,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunges",
+      "decline"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse surges by 16. 67 points on Sunday - The Annapurna Express",
+    "pubDate": "Sun, 19 Oct 2025 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5SRURMclQxYW5sNGpXMkdWdVJPalc3NUNBX0NNVG1WTzI2aE0wLVNJX2xzRXhTdHRYX0lrU3hFUjVHaDN6T0pYdmx1LWc2YmQzQVZiWU44OA?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "ANLB",
+    "llmScore": 0.6,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "upward"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse plunges by 15. 54 points on Monday - The Annapurna Express",
+    "pubDate": "Mon, 13 Jan 2025 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5PMTZVOENQeWlnRmFsdWtqTDZfLVMzZU5yaHlBSVZQdksyRnEtVGV1QVF3VnRwRkNuRGY5bkpXc21XbmExWXB3bHVoYlFIVks4b3FJRFhBNA?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "ANLB",
+    "llmScore": -0.7,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunges",
+      "downward"
+    ],
+    "llmProcessed": true
+  }
+]

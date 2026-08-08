@@ -1,0 +1,50 @@
+[
+  {
+    "title": "Nepse ends week with 14.21 points gain - The Kathmandu Post",
+    "pubDate": "Thu, 26 Mar 2026 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNcy1yNGMwNXJMOGJwZUM5SW80UGFucjA5eDNEQXR4dHRkTjJOWGFyQUYwYUk1ZXFLclBLenNyMFhYWXo3RjJ1SUtfTG51MTU5X1ltY0FvaUMxMTdWZFlCcEptWGpuTmxPVHpHNDQ2bTBZUmc4WG9yQVJHVF9pNV83SkhOS2hsRk9VbTlZNg?oc=5",
+    "sentimentScore": 0.22,
+    "sentimentLabel": "BULLISH",
+    "symbol": "PMHPL",
+    "llmScore": 0.5,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "gain",
+      "Nepse",
+      "growth"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse surges by 14. 21 points on Thursday - The Annapurna Express",
+    "pubDate": "Thu, 26 Mar 2026 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE1DbXhENm9SMkh3LXgzUjNHcW12NVNDX0cwT3NnVjJZQWFFSzNnOVR3NnRCUFNIQk1FQXVfM1JyVTc2T2lvSV8tRFl5eXhUbVdMdUgycTZzVQ?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "PMHPL",
+    "llmScore": 0.5,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "Nepse",
+      "gain"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse plunges by 9. 70 points on Wednesday - The Annapurna Express",
+    "pubDate": "Wed, 20 Aug 2025 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTFBKb183enI1MFNLSjZSX0o4V29yVXRYNTJ3MVRxRG9zZHBaUmg2bXRxNTllWjQtaHE0aE93UVFYYVRVRWg4YjdYZkRORVhlbHIwTlp6TjFkYw?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "PMHPL",
+    "llmScore": -0.5,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunges",
+      "Nepse",
+      "loss"
+    ],
+    "llmProcessed": true
+  }
+]

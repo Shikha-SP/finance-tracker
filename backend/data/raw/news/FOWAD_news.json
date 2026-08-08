@@ -1,0 +1,82 @@
+[
+  {
+    "title": "NEPSE declines by 34.63 points with reduced turnover - Nepalnews.com",
+    "pubDate": "Mon, 04 May 2026 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxOWkJhLWE3b3A4TGhjV0l1dWpmZVdsS3hWR3FNUlpMbVZpZF9sRXFYUThVUnpoWVBDZTY5TE03QVl4NWFaYjJzNFNHZTZ6Wk13ZEdLblhQMzY0UkJRSzhFLXh0WVB6SjhFbnhLM3BiTjdpNTA1SmdYU1VQM0VxY1ZOX2xqZGxxQ2hweHlENVJRcVpYX1dCUDJjbHFB?oc=5",
+    "sentimentScore": -0.44,
+    "sentimentLabel": "BEARISH",
+    "symbol": "FOWAD",
+    "llmScore": -0.8,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "declines",
+      "reduced",
+      "turnover"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse surges by 8. 78 points on Tuesday - The Annapurna Express",
+    "pubDate": "Tue, 05 May 2026 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTFBidl9aVnhBR3gtMVRJd01uMW02cHdVRjJGcGhWU2NWektJWm1KbWhuc0dxbWpuUGppS2JfaEVfYUY1b0JIYTR2dUtBc2hUNW5wYnB1S09vaw?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "FOWAD",
+    "llmScore": 0.9,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "gains",
+      "upward"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Four listed companies open their right shares - myRepublica",
+    "pubDate": "Sun, 10 Aug 2025 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQSzlzalV0TkFpUDIzeXZraEtfaFpxZU5fcHp5UlBhaS1TSjA2clVNMnAzc3ZTdmR0X2dEbEpWMjlpZ21mQlo4QUZTSTZTQWt6d1RNOWJzVi1sMldpSkxnTWRUTnUyWldidWhyS1V3S1dGR1pIbWM4YjVsRVNGcnNBWDZMMDFuYmRSbVdkRUhFcWkxNWZSSDlUSFUzLXNPcUh1a3c?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "FOWAD",
+    "llmScore": -0.7,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "rights",
+      "dilution",
+      "issue"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "New stock exchange license process moves forward without NEPSE restructuring - Ratopati",
+    "pubDate": "Mon, 10 Feb 2025 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiUkFVX3lxTFBYMU5Rc2RtOGRrdVdUUXRmZmpGejBQam1RQWdmZVdiVkIxeV96T3p4LU5wMWl5dzFkRlZNSWpjWXFzVFI3MDlMZUFfSXBnWHlfcUE?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "FOWAD",
+    "llmScore": 0.0,
+    "llmLabel": "NEUTRAL",
+    "llmKeywords": [
+      "license",
+      "process",
+      "regulation"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "New stock exchange license process moves forward without NEPSE restructuring - Hamro Patro",
+    "pubDate": "Mon, 10 Feb 2025 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxNenkyRUMzVHpETkJWS2x1Sk9VeFhMNTZOV3JtaU10emI5clV3eS1hVTJpUTZJMHFWY3FNQ0RQMk5aRVFOVFIzdGtqdkdjMVY2LV9JTlBrX1c5am0zZUsxREI2YnBvVHJlQnNKNjhQbjF3ZC1tRVJUbTQzNE9FanZmMXZsV1pVUW8yU0lwSVNsX3JvcnJDUjFiTUcwVHIyeklZMllONGluOU50YjU4NFhPQ2hXM2tBaFYyMXJOcGplZnhzUEloUFdsSmlaYWt4cUlmUWc?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "FOWAD",
+    "llmScore": 0.0,
+    "llmLabel": "NEUTRAL",
+    "llmKeywords": [
+      "license",
+      "process",
+      "regulation"
+    ],
+    "llmProcessed": true
+  }
+]

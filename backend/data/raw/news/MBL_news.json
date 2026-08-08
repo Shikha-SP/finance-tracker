@@ -1,0 +1,33 @@
+[
+  {
+    "title": "NEPSE drops 10.07 points, turnover rises to Rs 3.29 billion - Nepalnews.com",
+    "pubDate": "Thu, 14 May 2026 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQWjk3WExTdzNQaHJpdzhySTE3R2dQWW9Hb0Q5aFlZZU1ZUWU3U1pRNGZWSi14M3RKVXdLUzJrc0p0UkcxRFEtOU8yRWFMYk9SeFp0M19zYVgtcWRlSEhsN25RSVNUR0pER2hSc3JVanBVTTRuSjlTYUVwY0FNblVnQjNBWm40OTNNYTBnTUNfMUpYLWdhM2lSTEhsc0hocDVCNHc?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "MBL",
+    "llmScore": -0.5,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "drop",
+      "turnover"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "माछापुच्छ्रे बैंकले लाभांश वितरण नगर्ने - NEPSE Trading",
+    "pubDate": "Wed, 11 Dec 2024 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxQbjVhNW0yd250V0dnQlBaeEhVVVpGT1p2QkRZN2xoeXMtbFY0NzVWdm9vRnYxMnVETE5EWVN3RUpzUFJ1YVVSR3NOZWxjekZRTWk4MVF5V0lzNnF5ekhNUEhISEJFWHNVTXFBRThzM29UWkNpTkpodVBwblM4X2VscGFqTUFXd01yUm5xSHdQQzJ4TjRzTVhNOEJn?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "MBL",
+    "llmScore": -1.0,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "no",
+      "dividend",
+      "distribution"
+    ],
+    "llmProcessed": true
+  }
+]

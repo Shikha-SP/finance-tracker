@@ -1,0 +1,66 @@
+[
+  {
+    "title": "Nepse plunges by 885. 32 points on Sunday - The Annapurna Express",
+    "pubDate": "Sun, 01 Mar 2026 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5qSkRLblBXRzZKc2RSb0pWSFJtYWhHUDZJdXNIVWpndTg5dmhqWV9MNHRGN1JWY0xPVmFzS2F0d2l1VGZ5eGpiVHk5WFRPX3hOV1l4ZUdsWQ?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "BHPL",
+    "llmScore": -0.8,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunge",
+      "loss",
+      "Nepse"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse plunges by 6. 55 points on Thursday - The Annapurna Express",
+    "pubDate": "Thu, 04 Sep 2025 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE83TElSNHcweFl2SWlPM0NNRU9ETWN6bHVTWUZDRE9ZbkJvMGdrUFR2T2t4S1h0bV82R3MxOWZFYzVtR0tqTWhfdFFTcGZEZVNVYTRQWk5oVQ?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "BHPL",
+    "llmScore": -0.6,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunge",
+      "decline",
+      "Nepse"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse plunges by 6. 93 points on Wednesday - The Annapurna Express",
+    "pubDate": "Wed, 21 May 2025 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE1BTFAzb3BZTFhTTmlCTnhqWUJIQXI2dGVkRW1EU0NFM3JZb1ZQR1ZsWWJUTF85dnBYZUtNWkFlRVRSUzVWOEl2eGpyM2RyTlZ3QjhFU1pETQ?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "BHPL",
+    "llmScore": -0.6,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunge",
+      "downfall",
+      "Nepse"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse plunges by 15. 54 points on Monday - The Annapurna Express",
+    "pubDate": "Mon, 13 Jan 2025 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5PMTZVOENQeWlnRmFsdWtqTDZfLVMzZU5yaHlBSVZQdksyRnEtVGV1QVF3VnRwRkNuRGY5bkpXc21XbmExWXB3bHVoYlFIVks4b3FJRFhBNA?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "BHPL",
+    "llmScore": -0.8,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunge",
+      "drop",
+      "Nepse"
+    ],
+    "llmProcessed": true
+  }
+]

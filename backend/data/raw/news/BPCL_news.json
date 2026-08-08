@@ -1,0 +1,82 @@
+[
+  {
+    "title": "Nepse plunges by 32. 45 points on Monday - The Annapurna Express",
+    "pubDate": "Mon, 07 Apr 2025 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5LQVlkeXNsUENvdVNIVFFsQ0l2aVhkU2JHZ3dyVG96OGQxSUxJdW9nWWxXQnNqaF8yN29JUUpnZXhEX1ItNEFVTG9aXzFKY0JtN0NiYm5jRQ?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "BPCL",
+    "llmScore": -0.8,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunges",
+      "losses",
+      "decline"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "NEPSE crosses 3,000 mark, records nearly Rs 30​​​​​​​ billion in daily turnover - The Himalayan Times",
+    "pubDate": "Thu, 15 Aug 2024 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPRjlud3B0azBkLUFCSXlGclZRbFE0TVplWDVyWmwtZGZ3SlJ0M2V4eFNkU2ttZG9OQ1JVLUxNTUxVVHAtYlFsYi1wTG1pX3ZCZ2JOX1JRQlVVbHAtb1ZOZ2x6TTJ6UHNIWVdrUmZ1WWVrXy0xNl9yMGlJaUx5Q3pIaEgyM0pydk1LOWJHT1JpMFQxaW5hc21Lc09pWVkxdGU1RnR6V2haNUNWc2c?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "BPCL",
+    "llmScore": 0.9,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "growth",
+      "turnover",
+      "record"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Butwal Power - BPCL | Online Khabar Markets - Online Khabar",
+    "pubDate": "Tue, 10 Oct 2023 11:30:20 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1vSG1qMFV2LVJSQXBfSlhJcW5SbElVSTh3X2RwZ2NSM2Q1dzZmMjJ3bUk2a3BTT2VzVEstSndtN3FuWXpwWk5JYUFLd0VvSDJYbE5tZWl2X0YwNGNN?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "BPCL",
+    "llmScore": 0.0,
+    "llmLabel": "NEUTRAL",
+    "llmKeywords": [
+      "corporate",
+      "update",
+      "information"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Butwal Power Company's FPO under-subscribed - myRepublica",
+    "pubDate": "Wed, 28 Feb 2018 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxPak0zcGktQVhCSlFjLWsyTWNsMlFwSFRkU1RaSmdXeHFYUzNVQ0t5OGxTbXNBeGkyNlY1cmlMS2s2OXdaekVnVzRlaWlQTHlWYXFVYXhqTzRQWkhvVFdGV2o5enBCZWczNHV6OHdmN3FJdVdZRW1HVWV2X3Y1bGFmYmJlYzJOTDFVcF8ydnc1Yw?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "BPCL",
+    "llmScore": -0.7,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "under-subscribed",
+      "FPO",
+      "disappointment"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse surges by 27. 29 points on Sunday - The Annapurna Express",
+    "pubDate": "Mon, 09 Jun 2025 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE0zWmo0Mm80Q1p1X0hZWlVPWUJxWVA5dThiT2pkUEtDN3dUOFhOVFZwZlAtOTQwdUYtY2U3YnRTc1RxUmhQSTUyOXZkR3ZEWFhfM29nUEJEUQ?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "BPCL",
+    "llmScore": 0.8,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "gains",
+      "recovery"
+    ],
+    "llmProcessed": true
+  }
+]

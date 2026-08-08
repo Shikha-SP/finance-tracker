@@ -1,0 +1,33 @@
+[
+  {
+    "title": "November 18, 2025 - Nepalnews.com",
+    "pubDate": "Tue, 18 Nov 2025 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxQS0t1Y2lGXzZ5UjUteEVsbEprbXZzeXNGQTdDclFoMXEweHhvVm43a2RNMmU2dnY3a3FIekVqSzRadXREZ2dQTTRaZjNyS0ppakN4N2RfZlN0bjZ5STFPenVjQ2ZpbWJ6UldoQlBvYmRHbHI1Sldjbi1lNDMtbG5LZGQ5c3VQaGtvNTAzSHdVODlYOTdlYzBN?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "SONA",
+    "llmScore": 0.0,
+    "llmLabel": "NEUTRAL",
+    "llmKeywords": [
+      "Nepalnews",
+      "update"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse surges by 6. 70 points on Thursday - The Annapurna Express",
+    "pubDate": "Thu, 08 Aug 2024 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1vQktOYW5GRXZ3SHhBLVhIb29zS0RRUXpWUFhueDZTdnlJNVNPWWVLVGhtaERBQk5rTzRUSFdNN01NVGlTb1F5dlp5bmgybUxSMnBaVlBzQnpBd0JH?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "SONA",
+    "llmScore": 0.8,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "Nepse",
+      "surges",
+      "growth"
+    ],
+    "llmProcessed": true
+  }
+]

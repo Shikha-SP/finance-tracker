@@ -1,0 +1,98 @@
+[
+  {
+    "title": "Nepse surges by 47. 55 points on Sunday - The Annapurna Express",
+    "pubDate": "Sun, 28 Dec 2025 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5HSUVORHJuNjVHMjRxMkNtNGxCQk5rQnItSWFyNmJfbmhQVWsyYThJX1hXbHZGTERFWFYzaEhyRGVpeDcydGpBUTNaVDQ2b2ZCYWplQWI4VQ?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "WNLB",
+    "llmScore": 0.8,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "growth",
+      "Nepse"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse plunges by 10. 53 points on Monday - The Annapurna Express",
+    "pubDate": "Mon, 29 Dec 2025 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE53bURzaEhiRHRBN0RyRFVybEFsT1psRk5IWEhCckNINlF5RHRQZWQ5OHpFam81MElxQTNCRHpObWtITGZoRjBsYlhhUEdzbEtBVHZzLVlBdw?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "WNLB",
+    "llmScore": -0.8,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunges",
+      "losses",
+      "Nepse"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse surges by 12. 68 points on Tuesday - The Annapurna Express",
+    "pubDate": "Tue, 18 Feb 2025 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5CZjg4WjVZR1l3dkhhZ3k3clNDaTNkRVhwS3RlT2ViLVRVT25zV2NPUHNDYmh4eWd4UUVSZlRRTG0xZnBwNXk4QUVvZlFObDNYbFBVNDlPOA?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "WNLB",
+    "llmScore": 0.6,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "gain",
+      "Nepse"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse surges by 4. 26 points on Tuesday - The Annapurna Express",
+    "pubDate": "Tue, 06 May 2025 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE14V3hlUENhWmlHZWNMaVd4cER0YUxaeWxpTzlJSndZWmM3RC1UYXNkVmNqZTkyTUpERDlFNFFoOUpzMTBHdVNzeWg0UkxiZHJhS0VKdjdJVQ?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "WNLB",
+    "llmScore": 0.4,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "upward",
+      "Nepse"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse surges by 10. 87 points on Wednesday - The Annapurna Express",
+    "pubDate": "Wed, 31 Dec 2025 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5VcmFmcW40RGEzV1RBd1B4WWRRNzM1X0ZvR2ZET0pvTXBWQ1lUVG5oQTJ5YjFsRmFYNXlZMC1Na05nYTVBWnBJeW96TjVlS1d1UnF6ZzJvSQ?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "WNLB",
+    "llmScore": 0.7,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "increase",
+      "Nepse"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse surges by 19. 56 points on Sunday - The Annapurna Express",
+    "pubDate": "Sun, 16 Feb 2025 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5LWXF1dllBMm02VmZ5eVVJZXZhaHZYY0d3dmZRN25yUFdzZFIyR0tBTGdyandQNGk2QnpORU1RWEtwT0RlclpZM1hNWDZqUFFQdmxWTUtjbw?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "WNLB",
+    "llmScore": 0.9,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "high",
+      "Nepse"
+    ],
+    "llmProcessed": true
+  }
+]

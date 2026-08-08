@@ -1,0 +1,50 @@
+[
+  {
+    "title": "Retail Investors Pivot to Low-price Hydros as NEPSE Tests Key Resistance Levels - NEPSE Trading",
+    "pubDate": "Thu, 29 Jan 2026 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQa3BWckZCS1NUMENURFlYWDdiLUU2cXl1czJUdWFzeDlSdXdURlZ3U1lhbkQ2ZWhhc3R5SS1Wd3RBeEljOEwtUWF0TU9wX2JqdXBZYi1iYWswcS1rNjEzUHVYckpRd0JNU0ZXY1c5R2N5NnU3YzhuUGEzeVhkb3NmTnB5U2RwcW5INnAxMU9QTVhyMW1GQTVsYXdZWG1ocUJ3NEZGTUJiZjNfdFUyalE?oc=5",
+    "sentimentScore": -0.22,
+    "sentimentLabel": "BEARISH",
+    "symbol": "AKJCL",
+    "llmScore": 0.5,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "hydros",
+      "resistance",
+      "growth"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse surges by 5. 08 points on Wednesday - The Annapurna Express",
+    "pubDate": "Wed, 28 Jan 2026 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5fSEh3Nnl4UWR5TzViTk9JX1lZZVBwZkd4WkR6cmJETzVUZjRCaVZsMjBiT0FhMEdhdVVmS1FjZU55b25TdmZWb1NYajBhdGxXTlEyaU5GZw?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "AKJCL",
+    "llmScore": 0.8,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "Nepse",
+      "upward"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse surges by 59. 68 points on Thursday - The Annapurna Express",
+    "pubDate": "Thu, 18 Jul 2024 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTFA0RnNMYk1sWmF5VXZET0RncG9Vbjl6anRpbldNTUVkenlUbVR0SHFhOW1GQWhia0FjNlpUQ2MzaHdaZE5PYnJCYnZ0TVdnQmZ3UUhpMWRsNA?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "AKJCL",
+    "llmScore": 0.9,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "Nepse",
+      "momentum"
+    ],
+    "llmProcessed": true
+  }
+]

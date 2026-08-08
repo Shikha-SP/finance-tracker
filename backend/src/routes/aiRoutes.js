@@ -106,7 +106,7 @@ router.post('/rag/query', async (req, res) => {
       answer: 'The AI assistant is currently unavailable. Please ensure the Python AI service is running on port 8000.',
       recommendations: [],
       citations: [],
-      symbol: (req.body.symbol || 'NABIL').toUpperCase(),
+      symbol: null,
       query: req.body.query
     });
   }

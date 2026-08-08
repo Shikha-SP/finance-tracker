@@ -1,50 +1,98 @@
 [
   {
-    "title": "Nabil Bank\u2019s Profit Jumps 33.5 Percent, but Lower Credit-Loss Expenses Drive Much of the Gain - NEPSE Trading",
+    "title": "Nabil Bank’s Profit Jumps 33.5 Percent, but Lower Credit-Loss Expenses Drive Much of the Gain - NEPSE Trading",
     "pubDate": "Wed, 05 Aug 2026 03:12:34 GMT",
     "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxOVExlaEx5OXp0TjdUT1JXUDI3ejBiUzJvSUNTX0lLRnVRb3pfcGIwNnBzZWhCa2c0NkJ5THBQTFRlaFJKdThza1pWYlJNbWloajM4c05Sdkh3UlAtOVRZVTZ0TTNTaUZTT2xjWlFHX3dmNG40eklRTURxNURERm9PMmZkNTFEeXBULVF3R2U2d2MyU1V6ZjB6OGYzakZHTThmM0k4UXc5eFg2QkJu?oc=5",
-    "sentimentScore": 0.0,
-    "sentimentLabel": "NEUTRAL",
-    "symbol": "NABIL"
+    "sentimentScore": 0.74,
+    "sentimentLabel": "BULLISH",
+    "symbol": "NABIL",
+    "llmScore": 0.8,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "profit",
+      "growth",
+      "dividend"
+    ],
+    "llmProcessed": true
   },
   {
-    "title": "\u0928\u092c\u093f\u0932 \u092c\u0948\u0902\u0915\u0915\u094b \u091a\u094c\u0925\u094b \u0924\u094d\u0930\u0948\u092e\u093e\u0938\u093f\u0915 \u0935\u093f\u0924\u094d\u0924\u0940\u092f \u0935\u093f\u0935\u0930\u0923 (\u0906.\u0935. \u0968\u0966\u096d\u096f/\u096e\u0966) - NEPSE Trading",
+    "title": "नबिल बैंकको चौथो त्रैमासिक वित्तीय विवरण (आ.व. २०७९/८०) - NEPSE Trading",
     "pubDate": "Wed, 05 Aug 2026 03:50:30 GMT",
     "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQOWdXczVvbjYxSV95b3pLMXIyZF9MRUFDMV9fdk9pY2ctdjRiM1IzdDRCRjlDQVVLRTV3aWJQUWlrRERJSWVhX3FhTGpmdXBSUVdHN2thYzllTkdsUDRUN0JlSC1sdVFfZWtSNVpyTTRHbXBLY1ZZTVFmbDZDam1aR3RsYjFwMURoc1dRa24tcFl4bmlB?oc=5",
-    "sentimentScore": 0,
+    "sentimentScore": 0.0,
     "sentimentLabel": "NEUTRAL",
-    "symbol": "NABIL"
+    "symbol": "NABIL",
+    "llmScore": 0.0,
+    "llmLabel": "NEUTRAL",
+    "llmKeywords": [
+      "financial",
+      "report",
+      "release"
+    ],
+    "llmProcessed": true
   },
   {
     "title": "Nepse Index down by 13.46 point to 2837.77 - The Rising Nepal",
     "pubDate": "Fri, 10 Apr 2026 10:04:00 GMT",
     "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE4zQXFyaWdyYndicEtTdG5oc21NalVVbVcxVjVydWhXem9vNnRkWFJsZkxpelgtSjZGMFRNb2dfRWJmdlBJcC1uaUFkazlRV0FU?oc=5",
-    "sentimentScore": -0.25,
-    "sentimentLabel": "BEARISH",
-    "symbol": "NABIL"
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "NABIL",
+    "llmScore": -0.7,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "nepse",
+      "index",
+      "down"
+    ],
+    "llmProcessed": true
   },
   {
     "title": "Nepal Stock Exchange Publishes List of Tradeable Securities for Stock Dealers - Ratopati",
     "pubDate": "Wed, 11 Feb 2026 10:25:04 GMT",
     "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxOdUdKVzRfTnFiMm92RU1pZ0t1LWdINGVUdFFLM2xEc190VnVLNkJoRFJLZS1Uazh5RDJUWVc5Ynk2OVpZWURBYkd3dXZLbV9FTloyYmZ2bVY5RU9XSmZQOGZwdlRxa001b21scXlWa0MwckhOcVVFZVZPM2p5N2MzT3p0Wi1xMEJDdWlKZ0ZXdXFtcWRDLWtSZWRTZlgtekhHeV9oR1BscFJqZkNZbnVjVVdZQUZTd2c?oc=5",
-    "sentimentScore": 0,
+    "sentimentScore": 0.0,
     "sentimentLabel": "NEUTRAL",
-    "symbol": "NABIL"
+    "symbol": "NABIL",
+    "llmScore": 0.0,
+    "llmLabel": "NEUTRAL",
+    "llmKeywords": [
+      "tradeable",
+      "securities",
+      "list"
+    ],
+    "llmProcessed": true
   },
   {
     "title": "Time Pharmaceuticals Sets IPO Price at Rs 450 Thru Book Building Bidding - merolagani",
     "pubDate": "Mon, 13 Jul 2026 07:00:00 GMT",
     "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE5GRkdLSC1vd2c3NUpHWU9ReGZucHJqcm04Wmo2Qi1HcjNkaV9RZnFtUDN2Z2dKNFgxUjVHMEswTV9nRlV5WHJMNE9UbE1pazFhWlFxQlRvcmZVYVhsQ2lUajNR?oc=5",
-    "sentimentScore": 0,
+    "sentimentScore": 0.0,
     "sentimentLabel": "NEUTRAL",
-    "symbol": "NABIL"
+    "symbol": "NABIL",
+    "llmScore": 0.5,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "ipo",
+      "price",
+      "book"
+    ],
+    "llmProcessed": true
   },
   {
     "title": "November 16, 2025 - Nepalnews.com",
     "pubDate": "Sun, 16 Nov 2025 08:00:00 GMT",
     "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxNYkZIOEszSEFzSTZ2X0dTTHhTVy1PZDJHRVgxZk1XOGpyVjVxRllnc2RyMUswZURPUmp2RTBUT0dVN1VxQnF3Tm9ENnFPUjFaSUp0d05XbTl3cGNyOUFQUHIxV1RveXNEVjA5Z0cwVktmbHBzQ3BKV3lSbkcyMFRWZWlWRkI4Ry00YWxPdlBjSkRhc1NhVTN3?oc=5",
-    "sentimentScore": 0,
+    "sentimentScore": 0.0,
     "sentimentLabel": "NEUTRAL",
-    "symbol": "NABIL"
+    "symbol": "NABIL",
+    "llmScore": 0.0,
+    "llmLabel": "NEUTRAL",
+    "llmKeywords": [
+      "news",
+      "update",
+      "nepal"
+    ],
+    "llmProcessed": true
   }
 ]

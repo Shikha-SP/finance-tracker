@@ -1,9 +1,6 @@
 import os
 import re
-import math
 import json
-import urllib.request
-from collections import Counter
 
 from data_collector import relative_time
 
@@ -11,182 +8,308 @@ GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 class FinancialRAGProcessor:
     """
-    Groq LLM-powered RAG engine for NEPSE financial documents.
-    Indexes report chunks and synthesizes grounded answers using Groq Llama 3.3 / Mixtral.
+    Real-data NEPSE assistant.
+
+    Answers are grounded in:
+      - Real MeroLagani fundamentals cache (P/E, ROE, EPS, book value, dividend yield, market cap)
+      - Real NEPSE live-market snapshot (index, turnover, top gainers/losers, LTP)
+      - Real per-scrip news sentiment cache
+      - Real technical signals computed from actual price history (transparent scorer)
+
+    No fabricated figures. When a Groq API key is supplied the LLM summarizes the
+    same real context; otherwise a deterministic markdown answer is produced.
     """
     def __init__(self):
-        self.documents = {} # symbol -> list of chunks
         self.base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.raw_news_dir = os.path.join(self.base_dir, "data", "raw", "news")
-        self.raw_funds_dir = os.path.join(self.base_dir, "data", "raw", "fundamentals")
+        self.fund_cache_file = os.path.join(self.base_dir, "data", "raw", "fundamentals", "merolagani_cache.json")
+        self.snapshot_file = os.path.join(self.base_dir, "data", "nepse_snapshot.json")
+        self._fund_cache = None
+        self._snapshot_cache = None
 
-    def tokenize(self, text):
-        return re.findall(r'\w+', text.lower())
+    # ── Real data loaders ────────────────────────────────────────────────
 
-    def compute_tfidf(self, corpus):
-        N = len(corpus)
-        if N == 0:
-            return [], []
-            
-        dfs = Counter()
-        for doc in corpus:
-            words = set(self.tokenize(doc))
-            for w in words:
-                dfs[w] += 1
-                
-        idfs = {w: math.log((N + 1) / (df + 1)) for w, df in dfs.items()}
-        
-        vectors = []
-        for doc in corpus:
-            tf = Counter(self.tokenize(doc))
-            vec = {w: tf[w] * idfs.get(w, 0.0) for w in tf}
-            norm = math.sqrt(sum(v**2 for v in vec.values())) or 1.0
-            vec = {w: v / norm for w, v in vec.items()}
-            vectors.append(vec)
-            
-        return vectors, idfs
+    def _load_fundamentals(self):
+        if self._fund_cache is None:
+            try:
+                with open(self.fund_cache_file, encoding='utf-8') as f:
+                    self._fund_cache = json.load(f)
+            except Exception:
+                self._fund_cache = {}
+        return self._fund_cache
 
-    def process_document_text(self, symbol, title, text_content):
-        symbol = symbol.upper().strip()
-        words = text_content.split()
-        chunk_size = 250
-        overlap = 50
-        chunks = []
-        
-        for i in range(0, len(words), chunk_size - overlap):
-            chunk_words = words[i:i + chunk_size]
-            chunk_text = " ".join(chunk_words)
-            if len(chunk_text.strip()) > 30:
-                chunks.append({
-                    "chunkIndex": len(chunks),
-                    "title": title,
-                    "text": chunk_text
-                })
-                
-        if not chunks:
-            chunks.append({"chunkIndex": 0, "title": title, "text": text_content})
-            
-        self.documents[symbol] = chunks
-        print(f"[Groq RAG Engine] Indexed '{title}' for {symbol} ({len(chunks)} chunks).")
-        return len(chunks)
+    def _load_snapshot(self):
+        if self._snapshot_cache is None:
+            try:
+                with open(self.snapshot_file, encoding='utf-8') as f:
+                    self._snapshot_cache = json.load(f)
+            except Exception:
+                self._snapshot_cache = {}
+        return self._snapshot_cache
 
-    def query_financial_document(self, symbol, query, company_meta=None, groq_api_key=None):
-        symbol = symbol.upper().strip()
-        chunks = self.documents.get(symbol, [])
-        
-        if not chunks:
-            # Attempt to load scraped news and fundamentals
-            news_file = os.path.join(self.raw_news_dir, f"{symbol}_news.json")
-            funds_file = os.path.join(self.raw_funds_dir, f"{symbol}_fundamentals.json")
-            
-            meta = company_meta or {}
-            c_name = meta.get('name') or symbol
-            eps = meta.get('eps', 'N/A')
-            pe = meta.get('peRatio', 'N/A')
-            roe = meta.get('roe', 'N/A')
-            div = meta.get('dividendYield', 'N/A')
+    def _news_for_symbol(self, symbol):
+        try:
+            with open(os.path.join(self.raw_news_dir, f"{symbol}_news.json"), encoding='utf-8') as f:
+                items = json.load(f)
+                return items if isinstance(items, list) else []
+        except Exception:
+            return []
 
-            combined_text = f"Target Listed Scrip: {symbol} - {c_name}\n\n"
-            
-            if os.path.exists(funds_file):
-                try:
-                    with open(funds_file, 'r', encoding='utf-8') as f:
-                        scraped_meta = json.load(f)
-                        combined_text += f"Financial Overview & Annual Disclosure for {symbol} ({scraped_meta.get('name', c_name)}):\n"
-                        combined_text += f"The company recorded Earnings Per Share (EPS) of Rs. {scraped_meta.get('eps', eps)} and Return on Equity (ROE) of {scraped_meta.get('roe', roe)}%.\n"
-                        combined_text += f"Valuation metrics show Price-to-Earnings (P/E) ratio at {scraped_meta.get('peRatio', pe)}x with dividend yield of {scraped_meta.get('dividendYield', div)}%.\n"
-                        combined_text += f"Market Cap: {scraped_meta.get('marketCap', 'N/A')}, Book Value: {scraped_meta.get('bookValue', 'N/A')}.\n\n"
-                except Exception as e:
-                    pass
-            
-            if os.path.exists(news_file):
-                try:
-                    with open(news_file, 'r', encoding='utf-8') as f:
-                        news_items = json.load(f)
-                        if news_items:
-                            combined_text += f"Recent News & Sentiment for {symbol} ({c_name}):\n"
-                            for item in news_items:
-                                combined_text += f"- {item.get('title', '')} ({item.get('pubDate', '')}) [Sentiment: {item.get('sentimentLabel', '')}]\n"
-                except Exception as e:
-                    pass
-            
-            if len(combined_text.strip()) < 50:
-                combined_text = f"""
-                Financial Overview & Annual Disclosure for {symbol} ({c_name}):
-                Capital Adequacy Ratio (CAR) remains strong above NRB requirements with robust solvency margins.
-                The company recorded Earnings Per Share (EPS) of Rs. {eps} and Return on Equity (ROE) of {roe}%.
-                Non-Performing Loans (NPL) ratio is well managed.
-                Valuation metrics show Price-to-Earnings (P/E) ratio at {pe}x with dividend yield of {div}%.
-                Operating cash flows continue to cover debt obligations comfortably.
-                """
-            self.process_document_text(symbol, f"{symbol} ({c_name}) Knowledge Base", combined_text)
-            chunks = self.documents[symbol]
+    def _detect_symbol(self, query):
+        funds = self._load_fundamentals()
+        q = query.upper()
+        # Match ticker symbols (longest first so e.g. CBL over CBL... is stable)
+        for sym in sorted(funds.keys(), key=len, reverse=True):
+            if re.search(rf'\b{re.escape(sym)}\b', q):
+                return sym
+        # Match full company names
+        for sym, f in funds.items():
+            name = (f.get('name') or '').upper()
+            if name and re.search(rf'\b{re.escape(name)}\b', q):
+                return sym
+        return None
 
-        corpus = [c['text'] for c in chunks]
-        vectors, idfs = self.compute_tfidf(corpus)
-        
-        # Vectorize query
-        q_tf = Counter(self.tokenize(query))
-        q_vec = {w: q_tf[w] * idfs.get(w, 0.0) for w in q_tf}
-        q_norm = math.sqrt(sum(v**2 for v in q_vec.values())) or 1.0
-        q_vec = {w: v / q_norm for w, v in q_vec.items()}
+    def _technical_signal(self, symbol, df_raw):
+        """Real transparent scorer output for one symbol from its actual price history."""
+        try:
+            from indicators import compute_all_indicators
+            from ml_model import classifier
+            if df_raw is None:
+                return None
+            sub = df_raw[df_raw['symbol'].str.upper() == symbol]
+            if len(sub) < 5:
+                return None
+            di = compute_all_indicators(sub.sort_values('date'))
+            pred = classifier.predict_movement_probabilities(di, cache_key=symbol)
+            latest = di.iloc[-1]
+            sma_ratio = float(latest.get('close', 0)) / float(latest.get('sma_20', latest.get('close', 1))) if latest.get('sma_20') else None
+            return {
+                "signal": pred['signal'],
+                "confidence": pred['confidenceScore'],
+                "price": round(float(latest['close']), 2),
+                "rsi": round(float(latest.get('rsi', 50.0)), 2),
+                "sma20Ratio": round(sma_ratio, 3) if sma_ratio else None
+            }
+        except Exception:
+            return None
 
-        scores = []
-        for idx, doc_vec in enumerate(vectors):
-            dot = sum(q_vec.get(w, 0.0) * doc_vec.get(w, 0.0) for w in q_vec)
-            scores.append((dot, idx))
-            
-        scores.sort(reverse=True)
-        top_chunks = [chunks[idx] for score, idx in scores[:3] if idx < len(chunks)]
-        context_str = "\n\n".join([f"[Chunk #{c['chunkIndex']}]: {c['text']}" for c in top_chunks])
+    # ── Real top picks (no hardcoded numbers) ────────────────────────────
 
-        # Check for Groq API key in env or request parameter
+    def _build_top_picks(self, limit=5):
+        funds = self._load_fundamentals()
+        try:
+            from data_collector import fetch_price_history_csv
+            df_raw = fetch_price_history_csv()
+        except Exception:
+            df_raw = None
+
+        picks = []
+        for sym, f in funds.items():
+            pe = f.get('peRatio')
+            roe = f.get('roe')
+            dy = f.get('dividendYield')
+            # Require sane, real valuations: skip loss-making and absurd P/E
+            if pe is None or pe <= 0 or pe > 30:
+                continue
+            if roe is None or roe <= 0:
+                continue
+
+            tech = self._technical_signal(sym, df_raw)
+            signal = tech['signal'] if tech else 'NEUTRAL'
+            confidence = tech['confidence'] if tech else 55.0
+            price = tech['price'] if tech and tech['price'] else f.get('price')
+
+            score = 0.0
+            parts = []
+            if pe < 15:
+                score += 2.0
+            elif pe < 20:
+                score += 1.2
+            elif pe < 25:
+                score += 0.6
+            if roe > 18:
+                score += 1.5
+            elif roe > 12:
+                score += 1.0
+            elif roe > 8:
+                score += 0.5
+            if dy and dy > 4:
+                score += 1.5
+            elif dy and dy > 2.5:
+                score += 1.0
+            elif dy and dy > 1.5:
+                score += 0.5
+            if signal == 'BULLISH':
+                score += 1.5
+            elif signal == 'NEUTRAL':
+                score += 0.4
+            else:
+                score -= 1.0
+            if tech and tech.get('sma20Ratio'):
+                score += 0.8 if tech['sma20Ratio'] >= 1.0 else -0.5
+
+            reason_bits = [f"P/E {pe}", f"ROE {roe}%"]
+            if dy:
+                reason_bits.append(f"div yield {dy}%")
+            if tech:
+                reason_bits.append(f"{signal} technicals (RSI {tech['rsi']})")
+            parts = reason_bits
+
+            picks.append({
+                "symbol": sym,
+                "name": f.get('name') or sym,
+                "sector": f.get('sector') or 'Equity',
+                "signal": 'BUY' if signal == 'BULLISH' else ('HOLD' if signal == 'NEUTRAL' else 'SELL'),
+                "confidence": round(float(confidence), 1),
+                "price": round(float(price), 2) if price else None,
+                "reason": "; ".join(parts),
+                "score": score
+            })
+
+        picks.sort(key=lambda p: p['score'], reverse=True)
+        return picks[:limit]
+
+    # ── Context builders ─────────────────────────────────────────────────
+
+    def _market_context(self):
+        snap = self._load_snapshot()
+        lines = []
+        as_of = snap.get('asOf') or ''
+        # NEPSE main index from the indices list
+        nepse = next((i for i in (snap.get('indices') or []) if i.get('index') == 'NEPSE Index'), None)
+        if nepse:
+            val = nepse.get('currentValue') or nepse.get('close')
+            chg = nepse.get('change')
+            pct = nepse.get('perChange')
+            turnover = ''
+            for item in (snap.get('summary') or []):
+                if 'turnover' in (item.get('detail') or '').lower() and item.get('value'):
+                    turnover = f", turnover Rs {item['value']:,.0f}"
+            lines.append(
+                f"Market snapshot (as of {as_of or 'last session'}): NEPSE at {val} "
+                f"({chg:+} pts, {pct:+}%){turnover}"
+            )
+        else:
+            lines.append("Market snapshot: live index data currently unavailable.")
+        gainers = (snap.get('gainers') or [])[:3]
+        losers = (snap.get('losers') or [])[:3]
+        if gainers:
+            lines.append("Top gainers today: " + "; ".join(
+                f"{g.get('symbol')} {g.get('ltp')} ({g.get('percentageChange')}%)" for g in gainers))
+        if losers:
+            lines.append("Top losers today: " + "; ".join(
+                f"{l.get('symbol')} {l.get('ltp')} ({l.get('percentageChange')}%)" for l in losers))
+        return "\n".join(lines)
+
+    def _symbol_context(self, symbol):
+        funds = self._load_fundamentals()
+        f = funds.get(symbol, {})
+        tech = self._technical_signal(symbol, None)
+        try:
+            from data_collector import fetch_price_history_csv
+            df_raw = fetch_price_history_csv()
+            tech = tech or self._technical_signal(symbol, df_raw)
+        except Exception:
+            pass
+
+        lines = [f"Company: {symbol} ({f.get('name') or symbol}) - {f.get('sector') or 'Equity'}"]
+        if f.get('peRatio') is not None:
+            lines.append(f"P/E ratio {f['peRatio']}x, P/B ratio {f.get('pbRatio')}x")
+        if f.get('eps') is not None:
+            lines.append(f"EPS Rs {f['eps']}, ROE {f.get('roe')}%, book value Rs {f.get('bookValue')}")
+        if f.get('dividendYield') is not None:
+            lines.append(f"Dividend yield {f['dividendYield']}%")
+        if f.get('marketCap') is not None:
+            lines.append(f"Market cap Rs {f['marketCap']:,.0f}")
+        if f.get('price') is not None:
+            lines.append(f"Last traded price Rs {f['price']}")
+        if tech:
+            lines.append(
+                f"Technical (computed from real price history): {tech['signal']} with {tech['confidence']}% confidence, "
+                f"RSI {tech['rsi']}, price Rs {tech['price']}"
+            )
+        news = self._news_for_symbol(symbol)
+        if news:
+            lines.append("Recent news:")
+            for item in news[:6]:
+                lines.append(
+                    f"- {item.get('title')} ({item.get('pubDate')}) [Sentiment: {item.get('sentimentLabel', 'NEUTRAL')}]"
+                )
+        return "\n".join(lines)
+
+    # ── Intent helpers ───────────────────────────────────────────────────
+
+    def _is_rec_query(self, query):
+        return any(w in query.lower() for w in [
+            'buy', 'recommend', 'which stock', 'top pick', 'should i buy',
+            'best stock', 'invest', 'stocks to', 'which nepse', 'good stock'
+        ])
+
+    def _is_greeting(self, query):
+        return any(w in query.lower().strip() for w in [
+            'hi', 'hello', 'hey', 'namaste', 'good morning', 'good evening',
+            'who are you', 'what can you do', 'help'
+        ]) and len(query.strip().split()) <= 4
+
+    # ── Main entry ───────────────────────────────────────────────────────
+
+    def query_financial_document(self, query, groq_api_key=None, company_meta=None, symbol=None):
+        if not symbol:
+            symbol = self._detect_symbol(query)
+        symbol = symbol.upper().strip() if symbol else None
+
         api_key = groq_api_key or os.environ.get("GROQ_API_KEY")
-        
-        # Market-wide recommendation query handling
-        is_rec_query = any(w in query.lower() for w in ['buy', 'recommend', 'which stock', 'top pick', 'should i buy', 'best stock', 'invest', 'other banks', 'which nepse'])
+        is_rec = self._is_rec_query(query)
+        is_greet = self._is_greeting(query)
+
+        market_ctx = self._market_context()
+        picks = self._build_top_picks(limit=5) if is_rec else []
+
+        context_parts = [market_ctx]
+        if symbol:
+            context_parts.append(self._symbol_context(symbol))
+        context_str = "\n\n".join(context_parts)
+
+        picks_txt = ""
+        if picks:
+            picks_txt = "\n".join(
+                f"- {p['symbol']} ({p['name']}): {p['signal']} {p['confidence']}% confidence, "
+                f"price Rs {p['price']}. {p['reason']}."
+                for p in picks
+            )
 
         answer = None
-        recommendations = []
-
-        # Build top market recommendations from fundamental database & technicals
-        top_picks = [
-            {"symbol": "NABIL", "name": "Nabil Bank", "sector": "Commercial Banks", "signal": "STRONG BUY", "confidence": 88, "targetPrice": "Rs. 620", "reason": "Profits jumped 47% to NPR 4.75B with robust CAR above NRB requirements."},
-            {"symbol": "GBIME", "name": "Global IME Bank", "sector": "Commercial Banks", "signal": "BUY", "confidence": 82, "targetPrice": "Rs. 240", "reason": "Low P/E ratio of 14.2x and strong dividend yield of 4.2%."},
-            {"symbol": "CHCL", "name": "Chilime Hydropower", "sector": "Hydro Power", "signal": "BUY", "confidence": 85, "targetPrice": "Rs. 480", "reason": "High Return on Equity (ROE 12.8%) with strong operational cash flow."},
-            {"symbol": "SHIVM", "name": "Shivam Cements", "sector": "Manufacturing", "signal": "ACCUMULATE", "confidence": 78, "targetPrice": "Rs. 590", "reason": "Leading market share in cement manufacturing with solid book value."}
-        ]
+        recommendations = picks
+        groq_used = False
 
         if api_key:
             try:
                 from groq import Groq
                 client = Groq(api_key=api_key)
 
-                # Detect conversational / greeting queries
-                is_greeting = any(w in query.lower().strip() for w in ['hi', 'hello', 'hey', 'namaste', 'good morning', 'good evening', 'who are you', 'what can you do', 'help']) and len(query.strip().split()) <= 4
-
-                if is_greeting:
+                if is_greet:
                     system_prompt = (
-                        "You are a friendly, intelligent NEPSE financial advisor assistant. "
-                        "When the user says hi or greets you, reply in a warm, simple, conversational tone. "
-                        "Greet them back in 1-2 simple sentences and let them know you can help them analyze NEPSE stocks, "
-                        "check financial reports, or find good stocks to buy across all NEPSE listed companies."
+                        "You are a friendly, intelligent NEPSE financial advisor. Reply warmly and briefly, "
+                        "then note you can analyze stocks, fundamentals, and news using live NEPSE data."
                     )
-                    user_prompt = f"User message: {query}"
-                elif is_rec_query or 'bank' in query.lower() or 'stock' in query.lower():
+                    user_prompt = f"User: {query}"
+                elif is_rec:
                     system_prompt = (
-                        "You are an expert NEPSE stock market advisor. "
-                        "Provide clear, specific, actionable NEPSE stock recommendations (e.g. NABIL, GBIME, CHCL, SHIVM). "
-                        "List specific company symbols, state Buy/Hold/Sell signals, and give bullet points explaining why. "
-                        "Never say you don't know the company name or don't have information."
+                        "You are an expert NEPSE stock advisor. Recommend specific scrips using ONLY the real data provided "
+                        "below. State Buy/Hold/Sell signals with the real confidence and numbers given. "
+                        "Never invent P/E, ROE, dividend, price, or target figures that are not in the data. "
+                        "If data is missing, say so."
                     )
-                    user_prompt = f"User Question: {query}\nTarget Focus: {symbol}\nContext Data:\n{context_str}\n\nTop Market Candidates: NABIL, GBIME, CHCL, SHIVM, NTC, NLIC."
+                    user_prompt = (
+                        f"User question: {query}\n\nReal market data:\n{market_ctx}\n\n"
+                        f"Top candidates computed from real fundamentals + technicals:\n{picks_txt}"
+                    )
                 else:
                     system_prompt = (
-                        f"You are a helpful NEPSE financial assistant analyzing {symbol if symbol else 'NEPSE Market'}. "
-                        "Answer the user's question directly and concisely with clear facts."
+                        "You are a helpful NEPSE financial assistant. Answer using ONLY the real data provided below. "
+                        "Never invent financial figures. If you don't have the data to answer, say you don't have it."
                     )
-                    user_prompt = f"Target Company Symbol: {symbol}\nContext Data:\n{context_str}\n\nUser Question: {query}"
+                    user_prompt = f"Real data:\n{context_str}\n\nUser question: {query}"
 
                 completion = client.chat.completions.create(
                     model="llama-3.3-70b-versatile",
@@ -198,88 +321,89 @@ class FinancialRAGProcessor:
                     max_tokens=600
                 )
                 answer = completion.choices[0].message.content
-                if is_rec_query:
-                    recommendations = top_picks
-                print(f"[Groq AI] Successfully generated response for {symbol}")
+                groq_used = True
+                print(f"[Groq AI] Response generated (symbol={symbol})")
             except Exception as e:
                 print(f"[Groq SDK Error]: {e}")
 
         if not answer:
-            # High quality fallback grounded analysis when LLM API Key is absent/forbidden
-            meta = company_meta or {}
-            c_name = meta.get('name') or symbol
-            eps_str = f"Rs. {meta.get('eps')}" if meta.get('eps') else "N/A"
-            pe_str = f"{meta.get('peRatio')}x" if meta.get('peRatio') else "N/A"
-            roe_str = f"{meta.get('roe')}%" if meta.get('roe') else "N/A"
-            div_str = f"{meta.get('dividendYield')}%" if meta.get('dividendYield') else "N/A"
-            
-            if is_rec_query:
-                recommendations = top_picks
-                answer = (
-                    f"### Top NEPSE Stock Recommendations & Evaluation\n\n"
-                    f"Here are top-performing scrips evaluated across valuation, solvency, and historical returns:\n\n"
-                    f"1. **NABIL (Nabil Bank)** - Strong BUY (CAR > 12%, Profit +47%)\n"
-                    f"2. **GBIME (Global IME)** - BUY (Low P/E 14.2x, Div Yield 4.2%)\n"
-                    f"3. **CHCL (Chilime Hydro)** - BUY (ROE 12.8%, Cash flow coverage)\n"
-                    f"4. **SHIVM (Shivam Cement)** - ACCUMULATE (Book value Rs 176.5)\n\n"
-                    f"*Tip: Connect a valid Groq API key at the top for real-time LLM natural language chat.*"
-                )
-            else:
-                answer = (
-                    f"### Financial Overview for **{symbol}** ({c_name})\n\n"
-                    f"- **EPS**: {eps_str}\n"
-                    f"- **P/E Ratio**: {pe_str}\n"
-                    f"- **ROE**: {roe_str}\n"
-                    f"- **Dividend Yield**: {div_str}\n\n"
-                    f"The company maintains solid capital adequacy above NRB minimum thresholds with stable asset quality.\n\n"
-                    f"*Tip: Enter a valid Groq API key at the top to enable live LLM chat synthesis.*"
-                )
-                recommendations = []
+            answer = self._fallback_answer(query, symbol, is_rec, is_greet, market_ctx, picks, context_str)
 
-        citations = [
-            {
-                "source": c.get('title', f"{symbol} Financial Report"),
-                "chunkIndex": c['chunkIndex'],
-                "snippet": c['text'][:180] + "..."
-            }
-            for c in top_chunks
-        ]
-
-        # Sources = news articles with title + how long ago they were published
-        sources = []
-        if os.path.exists(news_file):
-            try:
-                with open(news_file, 'r', encoding='utf-8') as f:
-                    for item in json.load(f)[:6]:
-                        sources.append({
-                            "title": item.get('title', ''),
-                            "url": item.get('url', ''),
-                            "pubDate": item.get('pubDate', ''),
-                            "publishedAgo": relative_time(item.get('pubDate')),
-                            "sentimentLabel": item.get('sentimentLabel', 'NEUTRAL')
-                        })
-            except Exception as e:
-                print(f"[RAG Sources Warning] Could not read {news_file}: {e}")
-        if not sources:
-            sources = [
-                {
-                    "title": c.get('source', f"{symbol} Financial Report"),
-                    "url": "",
-                    "pubDate": "",
-                    "publishedAgo": "report chunk",
-                    "sentimentLabel": "DOCUMENT"
-                }
-                for c in citations
-            ]
+        sources = self._sources_for(symbol, picks)
 
         return {
             "answer": answer,
             "recommendations": recommendations,
-            "citations": citations,
+            "citations": [],
             "sources": sources,
-            "symbol": symbol,
+            "symbol": symbol or "NEPSE Market",
             "query": query,
-            "groqPowered": bool(api_key)
+            "groqPowered": groq_used
         }
+
+    def _fallback_answer(self, query, symbol, is_rec, is_greet, market_ctx, picks, context_str):
+        if is_greet:
+            return (
+                "Namaste! I can help you with NEPSE stocks using real market data — try:\n"
+                "- \"Which stocks should I buy?\"\n"
+                "- \"Tell me about NABIL or GBIME\"\n"
+                "- \"How did the market do today?\"\n\n"
+                "*I answer from live NEPSE data directly.*"
+            )
+        if is_rec:
+            if not picks:
+                return (
+                    "### Top NEPSE Stock Recommendations\n\n"
+                    "I don't have enough real valuation data to rank stocks right now. "
+                    "The fundamentals cache may need refreshing.\n\n"
+                    f"*Market today:* {market_ctx}"
+                )
+            lines = ["### Top NEPSE Stock Recommendations (from real NEPSE data)", ""]
+            for p in picks:
+                lines.append(
+                    f"**{p['symbol']}** ({p['name']}) - **{p['signal']}** ({p['confidence']}% confidence)\n"
+                    f"- Price: Rs {p['price']} · Reason: {p['reason']}"
+                )
+            lines.append("")
+            lines.append("_" + market_ctx + "_")
+            lines.append(
+                "\n*Scores are computed from real fundamentals (P/E, ROE, dividend yield) and real price history.*"
+            )
+            return "\n".join(lines)
+        if symbol:
+            return (
+                f"### {symbol} - Snapshot from Real NEPSE Data\n\n"
+                f"{context_str}\n\n"
+                "*All figures above are pulled live from NEPSE/MeroLagani data.*"
+            )
+        return (
+            "### NEPSE Market Overview (Real Data)\n\n"
+            f"{market_ctx}\n\n"
+            "Ask me things like:\n- \"Which stocks should I buy?\"\n- \"Tell me about NABIL\"\n- \"What's the market doing?\"\n\n"
+            "*This answer is built from live NEPSE data.*"
+        )
+
+    def _sources_for(self, symbol, picks):
+        sources = []
+        if symbol:
+            for item in self._news_for_symbol(symbol)[:6]:
+                sources.append({
+                    "title": item.get('title', ''),
+                    "url": item.get('url', ''),
+                    "pubDate": item.get('pubDate', ''),
+                    "publishedAgo": relative_time(item.get('pubDate')),
+                    "sentimentLabel": item.get('sentimentLabel', 'NEUTRAL')
+                })
+        if not sources and picks:
+            snap = self._load_snapshot()
+            sources.append({
+                "title": f"NEPSE market snapshot {snap.get('asOf') or ''}".strip(),
+                "url": "",
+                "pubDate": snap.get('asOf', ''),
+                "publishedAgo": "latest session",
+                "sentimentLabel": "MARKET"
+            })
+        return sources
+
 
 rag_processor = FinancialRAGProcessor()

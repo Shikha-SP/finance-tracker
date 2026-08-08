@@ -120,6 +120,26 @@ export default function CompanyAnalysis() {
         ))}
       </div>
 
+      {/* Investment Rating Banner */}
+      {data?.investmentRating && (
+        <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-4 flex flex-wrap items-center gap-4">
+          <span className={`text-lg font-bold px-3 py-1 rounded-lg ${
+            data.investmentRating.verdict === 'STRONG BUY' || data.investmentRating.verdict === 'BUY' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+            : data.investmentRating.verdict === 'HOLD' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
+            : 'bg-red-500/10 text-red-400 border border-red-500/30'
+          }`}>
+            {data.investmentRating.verdict} · {data.investmentRating.score}/100
+          </span>
+          <div className="flex flex-wrap gap-2">
+            {(data.investmentRating.parts || []).map((p, i) => (
+              <span key={i} title={p[1]} className="text-[11px] px-2 py-1 rounded-full bg-slate-950/70 border border-slate-800 text-slate-400 whitespace-nowrap">
+                {p[0]}: <strong className={p[2].startsWith('+') ? 'text-emerald-400' : p[2].startsWith('-') ? 'text-red-400' : 'text-slate-200'}>{p[2]}</strong>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
       {loading ? (
         <div className="flex items-center justify-center py-20 bg-slate-900/40 rounded-xl border border-slate-800">
           <RefreshCw className="w-8 h-8 text-indigo-400 animate-spin" />
@@ -187,6 +207,55 @@ export default function CompanyAnalysis() {
                 </div>
               </div>
             </div>
+
+            {/* Support & Resistance + Trend Projection */}
+            {(data.supportResistance || data.trendProjection) && (
+              <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-5 shadow-xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {data.supportResistance && (
+                    <div>
+                      <h4 className="text-xs font-semibold text-slate-300 mb-3 border-b border-slate-800 pb-2">Support & Resistance</h4>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div className="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800">
+                          <span className="text-slate-400 block text-[11px]">Support</span>
+                          <span className="text-emerald-400 font-bold text-sm">Rs. {data.supportResistance.support}</span>
+                        </div>
+                        <div className="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800">
+                          <span className="text-slate-400 block text-[11px]">Resistance</span>
+                          <span className="text-red-400 font-bold text-sm">Rs. {data.supportResistance.resistance}</span>
+                        </div>
+                        <div className="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800">
+                          <span className="text-slate-400 block text-[11px]">Pivot</span>
+                          <span className="text-slate-100 font-bold text-sm">Rs. {data.supportResistance.pivot}</span>
+                        </div>
+                        <div className="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800">
+                          <span className="text-slate-400 block text-[11px]">Position</span>
+                          <span className={`font-bold text-sm ${data.supportResistance.positionPct > 75 ? 'text-amber-400' : 'text-emerald-400'}`}>{data.supportResistance.positionPct}% of range</span>
+                        </div>
+                      </div>
+                      {(data.supportResistance.nearSupport || data.supportResistance.nearResistance) && (
+                        <p className="text-[10px] text-amber-400 mt-2">
+                          {data.supportResistance.nearSupport ? '⚠ Price is hugging support — watch for a bounce or break.' : '⚠ Price is at resistance — upside capped until a breakout.'}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  {data.trendProjection && (
+                    <div>
+                      <h4 className="text-xs font-semibold text-slate-300 mb-3 border-b border-slate-800 pb-2">
+                        Projected {data.trendProjection.horizonDays}-Session Move
+                      </h4>
+                      <div className={`text-2xl font-extrabold ${data.trendProjection.expectedMovePct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                        {data.trendProjection.direction} {data.trendProjection.expectedMovePct > 0 ? '+' : ''}{data.trendProjection.expectedMovePct}%
+                      </div>
+                      <p className="text-[11px] text-slate-400 mt-1">
+                        Range {data.trendProjection.lowPct}% to {data.trendProjection.highPct}% · trend {data.trendProjection.trendQuality} (R² {data.trendProjection.rSquared})
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Explainable AI Card */}
             <AIExplanationCard
@@ -257,11 +326,31 @@ export default function CompanyAnalysis() {
                   News Sentiment
                 </h3>
                 <span className={`text-[11px] font-bold px-2 py-0.5 rounded ${
-                  data.sentiment?.label === 'BULLISH' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-800 text-slate-300'
+                  data.sentiment?.label === 'BULLISH' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                  : data.sentiment?.label === 'BEARISH' ? 'bg-red-500/10 text-red-400 border border-red-500/20'
+                  : 'bg-slate-800 text-slate-300'
                 }`}>
                   {data.sentiment?.label || 'NEUTRAL'} ({data.sentiment?.score ?? '0.0'})
                 </span>
               </div>
+
+              <div className="text-[10px] text-slate-500 mb-3">
+                {data.sentiment?.newsCount ?? 0} headlines
+                {data.sentiment?.recent
+                  ? <> · latest {data.sentiment?.lastNewsAgo || ''} ({data.sentiment?.lastNewsDate || ''})</>
+                  : <> · no recent news (45d)</>}
+                {data.sentiment?.sentimentModel === 'llm-groq' && (
+                  <span className="ml-1 text-indigo-400 border border-indigo-500/40 rounded px-1 py-px text-[9px] font-bold">LLM</span>
+                )}
+              </div>
+
+              {(data.sentiment?.topKeywords || []).length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {data.sentiment.topKeywords.map((k, i) => (
+                    <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-slate-950/70 border border-slate-800 text-slate-400">#{k}</span>
+                  ))}
+                </div>
+              )}
 
               <div className="space-y-3">
                 {(data.sentiment?.articles || []).map((item, idx) => (
@@ -277,8 +366,8 @@ export default function CompanyAnalysis() {
                     </p>
                     <div className="flex justify-between items-center mt-2 text-[10px] text-slate-500">
                       <span>{item.publishedAgo || item.pubDate}</span>
-                      <span className={item.sentimentLabel === 'BULLISH' ? 'text-emerald-400 font-semibold' : 'text-slate-400'}>
-                        {item.sentimentLabel}
+                      <span className={item.llmLabel || item.sentimentLabel === 'BULLISH' ? 'text-emerald-400 font-semibold' : 'text-slate-400'}>
+                        {item.llmLabel || item.sentimentLabel}
                       </span>
                     </div>
                   </a>

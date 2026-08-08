@@ -1,29 +1,20 @@
 import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Bot, Send, Upload, FileText, CheckCircle2, BookOpen, Sparkles, RefreshCw, Key } from 'lucide-react';
+import { Bot, Send, BookOpen, Sparkles, RefreshCw } from 'lucide-react';
 
 export default function RAGAssistant() {
-  const [symbol, setSymbol] = useState('NABIL');
-  const [symbolSuggestions, setSymbolSuggestions] = useState([]);
-  const [showSymbolSuggestions, setShowSymbolSuggestions] = useState(false);
   const [query, setQuery] = useState('');
-  const [groqApiKey, setGroqApiKey] = useState('');
-  const [showKeyInput, setShowKeyInput] = useState(false);
   const [loading, setLoading] = useState(false);
   
   const [chatHistory, setChatHistory] = useState([
     {
       type: 'assistant',
-      text: 'Namaste! Welcome to your NEPSE AI Financial Advisor. I am powered by Groq Llama-3.3 AI.\n\nAsk me anything about any NEPSE company in plain English — for example: "Which stocks should I buy?", "What can you tell me about GBIME or CHCL?", or "Hi!"',
+      text: 'Namaste! Welcome to your NEPSE AI Financial Advisor. I am powered by Groq Llama-3.3 AI.\n\nAsk me anything about the NEPSE market in plain English — for example: "Which stocks should I buy?", "What can you tell me about GBIME or CHCL?", or "How is the market doing today?"',
       citations: [],
       recommendations: [],
       groqPowered: true
     }
   ]);
-
-  const [docTitle, setDocTitle] = useState('');
-  const [uploading, setUploading] = useState(false);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
 
   const sampleQueries = [
     "Which NEPSE stocks are recommended to BUY right now?",
@@ -45,7 +36,7 @@ export default function RAGAssistant() {
       const res = await fetch('/api/ai/rag/query', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ symbol, query: userMsg, groqApiKey: groqApiKey.trim() || undefined })
+        body: JSON.stringify({ query: userMsg })
       });
       const data = await res.json();
       setChatHistory(prev => [
@@ -62,30 +53,6 @@ export default function RAGAssistant() {
       console.error("Failed to query Groq RAG assistant:", err);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setUploading(true);
-    const formData = new FormData();
-    formData.append('symbol', symbol);
-    formData.append('title', docTitle || file.name);
-    formData.append('file', file);
-
-    try {
-      await fetch('/api/ai/rag/upload', {
-        method: 'POST',
-        body: formData
-      });
-      setUploadSuccess(true);
-      setTimeout(() => setUploadSuccess(false), 4000);
-    } catch (err) {
-      console.error("Upload error:", err);
-    } finally {
-      setUploading(false);
     }
   };
 
@@ -118,139 +85,12 @@ export default function RAGAssistant() {
             Get explainable Stock Buy/Hold recommendations grounded in disclosures, technical momentum, and fundamental metrics
           </p>
         </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <button
-            onClick={() => setShowKeyInput(!showKeyInput)}
-            style={{
-              padding: '0.4rem 0.75rem',
-              fontSize: '0.78rem',
-              fontWeight: 600,
-              borderRadius: 'var(--radius-md)',
-              border: groqApiKey ? '1px solid var(--green)' : '1px solid var(--border)',
-              background: groqApiKey ? 'var(--green-soft, rgba(16,185,129,0.15))' : 'var(--bg-surface)',
-              color: groqApiKey ? 'var(--green)' : 'var(--text-muted)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem'
-            }}
-          >
-            <Key size={14} />
-            {groqApiKey ? 'Groq Key Active' : 'Set Groq API Key'}
-          </button>
-        </div>
       </div>
-
-      {showKeyInput && (
-        <div className="card" style={{ padding: '1rem', marginBottom: '1rem', background: 'var(--bg-surface)' }}>
-          <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '0.4rem' }}>
-            Groq API Key (Optional - enables Llama 3.3-70B real-time synthesis):
-          </label>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <input
-              type="password"
-              placeholder="gsk_..."
-              value={groqApiKey}
-              onChange={e => setGroqApiKey(e.target.value)}
-              style={{
-                flex: 1,
-                background: 'var(--bg-card)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-md)',
-                padding: '0.4rem 0.75rem',
-                fontSize: '0.85rem',
-                color: 'var(--text-primary)'
-              }}
-            />
-            <button
-              onClick={() => setShowKeyInput(false)}
-              style={{ padding: '0.4rem 1rem', background: 'var(--accent)', color: '#fff', borderRadius: 'var(--radius-md)', fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer' }}
-            >
-              Save Key
-            </button>
-          </div>
-        </div>
-      )}
 
       <div className="page-content investment-content">
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
-          {/* Left: Chat Workspace */}
-          <div className="card" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', height: 540, gridColumn: 'span 2' }}>
-            {/* Scrip Selector Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border)', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>Target Scrip / Focus Symbol:</span>
-              <div style={{ position: 'relative' }}>
-                <input
-                  type="text"
-                  placeholder="Enter symbol (e.g. NABIL, NIMB, CHCL)"
-                  value={symbol}
-                  onChange={e => {
-                    const val = e.target.value.toUpperCase();
-                    setSymbol(val);
-                    if (val.trim()) {
-                      const filtered = ['NABIL', 'NIMB', 'SCB', 'HBL', 'SBI', 'EBL', 'NICA', 'GBIME', 'CHCL', 'SHIVM', 'NTC', 'NLIC', 'NLG', 'OHL', 'ICFC', 'CBBL', 'AKPL', 'UPPER', 'HDL', 'STC', 'RADHI'].filter(s => s.includes(val)).slice(0, 6);
-                      setSymbolSuggestions(filtered);
-                      setShowSymbolSuggestions(true);
-                    } else {
-                      setShowSymbolSuggestions(false);
-                    }
-                  }}
-                  onFocus={() => symbol.trim() && setShowSymbolSuggestions(true)}
-                  style={{
-                    background: 'var(--bg-surface)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-md)',
-                    padding: '0.35rem 0.75rem',
-                    fontSize: '0.8rem',
-                    color: 'var(--text-primary)',
-                    fontWeight: 700,
-                    width: '180px'
-                  }}
-                />
-                {showSymbolSuggestions && symbolSuggestions.length > 0 && (
-                  <div style={{
-                    position: 'absolute',
-                    top: '100%',
-                    left: 0,
-                    right: 0,
-                    marginTop: '4px',
-                    background: 'var(--bg-surface)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-md)',
-                    boxShadow: 'var(--shadow-md)',
-                    zIndex: 50,
-                    overflow: 'hidden'
-                  }}>
-                    {symbolSuggestions.map(s => (
-                      <button
-                        key={s}
-                        type="button"
-                        onClick={() => {
-                          setSymbol(s);
-                          setShowSymbolSuggestions(false);
-                        }}
-                        style={{
-                          width: '100%',
-                          textAlign: 'left',
-                          padding: '0.4rem 0.75rem',
-                          fontSize: '0.78rem',
-                          color: 'var(--text-primary)',
-                          background: 'transparent',
-                          border: 'none',
-                          borderBottom: '1px solid var(--border)',
-                          cursor: 'pointer',
-                          fontWeight: 600
-                        }}
-                      >
-                        {s}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
+          {/* Chat Workspace */}
+          <div className="card" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', height: 540 }}>
             {/* Message Feed */}
             <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem', paddingRight: '0.4rem' }}>
               {chatHistory.map((msg, idx) => (
@@ -295,7 +135,7 @@ export default function RAGAssistant() {
                                 </span>
                               </div>
                               <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: '0.2rem' }}>
-                                Confidence: <strong style={{ color: 'var(--text-primary)' }}>{rec.confidence}%</strong> · Target: <strong style={{ color: 'var(--green)' }}>{rec.targetPrice}</strong>
+                                Confidence: <strong style={{ color: 'var(--text-primary)' }}>{rec.confidence}%</strong> · Price: <strong style={{ color: 'var(--green)' }}>Rs {rec.price}</strong>
                               </div>
                               <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontStyle: 'italic', margin: 0 }}>
                                 "{rec.reason}"
@@ -372,7 +212,7 @@ export default function RAGAssistant() {
             <form onSubmit={handleQuerySubmit} style={{ display: 'flex', gap: '0.5rem' }}>
               <input
                 type="text"
-                placeholder={`Ask financial question about ${symbol}...`}
+                placeholder="Ask any financial question about NEPSE stocks (e.g. 'Which stocks should I buy?')"
                 value={query}
                 onChange={e => setQuery(e.target.value)}
                 style={{
@@ -405,67 +245,6 @@ export default function RAGAssistant() {
                 <Send size={15} /> Ask
               </button>
             </form>
-          </div>
-
-          {/* Right: Upload Report Card */}
-          <div className="card" style={{ padding: '1.25rem' }}>
-            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <Upload size={16} style={{ color: 'var(--green)' }} /> Upload Annual Report PDF
-            </div>
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-              Upload financial PDF statements or balance sheet notes to index into the vector vector database for {symbol}.
-            </p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <div>
-                <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.2rem' }}>Document Title</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Annual Report 2080"
-                  value={docTitle}
-                  onChange={e => setDocTitle(e.target.value)}
-                  style={{
-                    width: '100%',
-                    background: 'var(--bg-surface)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-md)',
-                    padding: '0.4rem 0.75rem',
-                    fontSize: '0.82rem',
-                    color: 'var(--text-primary)'
-                  }}
-                />
-              </div>
-
-              <label style={{
-                border: '2px dashed var(--border)',
-                borderRadius: 'var(--radius-md)',
-                padding: '1.5rem',
-                textAlign: 'center',
-                cursor: 'pointer',
-                background: 'var(--bg-surface)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '0.4rem'
-              }}>
-                <FileText size={28} style={{ color: 'var(--accent)' }} />
-                <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>Select PDF or TXT File</span>
-                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Up to 25MB report statements</span>
-                <input type="file" accept=".pdf,.txt" onChange={handleFileUpload} style={{ display: 'none' }} />
-              </label>
-
-              {uploading && (
-                <div style={{ fontSize: '0.78rem', color: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}>
-                  <RefreshCw size={14} className="spin" /> Chunking and indexing...
-                </div>
-              )}
-
-              {uploadSuccess && (
-                <div style={{ fontSize: '0.78rem', color: 'var(--green)', background: 'var(--green-soft, rgba(16,185,129,0.15))', padding: '0.5rem', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <CheckCircle2 size={15} /> Document indexed successfully!
-                </div>
-              )}
-            </div>
           </div>
         </div>
       </div>

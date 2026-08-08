@@ -1,0 +1,66 @@
+[
+  {
+    "title": "Nepse plunges by 4. 19 points on Monday - The Annapurna Express",
+    "pubDate": "Mon, 13 Apr 2026 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE83MU4ySC1aZk4yb2IweDAtVHFGUmM5UFhNY0tqVS1mTk8yalN4cTNMQXREOG51MlBBVW1UckRaVDUwX294UzdKWVlnUUYwbGh1TU1mWW12NA?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "SKHEL",
+    "llmScore": -0.8,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunges",
+      "losses",
+      "decline"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse surges by 5. 82 points on Thursday - The Annapurna Express",
+    "pubDate": "Thu, 02 Apr 2026 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE9tSldjc19VUXZoUjJqZlhrcDR3RjA4eUNNb0ZFNS1PQURvcXBvQUdvOEFtcXFGSldYQmhwODZWVW5SNFRIbl83aUlUck9SaF8wbUtqU2hGVQ?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "SKHEL",
+    "llmScore": 0.8,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "gains",
+      "growth"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "NEPSE surges 79 points as manufacturing, hydropower and investment lead gains - The Himalayan Times",
+    "pubDate": "Fri, 17 Jul 2026 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxNOTk3dk10cGo0Q2lleWZ6R1drbzl0V0JmVVM5S1VCdDk5SzJHMFVTdHhLUU5rQnNpcXBHcDJzU01waGNsTklmM0g0VHVLVEtUdTlESWQzMGhoakxXeEhJVG9yRzR2VWNkTHVfWjVvOHV3NHdhS0lmMDVUOFR0WU1JcG9jNzhYLWJTcUV5b2tPQnNpYkpWV2hMSmxQZ2VFWlk1WVNCeXVEQnAzQWx4cS1veXYtUU5UUdIBXEFVX3lxTE1PZzJtREczWDFsOV9WQnRZRG13dnRNNS03UVdvWWQzMGFPYTk0SDc4bkxfNEV0anN5TDBvbExHYnBKX2std0RCZGNlLW4yWklxQ1MtSDFwM1FCbW5X?oc=5",
+    "sentimentScore": 0.55,
+    "sentimentLabel": "BULLISH",
+    "symbol": "SKHEL",
+    "llmScore": 0.9,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "manufacturing",
+      "hydropower"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "NEPSE slips 13 points as market ends broadly in Red - The Himalayan Times",
+    "pubDate": "Mon, 20 Apr 2026 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQTVN6LU5SUV9lZzdNMWx0M1ZMV1JralNHVVpCcFNJRElGcUI1M3otYldXVmxERExOOUtPenFldVZpMXhHQlpzQlk3VHNvWFFHR05hS0FCYkdqeUQ0ak81OW1qMGFaeHFUekdaanNQOXRqVnAyTXU4NTV0RW5hMXBXYkNhbUk0cXdqWThRZktYbVI0OUJw0gFcQVVfeXFMTUgtRFNMLU9hQ1dhZVRpWFEwYlV1bjh4czAwNlNKVjBvS0tIZExhTXNrNVRIdFZZRWRLTE5zOGw2QkhRel9pSTYxaDNNWWxUY3otSUpMNzhpa2NZR04?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "SKHEL",
+    "llmScore": -0.6,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "slips",
+      "red",
+      "losses"
+    ],
+    "llmProcessed": true
+  }
+]

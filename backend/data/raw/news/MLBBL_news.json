@@ -1,0 +1,66 @@
+[
+  {
+    "title": "Mithila LaghuBitta Bittiya Sanstha Limited | BAJARKO CHIRFAR | NEPSE | Company News - Bajarko Chirfar",
+    "pubDate": "Fri, 08 May 2026 02:24:25 GMT",
+    "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxOOFk0OEFxYUR3N2Z3eW5EamcxdWZGV0Y3ZkpoUDVJNHBBOHBmYnNnMUx1VnZQcExpNGZHRmVyRDZrYWE3ZWtQRHZ1Z2NKSWY5WGszR1RMYlVrT2l3OC01ZVNrZVM5ZzdhSFRqYkpFNVpXVTFxQUU1V0pyUDdpQmNnbWh6T1pKUDRrdGtUWWVReE54am5TVFNoV0RB?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "MLBBL",
+    "llmScore": 0.0,
+    "llmLabel": "NEUTRAL",
+    "llmKeywords": [
+      "corporate",
+      "news",
+      "update"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "NEPSE retreats as the banking and finance sector weakens - The Farsight Nepal",
+    "pubDate": "Fri, 12 Dec 2025 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQSGUzSkVKUFZCbEVPNUZhRG1JRTZyQWx5S010VTFRbklRdVFpWjE5ZjY1SHZWYWJTNnJXQi1XZXA0M0g4dFlZNkZBU1hremtUbDZCSVF3T1dOWVdEbXZRa0J0VXdpTGFJc1BxbmZ2X3pJZDB3TUR3eUpCNHpnQ3FFZjkxMjdIZktRQ3ZBa1F1UHIwdw?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "MLBBL",
+    "llmScore": -0.8,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "sector",
+      "weakens",
+      "losses"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse surges by 1. 53 points on Monday - The Annapurna Express",
+    "pubDate": "Mon, 02 Feb 2026 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE9yVngtekNxQUdaZFk5T0hQSlFfdzJwWFk5dk1ZdXQxTjNMSllTNXFLZlh3OV9PNzRUcFMxanBPdDBQQW1Td1BDeWFZTXJVQTVmcnVMS1otbw?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "MLBBL",
+    "llmScore": 0.9,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "growth",
+      "market"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse plunges by 12. 38 points on Thursday - The Annapurna Express",
+    "pubDate": "Thu, 20 Mar 2025 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE5pMklxOVRKNG00bi1ycFJjN2VNVkM5YVFrWlpLVG9JWU5LV3VyeDRlUm0xNXN1QTJ3LXc4T3k1cGxkYlY3SkpSYXVHczE0UVZuQU1zUGxUdkc1MElm?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "MLBBL",
+    "llmScore": -0.9,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunges",
+      "decline",
+      "slowdown"
+    ],
+    "llmProcessed": true
+  }
+]
