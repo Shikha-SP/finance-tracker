@@ -1,0 +1,98 @@
+[
+  {
+    "title": "Nepse plunges by 50. 73 points on Sunday - The Annapurna Express",
+    "pubDate": "Sun, 15 Sep 2024 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTFBrYmp2LVN2MWhRd1p2Ri12azlLZ29DLUlUX3lMTXhBOFdpYmlaT1oyWXlVTVBhMnAybnR2MzN2SWgtQkxYR1pIcWFZVGZySWY2dTNiRW15bw?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "RAWA",
+    "llmScore": -1.0,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunges",
+      "decline",
+      "losses"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "NEPSE: Stock market indices rise as trading volume declines - OnlineKhabar English News",
+    "pubDate": "Tue, 22 Oct 2024 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxPcmdGbXdQaUZnMERqc2t2ZnppV3REVG5mc1pwTVFvb0FnaXNUMXVlZmhNdWQ2WkVHTXNDdC01QllqZkVnTjRjeThQQTZVWjhpZ2NvdHlZOUtVYmRFbjVXNTN2VjI3ZmxEV3lzQnU1RWxiSmNaT0FvUjJ6b3Azc1FnbTRoWlpuR1NrcVhFeDFpeXBtSnYtZ0VDWEdYZVc?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "RAWA",
+    "llmScore": 0.5,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "rise",
+      "trading",
+      "volume"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "NEPSE index sees modest rise - Ratopati",
+    "pubDate": "Thu, 17 Oct 2024 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE9pbDFUZTktcDRyeWlNWVltMnVpTlhDLWlVX2gzS2h1VjJxaDV2d25nZ3RLZm5jN09fdGNCUTNfRWJocEI1dDlBMGIzMkJRUlZfWFE?oc=5",
+    "sentimentScore": 0.22,
+    "sentimentLabel": "BULLISH",
+    "symbol": "RAWA",
+    "llmScore": 0.2,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "modest",
+      "rise",
+      "gain"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "NEPSE gains by 78.17 points, Daily turnover reaches Rs 8.192 billion - The Rising Nepal",
+    "pubDate": "Thu, 12 Sep 2024 11:59:24 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTFBwOEJfUTRpR2ZsN3RWVlFKM1BfZ19nQkk3MXFqREJ1bGNvS3ZsZEphNEhJVWI4Nk80ejh4OGVqV21WYjFyWWFvWWxkMEtSd0gy?oc=5",
+    "sentimentScore": 0.44,
+    "sentimentLabel": "BULLISH",
+    "symbol": "RAWA",
+    "llmScore": 1.0,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "gains",
+      "turnover",
+      "billion"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "NEPSE index drops by 50.73 points on Sunday - Ratopati",
+    "pubDate": "Sun, 15 Sep 2024 10:57:49 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE9PamxfblE5ZUZQVnBjanFCN09CX0xjczNlclYxZVkzWWxLdURaZXN1XzJaYUMzOWo5ZFVxbm4yVXpVWTYxVUxXVEhMTU5TSkV5LVE?oc=5",
+    "sentimentScore": -0.22,
+    "sentimentLabel": "BEARISH",
+    "symbol": "RAWA",
+    "llmScore": -1.0,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "drops",
+      "decline",
+      "losses"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "NEPSE: Market up by 14.88 points, trading volume over Rs 5 billion - OnlineKhabar English News",
+    "pubDate": "Tue, 30 Jan 2024 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9iZ0ttSlJEZktDOERmeUh3QWV5YzFCQnJDUElETFFmbDBhb3QwaFFaQ09RWWlCaHNxMmFrTlpXTmd3YUN5a0lvMnE0QjRSNktiekpiMUdVakFaX3l5X1NsRjRZOExCMGc?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "RAWA",
+    "llmScore": 0.8,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "market",
+      "up",
+      "billion"
+    ],
+    "llmProcessed": true
+  }
+]

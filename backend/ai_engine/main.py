@@ -17,7 +17,7 @@ from typing import Optional, List
 from data_collector import (
     fetch_price_history_csv, get_company_fundamentals, get_news_sentiment,
     get_symbol_ohlcv, background_refresh, relative_time, get_market_bias, get_sector_momentum,
-    get_market_regime
+    get_market_regime, IS_SERVERLESS
 )
 from indicators import (
     compute_all_indicators, compute_support_resistance, project_trend,
@@ -97,6 +97,10 @@ def _startup_background_refresh():
 
 @app.on_event("startup")
 def _on_startup():
+    # Serverless functions have no persistent process — a background full-refresh
+    # would just die with the request, so rely on lazy on-demand fetching instead.
+    if IS_SERVERLESS:
+        return
     _startup_background_refresh()
 
 class BacktestRequest(BaseModel):
@@ -481,7 +485,7 @@ def stock_screener(
 _VALIDATION = {"lock": threading.Lock(), "data": None, "at": None, "running": False}
 
 
-def _compute_screener_validation():
+def _compute_screener_validation(scoped=False):
     t0 = time.time()
     df_raw = fetch_price_history_csv()
     if df_raw is None or len(df_raw) < 100:
@@ -500,7 +504,9 @@ def _compute_screener_validation():
             lengths[str(sym).upper()] = len(sub)
     if not lengths:
         return {"status": "error", "message": "No symbol has enough history to validate."}
-    symbols = sorted(lengths, key=lengths.get, reverse=True)[:60]
+    # scoped=True keeps the trust check inside a serverless 60s budget.
+    cap = 24 if scoped else 60
+    symbols = sorted(lengths, key=lengths.get, reverse=True)[:cap]
 
     horizons = (5, 10, 20)
     buckets = {h: {} for h in horizons}
@@ -523,7 +529,7 @@ def _compute_screener_validation():
             sent_score = (sent or {}).get('score')
 
             # Sample ~55 dates spaced across the most recent ~9 months.
-            idxs = list(range(60, n - 21, 4))[-55:]
+            idxs = list(range(60, n - 21, 4))[(-28 if scoped else -55):]
             for i in idxs:
                 try:
                     pred = classifier.predict_movement_probabilities(
@@ -630,6 +636,17 @@ def _compute_screener_validation():
 
 @app.get("/api/v1/ai/validation")
 def screener_validation(refresh: int = 0):
+    if IS_SERVERLESS:
+        # Serverless has no persistent background threads, so the trust check
+        # runs synchronously (scoped down to fit the 60s function budget).
+        try:
+            res = _compute_screener_validation(scoped=True)
+        except Exception as e:
+            res = {"status": "error", "message": str(e)}
+        if res is None:
+            res = {"status": "error", "message": "Validation could not be computed."}
+        return {**res, "cached": False}
+
     now = time.time()
     with _VALIDATION["lock"]:
         if _VALIDATION["data"] is not None and not refresh and (now - (_VALIDATION["at"] or 0)) < 1800:

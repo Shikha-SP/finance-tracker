@@ -1,0 +1,66 @@
+[
+  {
+    "title": "Recommendation to file case against 29 including Bhatt and Agarwal, demand to claim about Rs 20 billion in damages - Ekantipur",
+    "pubDate": "Thu, 21 May 2026 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMi-AFBVV95cUxNT09POXhEU0JYSWlxdHhRUU9mZEdxelgyeURmNG90dFBONTF2R2pxejNPekdfQmpWYlZ1QUZ4QVczWjJVM0dYenNQVUpUM3NLdUZrbFc1U2ZTeExUS0NpeXQ5elNQNXlCSWdwSTBwRUhhemJkSnlJNWFvVGd4TkVxVk5wbVE5aVBkRW5VcmM0eDhtYjBOZ3BmX3VCZ0NPby0wTVFDWmp4eWtOZWpEekw4Q1l0U3ZvbzdRX0lYN0w4QUpraFQ5cDV4UGJ5dEFvTjlLeWV4aGxFMEdhV2hXY0R1NGZBS1h6SjJUR2VxNEhNNG02VTVqeFBEaQ?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "HLI",
+    "llmScore": -0.8,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "probe",
+      "damages",
+      "claim"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "NEPSE index drops by 1.02%, Market remains volatile; Three stocks reach upper circuit - The Himalayan Times",
+    "pubDate": "Mon, 03 Jul 2023 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxNUkZCTTZNU1lrWlZsdmplSGZhVjU4TEhlSVRZUUhjcThqcm1FNVgxcTRUbmo0SGMwOEdIYk9BSTZNZHkxcGNRb2s2T1JOdmxoa2t3TkM4OGFXQUpqaEdOQU03c1NnbURlOFpSQ0pSOHkxZU9HY2ZHRWM2TFcxQnREb0hYekVNRXFuc21MTnotVFg5clZaTld0VEhfdHk2YWRlS0NpbFMxZ2c3b0RiRFRFako5ZmlMdkRBSFpBdw?oc=5",
+    "sentimentScore": -0.22,
+    "sentimentLabel": "BEARISH",
+    "symbol": "HLI",
+    "llmScore": -0.2,
+    "llmLabel": "NEUTRAL",
+    "llmKeywords": [
+      "volatility",
+      "market",
+      "index"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Reliance Spinning Rally Lifts Mutual Fund Profits in Jestha, Some Schemes Book Heavy Losses - NEPSE Trading",
+    "pubDate": "Thu, 02 Jul 2026 04:33:46 GMT",
+    "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxOSlFpdDZNcXIyeTlyZU5hTERCZE5hUTNWOTY5V280U29xVHRqUWtnTV94aWZIMTdYUDNrTU1ha0dlQ1NjUkRsa0pCdDhVOXVYMXhsMFdWQUxYN2x3TmVkVk9NUkVyRndVdzlBRUh6UjVZOXhncUJ0bVc3MTJyNUhjQjR0QWJTMDg3SFFCenduay1fUG9aRGdGN3FjNXdQVF9pOTNqVy1xMllJTTJxaVdIQUJSZVBTcnZ1SDl3dA?oc=5",
+    "sentimentScore": 0.11,
+    "sentimentLabel": "BULLISH",
+    "symbol": "HLI",
+    "llmScore": 0.5,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "rally",
+      "profits",
+      "gains"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "NEPSE down by to 0.77 per cent to 2642.15 - The Rising Nepal",
+    "pubDate": "Fri, 20 Feb 2026 13:35:04 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE5Xd3RrTHZWSHY0N0lHN1J5SHdNT09Jenh3Y3pIcFc1cHBaVnRfdUFETGdJZnhwdWNBbnFOYS1jeU9lXzA4X1o0R1VWWnZXUmY4?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "HLI",
+    "llmScore": -0.4,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "down",
+      "losses",
+      "decline"
+    ],
+    "llmProcessed": true
+  }
+]

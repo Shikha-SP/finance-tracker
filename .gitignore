@@ -4,7 +4,23 @@ backend/.env
 backend/ai_engine/.env
 
 # Runtime caches / regenerated data (NEPSE snapshots, history, news caches)
-backend/data/
+# Only the small caches the Node AI reads are tracked; heavy runtime artifacts stay ignored.
+backend/data/*
+!backend/data/nepse_snapshot.json
+!backend/data/history_cache/
+backend/data/history_cache/*
+!backend/data/history_cache/INDEX_NEPSE.json
+!backend/data/raw/
+backend/data/raw/*
+!backend/data/raw/fundamentals/
+!backend/data/raw/news/
+!backend/data/raw/prices/
+!backend/data/raw/sector_momentum_cache.json
+backend/data/raw/fundamentals/*
+!backend/data/raw/fundamentals/merolagani_cache.json
+backend/data/raw/prices/*
+!backend/data/raw/prices/company_meta.json
+!backend/data/raw/prices/price_history.csv
 
 # Dependency folders and caches
 node_modules/

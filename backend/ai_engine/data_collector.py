@@ -23,21 +23,34 @@ except ImportError:
     HAS_NEPSE_LIB = False
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-RAW_PRICES_DIR = os.path.join(BASE_DIR, "data", "raw", "prices")
-RAW_FUNDAMENTALS_DIR = os.path.join(BASE_DIR, "data", "raw", "fundamentals")
-RAW_NEWS_DIR = os.path.join(BASE_DIR, "data", "raw", "news")
-RAW_REPORTS_DIR = os.path.join(BASE_DIR, "data", "raw", "reports")
 
-PROCESSED_INDICATORS_DIR = os.path.join(BASE_DIR, "data", "processed", "indicators")
-PROCESSED_FEATURES_DIR = os.path.join(BASE_DIR, "data", "processed", "features")
-PROCESSED_SENTIMENT_DIR = os.path.join(BASE_DIR, "data", "processed", "sentiment")
+# Serverless-safe cache root. Vercel Functions run on a read-only filesystem
+# (/tmp is the only writable scratch space) and derive BASE_DIR differently than
+# a normal checkout, so every cache path is redirected under one overridable
+# root. Locally this resolves to the usual backend/data/ tree.
+IS_SERVERLESS = bool(os.environ.get("VERCEL"))
+DATA_DIR = os.environ.get("AI_DATA_DIR") or (
+    os.path.join("/tmp", "data") if IS_SERVERLESS else os.path.join(BASE_DIR, "data")
+)
+
+RAW_PRICES_DIR = os.path.join(DATA_DIR, "raw", "prices")
+RAW_FUNDAMENTALS_DIR = os.path.join(DATA_DIR, "raw", "fundamentals")
+RAW_NEWS_DIR = os.path.join(DATA_DIR, "raw", "news")
+RAW_REPORTS_DIR = os.path.join(DATA_DIR, "raw", "reports")
+
+PROCESSED_INDICATORS_DIR = os.path.join(DATA_DIR, "processed", "indicators")
+PROCESSED_FEATURES_DIR = os.path.join(DATA_DIR, "processed", "features")
+PROCESSED_SENTIMENT_DIR = os.path.join(DATA_DIR, "processed", "sentiment")
 
 def ensure_directories():
     for d in [
         RAW_PRICES_DIR, RAW_FUNDAMENTALS_DIR, RAW_NEWS_DIR, RAW_REPORTS_DIR,
         PROCESSED_INDICATORS_DIR, PROCESSED_FEATURES_DIR, PROCESSED_SENTIMENT_DIR
     ]:
-        os.makedirs(d, exist_ok=True)
+        try:
+            os.makedirs(d, exist_ok=True)
+        except OSError:
+            pass
 
 PRICE_HISTORY_URL = "https://cdn.jsdelivr.net/gh/PrabeshAsm/Nepse-All-Scraper@main/data/price_history.csv"
 FALLBACK_PRICE_HISTORY = "https://cdn.jsdelivr.net/gh/SamirWagle/Nepse-All-Scraper@main/data/price_history.csv"
@@ -747,7 +760,7 @@ def get_market_bias():
     (up to ~+3 confidence pts for a strongly rising index, -3 for a falling one)
     plus a trend label. Used to boost all picks in a rising market."""
     try:
-        with open(os.path.join(BASE_DIR, "data", "nepse_snapshot.json"), encoding='utf-8') as f:
+        with open(os.path.join(DATA_DIR, "nepse_snapshot.json"), encoding='utf-8') as f:
             snap = json.load(f)
         nepse = next((i for i in (snap.get('indices') or []) if i.get('index') == 'NEPSE Index'), None)
         if not nepse:
@@ -777,7 +790,7 @@ def get_market_bias():
 # breadth across every stock in the CSV (median 5d/20d returns + % trading above
 # their own SMA20) combined with the NEPSE index snapshot. Cached 6h.
 
-MARKET_REGIME_CACHE = os.path.join(BASE_DIR, "data", "raw", "market_regime_cache.json")
+MARKET_REGIME_CACHE = os.path.join(DATA_DIR, "raw", "market_regime_cache.json")
 MARKET_REGIME_TTL_HOURS = 6
 
 
@@ -880,7 +893,7 @@ def get_market_regime(force=False):
 # (sector rotation). We derive it from the price CSV: average 5d and 20d
 # returns plus the % of members trading above their SMA20, cached for 6h.
 
-SECTOR_MOMENTUM_CACHE = os.path.join(BASE_DIR, "data", "raw", "sector_momentum_cache.json")
+SECTOR_MOMENTUM_CACHE = os.path.join(DATA_DIR, "raw", "sector_momentum_cache.json")
 SECTOR_MOMENTUM_TTL_HOURS = 6
 
 def compute_sector_momentum():

@@ -1,0 +1,66 @@
+[
+  {
+    "title": "Nepse surges by 8. 26 points on Sunday - The Annapurna Express",
+    "pubDate": "Sun, 12 May 2024 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE9MYVN0VEZRaVk2LUs0V2RCWTc3ZGVWMTZhdHlXUy1wd0UxU28yTmpOUllreHctbHRMbkItRlE3M1h0aC1OTmlOX0M1eHMxd19XZWlXeHNUOA?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "MLBS",
+    "llmScore": 0.8,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "upward",
+      "momentum"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "NEPSE continues upward momentum; Daily turnover crosses Rs 11 billion - The Himalayan Times",
+    "pubDate": "Mon, 11 Nov 2024 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxOcEdnLVdLYnp2UUN6ZkxRZ3hIZ1YxU2lGaFBEcU9TaW9PUmtSTWFJSnhERndFbVZjYWw5Rl94d3lHM3NmNUQzOEtnNm9tOFlnM1A5emlBRDZGLVlLc3BDUGF1cE1XWkJ1Yzl2aklUZWJucmhqQ3ZPaWZGaV93WjVUQUxJNVNnZlBLYkFkS3htWXpEVWZHYS1uV0VWY2NXaENWX3FOMDRDVkkyeDTSAVxBVV95cUxOUXFfRzE4OTZwcDB0YTVydTRhOWR5RVlPTHBYWmhvbk8xWFE2S00waEhNQl9qeDQySkhyeGkwb2lEUkNHTmJibm5taTdTWTctek45YnczejdTWG85Yw?oc=5",
+    "sentimentScore": 0.22,
+    "sentimentLabel": "BULLISH",
+    "symbol": "MLBS",
+    "llmScore": 0.9,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "upward",
+      "momentum",
+      "turnover"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "NEPSE declines by 45 points, life insurance sector takes biggest hit - The Himalayan Times",
+    "pubDate": "Sun, 08 Dec 2024 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxPc2xjOTFlVWxJbHJuN2QwS2RGM2JPQlNTaE82ZDJGaVRSY0paS1dYYjZEN1dRTVF3eWZJc2JSNDRFNWVNZFM2VFhWNUYzQWIxMlV2a0t0bkoxTXdCeVozbEZ0LXF5RmlvRDMwMmQwMnpFNzlEdjVzWkI5WWpPc3pac3NhY1J4b0lXRGFTRFJHUXltMEwwZ2ZRLUlRLWRmWDVsd3hmY3h5Sjl2UQ?oc=5",
+    "sentimentScore": -0.22,
+    "sentimentLabel": "BEARISH",
+    "symbol": "MLBS",
+    "llmScore": -0.7,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "declines",
+      "losses",
+      "insurance"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse surges by 3. 27 points on Monday - The Annapurna Express",
+    "pubDate": "Mon, 18 Mar 2024 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE1VX3FsbnoydTlGcmRtalA0dy1TOFJmVElOcUZwa1VHTXpnelY2RllPQ3BFb3hOU1djQlJwVm1uN1FUbjhWU0k4TWtjNXV5QjI2SVRxaXlvSQ?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "MLBS",
+    "llmScore": 0.5,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "growth",
+      "momentum"
+    ],
+    "llmProcessed": true
+  }
+]

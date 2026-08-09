@@ -16,10 +16,9 @@ import json
 import os
 import threading
 
-from data_collector import fetch_price_history_csv
+from data_collector import fetch_price_history_csv, DATA_DIR
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LOG_DIR = os.path.join(BASE_DIR, "data", "ai")
+LOG_DIR = os.path.join(DATA_DIR, "ai")
 LOG_FILE = os.path.join(LOG_DIR, "forward_signals.json")
 
 _lock = threading.Lock()
@@ -39,9 +38,12 @@ def _load():
 
 
 def _save(rows):
-    os.makedirs(LOG_DIR, exist_ok=True)
-    with open(LOG_FILE, "w", encoding="utf-8") as f:
-        json.dump(rows, f)
+    try:
+        os.makedirs(LOG_DIR, exist_ok=True)
+        with open(LOG_FILE, "w", encoding="utf-8") as f:
+            json.dump(rows, f)
+    except OSError:
+        pass
 
 
 def record_signal(symbol, date, verdict, score):

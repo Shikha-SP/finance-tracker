@@ -1,0 +1,90 @@
+{
+  "Microfinance": {
+    "ret5": -1.07,
+    "ret20": -1.29,
+    "pctAboveSma20": 12.0,
+    "members": 50,
+    "trend": "WEAKENING",
+    "momentumScore": -2.47
+  },
+  "Commercial Banks": {
+    "ret5": -2.22,
+    "ret20": 2.9,
+    "pctAboveSma20": 36.8,
+    "members": 19,
+    "trend": "NEUTRAL",
+    "momentumScore": 3.24
+  },
+  "Hydro Power": {
+    "ret5": -0.88,
+    "ret20": 1.8,
+    "pctAboveSma20": 28.4,
+    "members": 102,
+    "trend": "NEUTRAL",
+    "momentumScore": 2.26
+  },
+  "Life Insurance": {
+    "ret5": -1.73,
+    "ret20": -1.02,
+    "pctAboveSma20": 0.0,
+    "members": 14,
+    "trend": "WEAKENING",
+    "momentumScore": -2.4
+  },
+  "Others": {
+    "ret5": -1.28,
+    "ret20": 4.18,
+    "pctAboveSma20": 47.4,
+    "members": 19,
+    "trend": "NEUTRAL",
+    "momentumScore": 5.63
+  },
+  "Hotels And Tourism": {
+    "ret5": -1.19,
+    "ret20": 1.45,
+    "pctAboveSma20": 50.0,
+    "members": 8,
+    "trend": "STRENGTHENING",
+    "momentumScore": 1.58
+  },
+  "Finance": {
+    "ret5": -1.89,
+    "ret20": 0.44,
+    "pctAboveSma20": 15.4,
+    "members": 13,
+    "trend": "NEUTRAL",
+    "momentumScore": -0.28
+  },
+  "Manufacturing And Processing": {
+    "ret5": -1.8,
+    "ret20": 2.32,
+    "pctAboveSma20": 40.0,
+    "members": 15,
+    "trend": "NEUTRAL",
+    "momentumScore": 2.58
+  },
+  "Investment": {
+    "ret5": -1.85,
+    "ret20": 1.12,
+    "pctAboveSma20": 28.6,
+    "members": 7,
+    "trend": "NEUTRAL",
+    "momentumScore": 0.76
+  },
+  "Development Bank Limited": {
+    "ret5": -1.62,
+    "ret20": 1.78,
+    "pctAboveSma20": 25.0,
+    "members": 16,
+    "trend": "NEUTRAL",
+    "momentumScore": 1.86
+  },
+  "Non-Life Insurance": {
+    "ret5": -1.53,
+    "ret20": -0.13,
+    "pctAboveSma20": 7.7,
+    "members": 13,
+    "trend": "NEUTRAL",
+    "momentumScore": -0.96
+  }
+}

@@ -30,4 +30,15 @@ router.put('/', async (req, res) => {
   }
 });
 
+// Delete a budget by category
+router.delete('/:category', async (req, res) => {
+  try {
+    const budget = await Budget.findOneAndDelete({ category: req.params.category });
+    if (!budget) return res.status(404).json({ message: 'Budget not found.' });
+    res.json({ message: 'Budget deleted.', deleted: budget });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;

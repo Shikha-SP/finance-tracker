@@ -1,0 +1,50 @@
+[
+  {
+    "title": "NEPSE goes green Sunday - Khabarhub",
+    "pubDate": "Sun, 21 Mar 2021 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE9zVXM2V2RyNkRhQ0w4bHlla1duNTluVk5nc0pYNWVmVEpFR1dNdGt5TVc1UlRHWWdQeHhrUkswX2pfUUo3LVdNSlM5M1BzRU9SQWpBWlBQb04?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "GLH",
+    "llmScore": 0.5,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "market",
+      "growth",
+      "green"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse plunges by 1. 76 points on Tuesday - The Annapurna Express",
+    "pubDate": "Tue, 20 Feb 2024 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTFBQZlcyTFNkc0NsdTNVcEI2NDFIb2FycmRTN0todXBhSGY5R09hbDFCRUNYR19UTWRMbC16bjg4MVFULUNxZzQ2ZkRWTUFsWVk4NXlqYVRBYw?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "GLH",
+    "llmScore": -0.8,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunges",
+      "loss",
+      "decline"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Greenlife Hydropower issuing IPO from today - The Himalayan Times",
+    "pubDate": "Fri, 05 Feb 2021 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiigFBVV95cUxNc3FoT1o0c3lsY0pKMFh6bVZFNXdmdVlhWXhXTDE3S3ZuNVF1S2NhbTdLOVFLdHBqdDdSdVd5eU5veDQ1el8yc19uYTFvTnRWMktIeEZORlc1XzZYZ0c3di1ISTNJS08yVThEeUNpbmpHY1VKcmw2RjJ3YUJrVzdnelNJcUpzdDlGTWfSAVdBVV95cUxOU1J6U1ZqYXlJaUIyT0NmN3NWZWc1U1BZdzQ1ZjQxUTBOMnVZNUFJV1VVOEZ2LWNqOXNNRkpETlJRUTFEY2k4UDluVHNCVkV1MEVwZ3ZSNTA?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "GLH",
+    "llmScore": 0.2,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "IPO",
+      "investment",
+      "hydropower"
+    ],
+    "llmProcessed": true
+  }
+]

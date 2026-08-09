@@ -1,0 +1,98 @@
+[
+  {
+    "title": "Nepse surges by 8. 78 points on Tuesday - The Annapurna Express",
+    "pubDate": "Tue, 05 May 2026 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTFBidl9aVnhBR3gtMVRJd01uMW02cHdVRjJGcGhWU2NWektJWm1KbWhuc0dxbWpuUGppS2JfaEVfYUY1b0JIYTR2dUtBc2hUNW5wYnB1S09vaw?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "ULHC",
+    "llmScore": 0.8,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "growth",
+      "nepse"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Upper Lohore Khola Hydropower Company Limited - ULHC | Online Khabar Markets - Online Khabar",
+    "pubDate": "Sat, 30 Sep 2023 13:59:55 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE9wUlB2MzA3ejBQMVBJbFdfWEd5N002Y0d4bm1NVDQ2SGhOejVuQkhyVXFtRjlOaGFVLTY2V05zQmdCaG41dGJycGdaYUgteXpRNUFYTXJNYzdlQXY1?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "ULHC",
+    "llmScore": 0.0,
+    "llmLabel": "NEUTRAL",
+    "llmKeywords": [
+      "update",
+      "information",
+      "announcement"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse plunges by 8. 30 points on Thursday - The Annapurna Express",
+    "pubDate": "Fri, 03 Jul 2026 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE05bkY0Vk53Yk9zSnl6cHA5aUZQLURISWhLWU5yMFRMczRqOWdlSFZOb3llV3JfaTVpWFRlQVU0VGtfZ25XSXNmREM5eWZZTXBXeHR2ZnJUYw?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "ULHC",
+    "llmScore": -0.8,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunges",
+      "loss",
+      "nepse"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse plunges by 13. 82 points on Thursday - The Annapurna Express",
+    "pubDate": "Thu, 06 Aug 2026 10:40:46 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTFBpQkpoc2dLRndjUHJCN3ZkQklVNzVOcThJUENydXJBU1RKN3FYMDJBa2JzNTE0Z2k2VkZUcHVKSmdSM2xFS2NKQ3hoc29tdkR0bWVjeEc0WQ?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "ULHC",
+    "llmScore": -0.9,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunges",
+      "decline",
+      "nepse"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse plunges by 11. 64 points on Thursday - The Annapurna Express",
+    "pubDate": "Thu, 06 Feb 2025 08:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTFBtWlNORFhzYkNOVUFQTVptTXNxMUFhbXg5TW02QWRfUUw4TWxtNXlqTmhVd2xfVExfN2RtNkoyTlJYd3lZdEkxeXhiaDUzcXdTWkxzbzNBSQ?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "ULHC",
+    "llmScore": -0.8,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunges",
+      "downfall",
+      "nepse"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse plunges by 5.58 points on Wednesday - The Annapurna Express",
+    "pubDate": "Wed, 05 Jun 2024 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE1SWUcyNThiQ1FwUl9lcm1vM0NZVm1kQ3RfbmFQU19tR3VvM0tyZHdEVjhJYnFEX0s2alFuXzE5ZjltQ1VRYkVLOUlTOU15THIxYml4ZFNSZw?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "ULHC",
+    "llmScore": -0.5,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunges",
+      "drop",
+      "nepse"
+    ],
+    "llmProcessed": true
+  }
+]

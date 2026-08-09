@@ -21,7 +21,7 @@ export default function TrustCheck() {
   const load = useCallback(async (refresh = false) => {
     if (!refresh) setLoading(true);
     try {
-      const res = await fetch(`${URL}${refresh ? '?refresh=1' : ''}`, { signal: AbortSignal.timeout(15000) });
+      const res = await fetch(`${URL}${refresh ? '?refresh=1' : ''}`, { signal: AbortSignal.timeout(60000) });
       const json = await res.json().catch(() => null);
       if (mounted.current) {
         if (res.ok && json) {
@@ -40,7 +40,7 @@ export default function TrustCheck() {
 
   const loadFwd = useCallback(async () => {
     try {
-      const res = await fetch(FWD_URL, { signal: AbortSignal.timeout(10000) });
+      const res = await fetch(FWD_URL, { signal: AbortSignal.timeout(30000) });
       const json = await res.json().catch(() => null);
       if (mounted.current && res.ok && json) setFwd(json);
     } catch { /* forward test is best-effort; hide on failure */ }

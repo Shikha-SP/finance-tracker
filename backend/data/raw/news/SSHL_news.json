@@ -1,0 +1,34 @@
+[
+  {
+    "title": "Nepse surges by 162. 93 points on Monday - The Annapurna Express",
+    "pubDate": "Mon, 09 Mar 2026 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE1STmY3M3VpWkJWc0Y3dHBjeVlOUEFKNWJYNmNQUEEydXhoWWtUaXlBWGg0ZnVWdHZfbWtDdjl0QVhMWEU3OE90NC1rNGVETGYxelNIcER0UQ?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "SSHL",
+    "llmScore": 0.8,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "growth",
+      "nepse"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Upper Lohore Khola Hydropower Company Limited - ULHC | Online Khabar Markets - Online Khabar",
+    "pubDate": "Sat, 30 Sep 2023 13:59:55 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE9wUlB2MzA3ejBQMVBJbFdfWEd5N002Y0d4bm1NVDQ2SGhOejVuQkhyVXFtRjlOaGFVLTY2V05zQmdCaG41dGJycGdaYUgteXpRNUFYTXJNYzdlQXY1?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "SSHL",
+    "llmScore": 0.0,
+    "llmLabel": "NEUTRAL",
+    "llmKeywords": [
+      "company",
+      "update",
+      "hydropower"
+    ],
+    "llmProcessed": true
+  }
+]

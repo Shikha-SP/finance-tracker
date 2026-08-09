@@ -1,0 +1,18 @@
+[
+  {
+    "title": "Nepse plunges by 4. 19 points on Monday - The Annapurna Express",
+    "pubDate": "Mon, 13 Apr 2026 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE83MU4ySC1aZk4yb2IweDAtVHFGUmM5UFhNY0tqVS1mTk8yalN4cTNMQXREOG51MlBBVW1UckRaVDUwX294UzdKWVlnUUYwbGh1TU1mWW12NA?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "UNLB",
+    "llmScore": -0.8,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunge",
+      "losses",
+      "Nepse"
+    ],
+    "llmProcessed": true
+  }
+]

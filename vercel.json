@@ -5,5 +5,11 @@
   ],
   "routes": [
     { "src": "/(.*)", "dest": "/backend/api/index.js" }
-  ]
+  ],
+  "functions": {
+    "backend/api/index.js": {
+      "maxDuration": 60,
+      "includeFiles": "backend/data/**"
+    }
+  }
 }

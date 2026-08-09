@@ -1,0 +1,34 @@
+[
+  {
+    "title": "Nepse plunges by 4. 19 points on Monday - The Annapurna Express",
+    "pubDate": "Mon, 13 Apr 2026 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE83MU4ySC1aZk4yb2IweDAtVHFGUmM5UFhNY0tqVS1mTk8yalN4cTNMQXREOG51MlBBVW1UckRaVDUwX294UzdKWVlnUUYwbGh1TU1mWW12NA?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "PCIL",
+    "llmScore": -0.8,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunges",
+      "loss",
+      "decline"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse surges by 7. 73 points on Monday - The Annapurna Express",
+    "pubDate": "Mon, 27 Apr 2026 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTFB4TlE4Skc3VjdHZ0xISko0aU9SQVJETjFkYjdkU09FRFJabE5kRG1WVDgwRXhWX0wyN3dyME8xc3RqbkxidHE5NDR6enB6aHJMR0pXbXVhbw?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "PCIL",
+    "llmScore": 0.9,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "gain",
+      "upswing"
+    ],
+    "llmProcessed": true
+  }
+]

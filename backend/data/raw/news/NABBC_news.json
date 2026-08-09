@@ -1,0 +1,82 @@
+[
+  {
+    "title": "Nepse surges by 21. 30 points on Monday - The Annapurna Express",
+    "pubDate": "Mon, 25 Aug 2025 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE9fb0VBZW0xc1ZoM1htQUxvX0JBQTlhRDJmVkp6bFhEbHJGSTRxX0pjN2ZfOXFzRVZwWXFTQUMxLV9nakg3TVFZMklIT2NwYkpqc3M3UmU1SQ?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "NABBC",
+    "llmScore": 0.8,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "growth",
+      "market"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse plunges by 12. 60 points on Thursday - The Annapurna Express",
+    "pubDate": "Thu, 08 May 2025 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE1PWHprU3drU1EwZW83OW9CTDNiZzM4WTRzTWhzLTZfZXY3QnZuTjZCcW5ZUnItQ1F4OUpEbEZKcDlWV2xGMHNCakZtUWkwc0llOEFYX0pqZw?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "NABBC",
+    "llmScore": -0.7,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunges",
+      "losses",
+      "decline"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse plunges by 23. 93 points on Sunday - The Annapurna Express",
+    "pubDate": "Sun, 27 Jul 2025 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE9Bb3FnbEhnYmJYWHVCMnU4NGJNX0h4TkxvT2tCUGZiS2wwWXpNYXJpR2xOSGI2NXhoZXRUSHRJN1JsTE1qaEF2R0JQc0RmeU5yenNwQURJNA?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "NABBC",
+    "llmScore": -0.9,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "plunges",
+      "downfall",
+      "slowdown"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse surges by 9. 76 points on Tuesday - The Annapurna Express",
+    "pubDate": "Tue, 19 Aug 2025 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTFByOTM1aV9jSEdtaDlDNGRmWkU1UExEZXl0SFFmX3VCVGprV1NzeXZGOG4xeTBmN3BMOVFmMHFFeHFyQnEwVmRTZVdTSC1SOHRyT2dSa0tGTQ?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "NABBC",
+    "llmScore": 0.6,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "upward",
+      "trend"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse surges by 13. 51 points on Sunday - The Annapurna Express",
+    "pubDate": "Sun, 02 Jun 2024 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTFA0RUloSXZmRDNJZnFKVFF6akNUMW05eXZMX0lmRlV3SE9ySXVrOEZXQkhiR0EtekZlOHdORm1jMEJ6eEZEMHcteGZIRER2TE5JdnVLLVlaMTljMzhs?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "NABBC",
+    "llmScore": 0.7,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "surges",
+      "recovery",
+      "gain"
+    ],
+    "llmProcessed": true
+  }
+]

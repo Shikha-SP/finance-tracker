@@ -1,0 +1,98 @@
+[
+  {
+    "title": "Om Megashree Pharmaceuticals Limited - OMPL | Online Khabar Markets - Online Khabar",
+    "pubDate": "Sun, 04 May 2025 18:32:25 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE45TlhuQ05HS0J4U3pKLW15UzZfY3ZoNXhVcklGZFJNMkhnNHVzY1k4MlpNcXRLN2xwaDhNcTJsU1BTX1VFdkRTWDliVm1ibFpPbVdkM2hrZnZkX0FI?oc=5",
+    "sentimentScore": 0.0,
+    "sentimentLabel": "NEUTRAL",
+    "symbol": "OMPL",
+    "llmScore": 0.0,
+    "llmLabel": "NEUTRAL",
+    "llmKeywords": [
+      "corporate",
+      "update",
+      "pharmaceuticals"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse plunges by 6. 87 points on Wednesday - The Annapurna Express",
+    "pubDate": "Wed, 04 Jun 2025 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE9wYnFqaFk3ZnFFU2piQ1g3N2FNNHdPN2hRcVVwME9rQUFRV1FsZWRMWXhtT3VDOUxLbk02VkZDek9OdUI1N1ItN3RHclZxS1BzSFlJa1hJMA?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "OMPL",
+    "llmScore": -0.8,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "market",
+      "plunge",
+      "losses"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse plunges by 3. 77 points on Sunday - The Annapurna Express",
+    "pubDate": "Sun, 18 May 2025 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTFBsTUNVY1ZKRHhBQkN0QmwtZEoxR012SHdFYTNvbnhZTVhlbW1tQkpLTXpLT1AyNFNQTF9ZSzBxOHlVN3JyaThrbHBGYWVYa01CdkNvSmotcw?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "OMPL",
+    "llmScore": -0.7,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "market",
+      "decline",
+      "slowdown"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse surges by 1. 08 points on Tuesday - The Annapurna Express",
+    "pubDate": "Tue, 24 Jun 2025 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE4yQVhqQkhxWjQ2MlN6OEI3U2lKOVhuSFNfbUtWcHVFUHM0WndPRXFjclEzRDNkX2UzbmZhcUVuS0ZFOXhVdFZnc1FWY1lqWWgwWlV5YlVCNA?oc=5",
+    "sentimentScore": 0.33,
+    "sentimentLabel": "BULLISH",
+    "symbol": "OMPL",
+    "llmScore": 0.2,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "market",
+      "surge",
+      "growth"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse plunges by 8. 41 points on Thursday - The Annapurna Express",
+    "pubDate": "Thu, 15 May 2025 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTFBjeWVaQ1R5MktkWEdlMWNZX1N3WkRUNWRROVQyZXAxcThGcWZvME9OSjdJS01iQUxPeWRQZDB5dHNrZWE4SUZqSElXUTdGNWtmYmlZNjBqYw?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "OMPL",
+    "llmScore": -0.9,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "market",
+      "plunge",
+      "crash"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "Nepse plunges by 6. 93 points on Wednesday - The Annapurna Express",
+    "pubDate": "Wed, 21 May 2025 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE1BTFAzb3BZTFhTTmlCTnhqWUJIQXI2dGVkRW1EU0NFM3JZb1ZQR1ZsWWJUTF85dnBYZUtNWkFlRVRSUzVWOEl2eGpyM2RyTlZ3QjhFU1pETQ?oc=5",
+    "sentimentScore": -0.33,
+    "sentimentLabel": "BEARISH",
+    "symbol": "OMPL",
+    "llmScore": -0.8,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "market",
+      "decline",
+      "downturn"
+    ],
+    "llmProcessed": true
+  }
+]

@@ -2,7 +2,7 @@ import os
 import re
 import json
 
-from data_collector import relative_time
+from data_collector import relative_time, DATA_DIR
 
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
@@ -20,10 +20,10 @@ class FinancialRAGProcessor:
     same real context; otherwise a deterministic markdown answer is produced.
     """
     def __init__(self):
-        self.base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        self.raw_news_dir = os.path.join(self.base_dir, "data", "raw", "news")
-        self.fund_cache_file = os.path.join(self.base_dir, "data", "raw", "fundamentals", "merolagani_cache.json")
-        self.snapshot_file = os.path.join(self.base_dir, "data", "nepse_snapshot.json")
+        self.base_dir = DATA_DIR
+        self.raw_news_dir = os.path.join(self.base_dir, "raw", "news")
+        self.fund_cache_file = os.path.join(self.base_dir, "raw", "fundamentals", "merolagani_cache.json")
+        self.snapshot_file = os.path.join(self.base_dir, "nepse_snapshot.json")
         self._fund_cache = None
         self._snapshot_cache = None
 

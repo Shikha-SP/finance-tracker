@@ -1,0 +1,66 @@
+[
+  {
+    "title": "NEPSE rises by 7.90 points with turnover reaching Rs 6.26 billion - Nepalnews.com",
+    "pubDate": "Fri, 24 Jul 2026 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPQzYyQmdSeDN6cHB1S0h1Yi04RkFZaEEtcVJoZUlsTVJhMHJGVFNuc2pLUjc2VWYtOEVlc1AySGpHb2FldTRtUUlKeTZiMXluN0RUSkVKVWMwcFJrUUxhOU9UdG1KdFNPc3BQMHFBaFpOSTdqSk53a2RlN0JYS2RVY1JqLXJKN3dNenFIS19IOWlnWDhXSy1sZ1V1RjYwbzFmTllrNF9LYWxkejA?oc=5",
+    "sentimentScore": 0.22,
+    "sentimentLabel": "BULLISH",
+    "symbol": "NADEP",
+    "llmScore": 0.8,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "rise",
+      "turnover",
+      "growth"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "NEPSE climbs nearly 8 points as turnover rises to Rs 6.26 billion - Khabarhub",
+    "pubDate": "Fri, 24 Jul 2026 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE1Qd0JQYWxnQXBEUDRVbTNEYVR0bFJDMzMyUWxLekFYTkwzWG14TVZVRTB4VDQ5SVg4cEF3ckxNdEUtV0xNREtjTG9CUFowMGxlVHhxZmlFX1o?oc=5",
+    "sentimentScore": 0.22,
+    "sentimentLabel": "BULLISH",
+    "symbol": "NADEP",
+    "llmScore": 0.8,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "climbs",
+      "turnover",
+      "increase"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "NEPSE and transaction amounts decrease - OnlineKhabar English News",
+    "pubDate": "Wed, 05 Jun 2024 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiggFBVV95cUxOaDRwdlVfVE4zN0dEbl81eXZHNlJoT2ZtZW96NGZWSm9FaElWaFkwM0VETmgxRnp6cUt1UjJhNVJqZUJoaV8zZl8yWFctenpKNjNKVE5LQmVXTEdBdzRjdEVnNXlJX241aU9uMGoyOTBVZnJKRmJxOVZnQVMzZEdEUlZR?oc=5",
+    "sentimentScore": -0.22,
+    "sentimentLabel": "BEARISH",
+    "symbol": "NADEP",
+    "llmScore": -0.7,
+    "llmLabel": "BEARISH",
+    "llmKeywords": [
+      "decrease",
+      "transaction",
+      "loss"
+    ],
+    "llmProcessed": true
+  },
+  {
+    "title": "NEPSE index exceeds 2,100 points - The Rising Nepal",
+    "pubDate": "Wed, 13 Mar 2024 07:00:00 GMT",
+    "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE1fanVseUpWNmZhWVRkc2NUbFcwVlNsQ1JRamNKSGFxUnpGUExtdlNveHZsd2JHVzZjNU1TaVJxR1M2cGwxYVpBRUxGRUtRa19x?oc=5",
+    "sentimentScore": 0.44,
+    "sentimentLabel": "BULLISH",
+    "symbol": "NADEP",
+    "llmScore": 0.9,
+    "llmLabel": "BULLISH",
+    "llmKeywords": [
+      "exceeds",
+      "index",
+      "high"
+    ],
+    "llmProcessed": true
+  }
+]
