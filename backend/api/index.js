@@ -9,3 +9,5 @@ module.exports = async function handler(req, res) {
     res.status(500).json({ error: 'Database unavailable', message: err.message });
   }
 };
+
+module.exports.config = { maxDuration: 60 };

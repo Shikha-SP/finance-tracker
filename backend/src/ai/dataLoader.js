@@ -3,18 +3,30 @@ const path = require('path');
 
 function resolveDataDir() {
   if (process.env.DATA_DIR) return process.env.DATA_DIR;
-  const candidates = [
-    path.resolve(__dirname, '../../data'),
-    path.resolve(process.cwd(), 'data'),
-  ];
-  for (const candidate of candidates) {
+
+  // The data dir is uniquely identified by nepse_snapshot.json + the price CSV.
+  // Walk up from every plausible root so the path is found regardless of how
+  // Vercel lays out the bundled lambda (includeFiles preserves project paths).
+  const hasData = (p) => {
     try {
-      if (fs.statSync(candidate).isDirectory()) return candidate;
+      return fs.existsSync(path.join(p, 'nepse_snapshot.json')) &&
+        fs.existsSync(path.join(p, 'raw', 'prices', 'price_history.csv'));
     } catch (err) {
-      // keep trying
+      return false;
+    }
+  };
+
+  for (const root of [__dirname, process.cwd()]) {
+    let p = root;
+    while (p && p.length >= 3) {
+      if (hasData(p)) return p;
+      const next = path.dirname(p);
+      if (next === p) break;
+      p = next;
     }
   }
-  return candidates[0];
+
+  return path.resolve(__dirname, '../../data');
 }
 
 const DATA_DIR = resolveDataDir();
