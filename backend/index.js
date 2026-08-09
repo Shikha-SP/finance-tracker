@@ -1,5 +1,7 @@
 const dns = require('node:dns');
-dns.setServers(['1.1.1.1', '1.0.0.1']);
+if (!process.env.VERCEL) {
+  dns.setServers(['1.1.1.1', '1.0.0.1']);
+}
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -27,6 +29,7 @@ const userRoutes        = require('./src/routes/userRoutes');
 const nepseRoutes       = require('./src/routes/nepseRoutes');
 const portfolioRoutes   = require('./src/routes/portfolioRoutes');
 const aiRoutes          = require('./src/routes/aiRoutes');
+const newsRoutes        = require('./src/routes/newsRoutes');
 
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/budgets',      budgetRoutes);
@@ -35,6 +38,7 @@ app.use('/api/users',        userRoutes);
 app.use('/api/nepse',        nepseRoutes);
 app.use('/api/portfolio',    portfolioRoutes);
 app.use('/api/ai',           aiRoutes);
+app.use('/api/news',         newsRoutes);
 
 app.get('/', (req, res) => {
   res.send('FinanceTracker API is running!');
@@ -106,9 +110,22 @@ async function connectDatabase() {
   console.log('In-memory MongoDB ready (data resets when server stops).');
 }
 
+let connectionPromise = null;
+
+function ensureConnected() {
+  if (mongoose.connection.readyState === 1) return Promise.resolve();
+  if (!connectionPromise) {
+    connectionPromise = connectDatabase().catch((err) => {
+      connectionPromise = null;
+      throw err;
+    });
+  }
+  return connectionPromise;
+}
+
 async function startServer() {
   try {
-    await connectDatabase();
+    await ensureConnected();
 
     app.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
@@ -119,4 +136,10 @@ async function startServer() {
   }
 }
 
-startServer();
+// Vercel (serverless) loads this file as a module via backend/api/index.js,
+// so only boot the persistent server when invoked directly (local dev / Render).
+if (require.main === module && !process.env.VERCEL) {
+  startServer();
+}
+
+module.exports = { app, ensureConnected };

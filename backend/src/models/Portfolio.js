@@ -30,6 +30,15 @@ const portfolioSchema = new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now
+  },
+  source: {
+    type: String,
+    enum: ['app', 'own'],
+    default: 'own'
+  },
+  appSnapshot: {
+    type: mongoose.Schema.Types.Mixed,
+    default: null
   }
 }, { timestamps: true });
 

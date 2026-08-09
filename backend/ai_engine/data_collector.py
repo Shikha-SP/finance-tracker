@@ -771,6 +771,110 @@ def get_market_bias():
     except Exception:
         return {"available": False, "bias": 0.0, "trend": "FLAT"}
 
+# ── Market regime (breadth-based, NOT opinion) ──────────────────────────────
+# Whether NEPSE is in an UPTREND / DOWNTREND / SIDEWAYS decides *when* to buy,
+# which historically matters far more than which stock. Computed from real
+# breadth across every stock in the CSV (median 5d/20d returns + % trading above
+# their own SMA20) combined with the NEPSE index snapshot. Cached 6h.
+
+MARKET_REGIME_CACHE = os.path.join(BASE_DIR, "data", "raw", "market_regime_cache.json")
+MARKET_REGIME_TTL_HOURS = 6
+
+
+def compute_market_regime():
+    try:
+        df = fetch_price_history_csv()
+        if df is None or 'symbol' not in df.columns or len(df) < 500:
+            return None
+    except Exception as e:
+        print(f"[Market Regime] price load failed: {e}")
+        return None
+
+    rets5, rets20 = [], []
+    above20 = 0
+    n = 0
+    last_dates = []
+    for sym, sub in df.groupby('symbol'):
+        sub = sub.dropna(subset=['close']).sort_values('date')
+        closes = sub['close'].astype(float)
+        if len(closes) < 25:
+            continue
+        c0 = float(closes.iloc[-1])
+        c5 = float(closes.iloc[-6])
+        c20 = float(closes.iloc[-21])
+        if c5 <= 0 or c20 <= 0:
+            continue
+        rets5.append((c0 / c5 - 1.0) * 100.0)
+        rets20.append((c0 / c20 - 1.0) * 100.0)
+        if c0 > float(closes.tail(20).mean()):
+            above20 += 1
+        n += 1
+        last_dates.append(str(sub['date'].iloc[-1]))
+    if n < 20:
+        return None
+
+    med5 = round(float(np.median(rets5)), 2)
+    med20 = round(float(np.median(rets20)), 2)
+    breadth = round(above20 * 100.0 / n, 1)
+    as_of = max(last_dates) if last_dates else None
+
+    bias = get_market_bias()
+    index = bias.get('index') if bias.get('available') else None
+    daily = bias.get('changePct') if bias.get('available') else None
+    daily_trend = bias.get('trend') if bias.get('available') else None
+
+    if med20 > 2.0 and breadth >= 55:
+        regime = "UPTREND"
+    elif med20 < -2.0 and breadth <= 45:
+        regime = "DOWNTREND"
+    else:
+        regime = "SIDEWAYS"
+
+    guidance = {
+        "UPTREND": "Risk-on. The market is rising — this is when new buys work. Prefer stocks already above their 20-day average and keep normal position sizes.",
+        "SIDEWAYS": "Mixed. Neither buyers nor sellers own the tape. Only strong, cheap stocks are worth touching, keep sizes moderate and exit if the price breaks its recent low.",
+        "DOWNTREND": "Risk-off. The market is falling — cash and patience beat stock-picking here. If you must act, use small sizes, only in stocks holding their support, and stop out below support.",
+    }[regime]
+    stance = {"UPTREND": "OFFENSIVE", "SIDEWAYS": "BALANCED", "DOWNTREND": "DEFENSIVE"}[regime]
+    max_position = {"UPTREND": 100, "SIDEWAYS": 60, "DOWNTREND": 30}[regime]
+
+    return {
+        "regime": regime,
+        "stance": stance,
+        "maxPositionPct": max_position,
+        "advice": guidance,
+        "asOf": as_of,
+        "index": index,
+        "indexDailyChangePct": daily,
+        "indexDailyTrend": daily_trend,
+        "median5dReturn": med5,
+        "median20dReturn": med20,
+        "pctAboveSma20": breadth,
+        "n": n,
+        "computedAt": time.strftime("%Y-%m-%dT%H:%M:%S"),
+    }
+
+
+def get_market_regime(force=False):
+    if not force:
+        try:
+            with open(MARKET_REGIME_CACHE, encoding='utf-8') as f:
+                cached = json.load(f)
+            age = (time.time() - os.path.getmtime(MARKET_REGIME_CACHE)) / 3600.0
+            if isinstance(cached, dict) and cached and age <= MARKET_REGIME_TTL_HOURS:
+                return cached
+        except Exception:
+            pass
+    out = compute_market_regime()
+    if out:
+        try:
+            ensure_directories()
+            with open(MARKET_REGIME_CACHE, 'w', encoding='utf-8') as f:
+                json.dump(out, f, indent=2)
+        except Exception:
+            pass
+    return out or {}
+
 # ── Sector momentum layer ────────────────────────────────────────────────────
 # Whether a sector is rising/falling/strengthening matters a lot in NEPSE
 # (sector rotation). We derive it from the price CSV: average 5d and 20d

@@ -2,10 +2,10 @@ import { NavLink } from 'react-router-dom';
 import { TrendingUp, Filter, Briefcase, Bot } from 'lucide-react';
 
 const investmentNavItems = [
-  { to: '/investment/market',   label: 'Market Overview',            icon: TrendingUp },
+  { to: '/investment/market',   label: 'Market Overview',              icon: TrendingUp },
   { to: '/investment/screener', label: 'Stock Screener & AI Analysis', icon: Filter },
-  { to: '/investment/tracker',  label: 'Portfolio Tracker',          icon: Briefcase },
-  { to: '/investment/rag',      label: 'AI Stock Advisor (RAG)',     icon: Bot },
+  { to: '/investment/tracker',  label: 'Portfolio Tracker',            icon: Briefcase },
+  { to: '/investment/rag',      label: 'AI Stock Advisor (RAG)',       icon: Bot },
 ];
 
 export default function InvestmentSidebar() {

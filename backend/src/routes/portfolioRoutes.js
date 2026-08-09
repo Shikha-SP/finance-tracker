@@ -17,7 +17,7 @@ router.get('/', auth, async (req, res) => {
 
 // Add a portfolio item
 router.post('/', auth, async (req, res) => {
-  const { symbol, type, quantity, price, date } = req.body;
+  const { symbol, type, quantity, price, date, source, appSnapshot } = req.body;
   try {
     const userId = req.user.userId || req.user.id;
     const newItem = new Portfolio({
@@ -26,7 +26,9 @@ router.post('/', auth, async (req, res) => {
       type,
       quantity,
       price,
-      date: date || Date.now()
+      date: date || Date.now(),
+      source: source || 'own',
+      appSnapshot: appSnapshot || null
     });
     const item = await newItem.save();
     res.json(item);
@@ -38,7 +40,7 @@ router.post('/', auth, async (req, res) => {
 
 // Update a portfolio item
 router.put('/:id', auth, async (req, res) => {
-  const { symbol, type, quantity, price, date } = req.body;
+  const { symbol, type, quantity, price, date, source, appSnapshot } = req.body;
   try {
     let item = await Portfolio.findById(req.params.id);
     if (!item) return res.status(404).json({ msg: 'Item not found' });
@@ -50,6 +52,8 @@ router.put('/:id', auth, async (req, res) => {
     if (quantity !== undefined) item.quantity = Number(quantity);
     if (price !== undefined) item.price = Number(price);
     if (date) item.date = date;
+    if (source) item.source = source;
+    if (appSnapshot !== undefined) item.appSnapshot = appSnapshot;
 
     await item.save();
     res.json(item);

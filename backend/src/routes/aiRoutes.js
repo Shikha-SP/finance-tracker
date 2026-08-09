@@ -1,45 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const http = require('http');
 
 const PYTHON_AI_URL = process.env.PYTHON_AI_URL || 'http://127.0.0.1:8000';
 
 function fetchPythonAPI(path, method = 'GET', body = null) {
-  return new Promise((resolve, reject) => {
-    const url = new URL(path, PYTHON_AI_URL);
-    const options = {
-      method,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    };
-
-    const req = http.request(url, options, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        try {
-          const parsed = JSON.parse(data);
-          if (res.statusCode >= 400 || parsed.detail || parsed.error) {
-            reject(new Error(parsed.detail || parsed.error || `HTTP ${res.statusCode}`));
-          } else {
-            resolve(parsed);
-          }
-        } catch (e) {
-          reject(e);
-        }
-      });
-    });
-
-    req.on('error', (err) => {
-      console.warn('[Express AI Proxy Warning] Could not connect to Python AI engine:', err.message);
-      reject(err);
-    });
-
-    if (body) {
-      req.write(JSON.stringify(body));
+  const url = new URL(path, PYTHON_AI_URL).toString();
+  return fetch(url, {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body: body ? JSON.stringify(body) : undefined,
+    signal: AbortSignal.timeout(25000)
+  }).then(async (res) => {
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data.detail || data.error) {
+      throw new Error(data.detail || data.error || `HTTP ${res.status}`);
     }
-    req.end();
+    return data;
   });
 }
 
@@ -61,6 +37,19 @@ router.get('/analyze/:symbol', async (req, res) => {
   } catch (err) {
     console.log(`[Express AI Proxy] AI engine offline for ${req.params.symbol}`);
     res.status(503).json(getOfflineResponse(req.params.symbol, 'analysis'));
+  }
+});
+
+router.get('/market-regime', async (req, res) => {
+  try {
+    const data = await fetchPythonAPI('/api/v1/market-regime');
+    res.json(data);
+  } catch (err) {
+    res.status(503).json({
+      error: true,
+      offline: true,
+      message: 'Market regime is offline. Start the Python AI service on port 8000.',
+    });
   }
 });
 
@@ -108,6 +97,23 @@ router.post('/rag/query', async (req, res) => {
       citations: [],
       symbol: null,
       query: req.body.query
+    });
+  }
+});
+
+router.get('/validation', async (req, res) => {
+  try {
+    const queryStr = req.query.refresh ? '?refresh=1' : '';
+    const data = await fetchPythonAPI(`/api/v1/ai/validation${queryStr}`);
+    res.json(data);
+  } catch (err) {
+    res.status(503).json({
+      error: true,
+      offline: true,
+      status: 'error',
+      message: 'Trust check is offline. Start the Python AI service on port 8000 to see the honest scorecard.',
+      horizons: [],
+      conclusion: ''
     });
   }
 });

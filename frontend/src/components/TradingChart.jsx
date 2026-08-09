@@ -57,6 +57,8 @@ export default function TradingChart({
     downColor = 'var(--red, #ef4444)',
     lineColor = 'var(--accent, #3b82f6)',
   } = {},
+  areaOpacity = 0.2,
+  showZoomControls = true,
 }) {
   const chartContainerRef = useRef();
   const chartRef = useRef();
@@ -170,7 +172,7 @@ export default function TradingChart({
     } else {
       const series = chart.addSeries(AreaSeries, {
         lineColor: resolvedLine,
-        topColor: withAlpha(resolvedLine, 0.2),
+        topColor: withAlpha(resolvedLine, areaOpacity),
         bottomColor: withAlpha(resolvedLine, 0),
         lineWidth: 2,
         priceLineVisible: false,
@@ -184,7 +186,7 @@ export default function TradingChart({
     return () => {
       chart.remove();
     };
-  }, [data, type, backgroundColor, textColor, upColor, downColor, lineColor, themeVersion]);
+    }, [data, type, backgroundColor, textColor, upColor, downColor, lineColor, themeVersion, areaOpacity]);
 
   const zoomIn = () => {
     if (chartRef.current) {
@@ -222,6 +224,7 @@ export default function TradingChart({
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <div ref={chartContainerRef} style={{ width: '100%', height: '100%' }} />
       {/* Interactive Floating Zoom Controls */}
+      {showZoomControls && (
       <div style={{
         position: 'absolute', bottom: '12px', right: '12px', zIndex: 5,
         display: 'flex', gap: '4px', background: 'var(--bg-glass, rgba(15,23,42,0.85))',
@@ -244,6 +247,7 @@ export default function TradingChart({
           style={{ background: 'transparent', border: 'none', color: 'var(--accent, #3b82f6)', cursor: 'pointer', padding: '2px 6px', fontSize: '11px', fontWeight: 600 }}
         >Reset</button>
       </div>
+      )}
     </div>
   );
 }

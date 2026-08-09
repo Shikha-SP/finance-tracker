@@ -1,0 +1,19 @@
+[build]
+  command = "npm install --prefix frontend && npm run build --prefix frontend"
+  publish = "frontend/dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Proxy API calls to the Vercel backend.
+# Replace YOUR-VERCEL-APP with your Vercel deployment URL after deploying the backend.
+[[redirects]]
+  from = "/api/*"
+  to = "https://YOUR-VERCEL-APP.vercel.app/api/:splat"
+  status = 200
+
+# SPA fallback: every other route serves index.html.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

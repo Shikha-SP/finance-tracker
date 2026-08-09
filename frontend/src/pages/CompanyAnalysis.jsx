@@ -230,7 +230,7 @@ export default function CompanyAnalysis() {
                         </div>
                         <div className="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800">
                           <span className="text-slate-400 block text-[11px]">Position</span>
-                          <span className={`font-bold text-sm ${data.supportResistance.positionPct > 75 ? 'text-amber-400' : 'text-emerald-400'}`}>{data.supportResistance.positionPct}% of range</span>
+                          <span className={`font-bold text-sm ${data.supportResistance.positionPct > 75 ? 'text-amber-400' : 'text-emerald-400'}`}>{data.supportResistance.positionPct}% of support/resistance range</span>
                         </div>
                       </div>
                       {(data.supportResistance.nearSupport || data.supportResistance.nearResistance) && (

@@ -5,9 +5,21 @@ const CACHE_DIR = path.join(__dirname, '../../data/history_cache');
 const CSV_BACKUP_DIR = path.join(__dirname, '../../data/csv_backup');
 const CACHE_TTL_MS = 2 * 60 * 60 * 1000; // 2 hours
 
+function safeWrite(file, content) {
+  try {
+    fs.writeFileSync(file, content, 'utf8');
+  } catch (e) {
+    // Read-only filesystem (e.g. serverless) — caching is best-effort.
+  }
+}
+
 function ensureDirs() {
-  if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR, { recursive: true });
-  if (!fs.existsSync(CSV_BACKUP_DIR)) fs.mkdirSync(CSV_BACKUP_DIR, { recursive: true });
+  try {
+    if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR, { recursive: true });
+    if (!fs.existsSync(CSV_BACKUP_DIR)) fs.mkdirSync(CSV_BACKUP_DIR, { recursive: true });
+  } catch (e) {
+    // Read-only filesystem — skip local cache dirs.
+  }
 }
 
 /**
@@ -112,9 +124,9 @@ async function fetchCompanyHistory(symbol, fromSec = null, toSec = null) {
 
       if (records.length > 0) {
         // Save CSV backup
-        fs.writeFileSync(csvBackupFile, csvText, 'utf8');
+        safeWrite(csvBackupFile, csvText);
         // Save JSON cache
-        fs.writeFileSync(cacheFile, JSON.stringify(records), 'utf8');
+        safeWrite(cacheFile, JSON.stringify(records));
         console.log(`[HistoryFetcher] Saved CSV backup & cached ${records.length} records for ${cleanSymbol}`);
       }
     } catch (err) {
@@ -280,7 +292,7 @@ async function fetchNepseDailyCloses() {
     if (!response.ok) throw new Error(`HTTP ${response.status} when fetching NEPSE daily index`);
     const records = parseNepseDailyCloses(await response.json());
     if (records.length > 0) {
-      fs.writeFileSync(NEPSE_DAILY_CACHE, JSON.stringify(records), 'utf8');
+      safeWrite(NEPSE_DAILY_CACHE, JSON.stringify(records));
       console.log(`[IndexHistory] Cached ${records.length} NEPSE daily closes (${records[0].time} → ${records[records.length - 1].time})`);
     }
     return records;
@@ -339,8 +351,8 @@ async function fetchIndexHistory(indexKey, fromSec = null, toSec = null) {
       records = parseIndexCsv(csvText);
 
       if (records.length > 0) {
-        fs.writeFileSync(csvBackupFile, csvText, 'utf8');
-        fs.writeFileSync(cacheFile, JSON.stringify(records), 'utf8');
+        safeWrite(csvBackupFile, csvText);
+        safeWrite(cacheFile, JSON.stringify(records));
         console.log(`[IndexHistory] Cached ${records.length} records for ${cleanKey} index`);
       }
     } catch (err) {
